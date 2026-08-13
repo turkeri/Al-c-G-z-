@@ -116,6 +116,7 @@ export default function ChronicIssuesPage() {
               </h3>
               <p className="result-summary-engine">
                 {engine.fuelType} &middot; {engine.transmission} &middot; Güvenilirlik puanı {engine.reliabilityScore}/100
+                {engine.avgFuelConsumption && <> &middot; Ort. {engine.avgFuelConsumption} L/100km</>}
               </p>
               {engine.knownProblems.length ? (
                 <div className="problem-list">

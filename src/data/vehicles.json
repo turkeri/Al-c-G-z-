@@ -35,7 +35,8 @@
           "Turbo kontrolü",
           "Şanzıman geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.2
       },
       {
         "name": "1.4 TFSI",
@@ -62,7 +63,8 @@
           "Yağ seviyesi ve tüketimi",
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.8
       }
     ],
     "referencePrice": 1550000,
@@ -99,7 +101,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.3
       }
     ],
     "referencePrice": 1850000,
@@ -136,7 +139,8 @@
           "Turbo kontrolü",
           "Şanzıman geçişleri",
           "Süspansiyon (arka amortisör)"
-        ]
+        ],
+        "avgFuelConsumption": 4.8
       },
       {
         "name": "320i",
@@ -163,7 +167,8 @@
           "Yağ kaçakları",
           "Motor titreşimi (rölanti)",
           "Şanzıman geçişleri"
-        ]
+        ],
+        "avgFuelConsumption": 6.8
       }
     ],
     "referencePrice": 1900000,
@@ -200,7 +205,8 @@
           "Turbo kontrolü",
           "Multimedya ve sensör testi",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.3
       },
       {
         "name": "200",
@@ -221,7 +227,8 @@
           "Motor çalışma sesi",
           "Şanzıman geçişleri",
           "Elektronik sistemler"
-        ]
+        ],
+        "avgFuelConsumption": 6.2
       }
     ],
     "referencePrice": 1700000,
@@ -258,7 +265,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.3
       },
       {
         "name": "1.4 TSI",
@@ -285,7 +293,8 @@
           "Turbo kontrolü",
           "Vites geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.9
       }
     ],
     "referencePrice": 1400000,
@@ -322,7 +331,8 @@
           "Şanzıman geçişleri",
           "Egzoz dumanı rengi",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.5
       }
     ],
     "referencePrice": 1650000,
@@ -353,7 +363,8 @@
           "Vites geçişleri",
           "Yağ kaçakları",
           "Klima performansı"
-        ]
+        ],
+        "avgFuelConsumption": 4.1
       },
       {
         "name": "1.6 Benzin",
@@ -374,7 +385,8 @@
           "CVT tepki süresi",
           "Yağ kaçakları",
           "Klima ve multimedya"
-        ]
+        ],
+        "avgFuelConsumption": 6
       }
     ],
     "referencePrice": 1300000,
@@ -411,7 +423,8 @@
           "Turbo kontrolü",
           "Vites geçişleri",
           "Elektronik arıza lambaları"
-        ]
+        ],
+        "avgFuelConsumption": 3.8
       },
       {
         "name": "1.2 Benzin",
@@ -432,7 +445,8 @@
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları",
           "Klima performansı"
-        ]
+        ],
+        "avgFuelConsumption": 5.8
       }
     ],
     "referencePrice": 750000,
@@ -469,7 +483,8 @@
           "DPF ikaz lambası",
           "Debriyaj/vites geçişi",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 4.5
       },
       {
         "name": "1.4 Fire",
@@ -490,7 +505,8 @@
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları",
           "Klima performansı"
-        ]
+        ],
+        "avgFuelConsumption": 6.3
       }
     ],
     "referencePrice": 800000,
@@ -527,7 +543,8 @@
           "Debriyaj/vites geçişi",
           "Turbo kontrolü",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 4.4
       },
       {
         "name": "1.0 EcoBoost",
@@ -554,7 +571,8 @@
           "Motor çalışma sesi",
           "Triger bakım kaydı",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.4
       }
     ],
     "referencePrice": 1000000,
@@ -591,7 +609,8 @@
           "DPF/AdBlue ikaz lambaları",
           "Turbo kontrolü",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 1000000,
@@ -628,7 +647,8 @@
           "Motor çalışma sesi",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.3
       },
       {
         "name": "1.4 Turbo",
@@ -649,7 +669,8 @@
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları",
           "Klima ve elektronik"
-        ]
+        ],
+        "avgFuelConsumption": 6.1
       },
       {
         "name": "1.4 Turbo",
@@ -670,7 +691,8 @@
           "Şanzıman geçişleri",
           "Yağ kaçakları",
           "Klima ve elektronik"
-        ]
+        ],
+        "avgFuelConsumption": 6.1
       }
     ],
     "referencePrice": 900000,
@@ -707,7 +729,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.6
       }
     ],
     "referencePrice": 1150000,
@@ -744,7 +767,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "4x4 aktarma organları"
-        ]
+        ],
+        "avgFuelConsumption": 5.5
       }
     ],
     "referencePrice": 2000000,
@@ -781,7 +805,8 @@
           "Turbo kontrolü",
           "Süspansiyon (hava körüğü)",
           "Şanzıman geçişleri"
-        ]
+        ],
+        "avgFuelConsumption": 5
       }
     ],
     "referencePrice": 2400000,
@@ -818,7 +843,8 @@
           "Turbo kontrolü",
           "Şanzıman geçişleri",
           "4x4 aktarma organları"
-        ]
+        ],
+        "avgFuelConsumption": 5.2
       }
     ],
     "referencePrice": 2100000,
@@ -855,7 +881,8 @@
           "AdBlue ikaz lambası",
           "Şanzıman geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.8
       }
     ],
     "referencePrice": 2200000,
@@ -886,7 +913,8 @@
           "Turbo kontrolü",
           "Multimedya ve sensör testi",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.9
       }
     ],
     "referencePrice": 2100000,
@@ -917,7 +945,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "4x4 aktarma organları (varsa)"
-        ]
+        ],
+        "avgFuelConsumption": 6.8
       }
     ],
     "referencePrice": 1900000,
@@ -948,7 +977,8 @@
           "Triger bakım kaydı",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5
       }
     ],
     "referencePrice": 1050000,
@@ -979,7 +1009,8 @@
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları",
           "Klima performansı"
-        ]
+        ],
+        "avgFuelConsumption": 5.5
       }
     ],
     "referencePrice": 950000,
@@ -1010,7 +1041,8 @@
           "Fren rejeneratif sistemi",
           "Klima ve multimedya",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 1750000,
@@ -1047,7 +1079,8 @@
           "DPF ikaz lambası",
           "Turbo kontrolü",
           "Vites geçişleri"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 950000,
@@ -1078,7 +1111,8 @@
           "Motor çalışma sesi",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.3
       }
     ],
     "referencePrice": 1050000,
@@ -1115,7 +1149,8 @@
           "DPF ikaz lambası",
           "Debriyaj/vites geçişi",
           "Yük altında performans"
-        ]
+        ],
+        "avgFuelConsumption": 5.3
       }
     ],
     "referencePrice": 900000,
@@ -1146,7 +1181,8 @@
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları",
           "Klima performansı"
-        ]
+        ],
+        "avgFuelConsumption": 5.6
       }
     ],
     "referencePrice": 650000,
@@ -1177,7 +1213,8 @@
           "Debriyaj/vites geçişi",
           "Turbo kontrolü",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 800000,
@@ -1214,7 +1251,8 @@
           "Turbo kontrolü",
           "4x4 aktarma organları",
           "Şanzıman geçişleri"
-        ]
+        ],
+        "avgFuelConsumption": 5.8
       }
     ],
     "referencePrice": 1500000,
@@ -1245,7 +1283,8 @@
           "DPF/AdBlue ikaz lambaları",
           "Turbo kontrolü",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 3.8
       }
     ],
     "referencePrice": 800000,
@@ -1276,7 +1315,8 @@
           "AdBlue ikaz lambası",
           "Şanzıman geçişleri",
           "Multimedya ve sensörler"
-        ]
+        ],
+        "avgFuelConsumption": 5
       }
     ],
     "referencePrice": 1550000,
@@ -1307,7 +1347,8 @@
           "Debriyaj/vites geçişi",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 800000,
@@ -1338,7 +1379,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "4x4 aktarma organları"
-        ]
+        ],
+        "avgFuelConsumption": 5.6
       }
     ],
     "referencePrice": 1500000,
@@ -1369,7 +1411,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "4x4 aktarma organları"
-        ]
+        ],
+        "avgFuelConsumption": 5.6
       }
     ],
     "referencePrice": 1500000,
@@ -1400,7 +1443,8 @@
           "Debriyaj/vites geçişi",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.2
       }
     ],
     "referencePrice": 950000,
@@ -1437,7 +1481,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.3
       }
     ],
     "referencePrice": 1150000,
@@ -1468,7 +1513,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "4x4 aktarma organları (varsa)"
-        ]
+        ],
+        "avgFuelConsumption": 5.2
       }
     ],
     "referencePrice": 1550000,
@@ -1499,7 +1545,8 @@
           "DPF/AdBlue ikaz lambaları",
           "Turbo kontrolü",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 3.9
       }
     ],
     "referencePrice": 750000,
@@ -1530,7 +1577,8 @@
           "Turbo kontrolü",
           "Vites geçişleri",
           "Egzoz dumanı rengi"
-        ]
+        ],
+        "avgFuelConsumption": 4.2
       }
     ],
     "referencePrice": 650000,
@@ -1561,7 +1609,8 @@
           "DPF ikaz lambası",
           "Vites geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 1150000,
@@ -1592,7 +1641,8 @@
           "DPF ikaz lambası",
           "4x4 aktarma organları",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.5
       }
     ],
     "referencePrice": 1750000,
@@ -1629,7 +1679,8 @@
           "Motor çalışma sesi",
           "DPF ikaz lambası",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.5
       }
     ],
     "referencePrice": 1350000,
@@ -1660,7 +1711,8 @@
           "Motor titreşimi (rölanti)",
           "Yağ kaçakları",
           "Klima ve elektronik"
-        ]
+        ],
+        "avgFuelConsumption": 5.2
       }
     ],
     "referencePrice": 700000,
@@ -1691,7 +1743,8 @@
           "Şanzıman geçişleri",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.3
       }
     ],
     "referencePrice": 1050000,
@@ -1728,7 +1781,8 @@
           "4x4 aktarma organları",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.8
       }
     ],
     "referencePrice": 950000,
@@ -1759,7 +1813,8 @@
           "Turbo kontrolü",
           "Vites geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 650000,
@@ -1790,7 +1845,8 @@
           "DPF ikaz lambası",
           "Vites geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4
       }
     ],
     "referencePrice": 1150000,
@@ -1821,7 +1877,8 @@
           "Şanzıman geçişleri",
           "4x4 aktarma organları",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 5.6
       }
     ],
     "referencePrice": 1700000,
@@ -1852,7 +1909,8 @@
           "DPF ikaz lambası",
           "Vites geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.6
       }
     ],
     "referencePrice": 1100000,
@@ -1889,7 +1947,8 @@
           "Turbo kontrolü",
           "Şanzıman geçişleri",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.8
       }
     ],
     "referencePrice": 2000000,
@@ -1920,7 +1979,8 @@
           "DPF ikaz lambası",
           "4x4 aktarma organları",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.2
       }
     ],
     "referencePrice": 1150000,
@@ -1951,7 +2011,8 @@
           "Debriyaj/vites geçişi",
           "Turbo kontrolü",
           "Yağ kaçakları"
-        ]
+        ],
+        "avgFuelConsumption": 4.5
       }
     ],
     "referencePrice": 1050000,
@@ -1982,11 +2043,2644 @@
           "Turbo kontrolü",
           "Vites geçişleri",
           "Yağ kaçakları"
+        ],
+        "avgFuelConsumption": 4
+      }
+    ],
+    "referencePrice": 750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Audi",
+    "model": "A6",
+    "yearRange": "2011-2018",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 81,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.4,
+        "knownProblems": [
+          {
+            "title": "Zincir gerdirici arızası",
+            "risk": "Yüksek",
+            "description": "Erken üretim yıllarında zincir gerdirici arızası motor hasarına yol açabilir.",
+            "checkKm": "90000-160000"
+          },
+          {
+            "title": "Hava süspansiyonu kaçağı",
+            "risk": "Orta",
+            "description": "Opsiyonel hava süspansiyonlu versiyonlarda körük kaçakları yaşanabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor çalışma sesi (zincir sesi)",
+          "Süspansiyon (hava körüğü)",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Audi",
+    "model": "Q5",
+    "yearRange": "2012-2019",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "S tronic",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.8,
+        "knownProblems": [
+          {
+            "title": "S tronic mekatronik arızası",
+            "risk": "Yüksek",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızası ve sarsıntılı geçişler görülebilir.",
+            "checkKm": "120000-190000"
+          },
+          {
+            "title": "EGR valfi tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kullanımda EGR valfi kurumlanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "4x4 aktarma organları",
+          "Turbo kontrolü"
+        ]
+      }
+    ],
+    "referencePrice": 2500000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "BMW",
+    "model": "X3",
+    "yearRange": "2011-2017",
+    "engines": [
+      {
+        "name": "20d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.6,
+        "knownProblems": [
+          {
+            "title": "Turbo aktüatör arızası",
+            "risk": "Orta",
+            "description": "Turbo aktüatöründe elektronik arızalar güç kaybına neden olabilir.",
+            "checkKm": "100000-170000"
+          },
+          {
+            "title": "Su pompası arızası",
+            "risk": "Orta",
+            "description": "Elektrikli su pompası belirli kilometrede değişim ister.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "4x4 aktarma organları",
+          "Şanzıman geçişleri"
+        ]
+      }
+    ],
+    "referencePrice": 2600000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "BMW",
+    "model": "X5",
+    "yearRange": "2013-2018",
+    "engines": [
+      {
+        "name": "30d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6.8,
+        "knownProblems": [
+          {
+            "title": "Hava süspansiyonu kaçağı",
+            "risk": "Orta",
+            "description": "Hava süspansiyonlu versiyonlarda körük kaçakları yaşanabilir.",
+            "checkKm": "110000+"
+          },
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Süspansiyon (hava körüğü)",
+          "Turbo kontrolü",
+          "4x4 aktarma organları",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 3400000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mercedes",
+    "model": "E Serisi",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "E220d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5,
+        "knownProblems": [
+          {
+            "title": "AdBlue sistemi arızası",
+            "risk": "Orta",
+            "description": "AdBlue sensör ve pompa arızaları ikaz lambası ile kendini gösterebilir.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Hava süspansiyonu (Airmatic) kaçağı",
+            "risk": "Orta",
+            "description": "Airmatic donanımlı versiyonlarda körük kaçakları yaşanabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "AdBlue ikaz lambası",
+          "Süspansiyon (Airmatic)",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mercedes",
+    "model": "GLC",
+    "yearRange": "2016-2022",
+    "engines": [
+      {
+        "name": "220d",
+        "fuelType": "Dizel",
+        "transmission": "9G-Tronic",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.6,
+        "knownProblems": [
+          {
+            "title": "AdBlue sensör arızası",
+            "risk": "Orta",
+            "description": "AdBlue seviye sensörü arızası ikaz lambası ile kendini gösterebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "AdBlue ikaz lambası",
+          "Şanzıman geçişleri",
+          "4x4 aktarma organları",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "T-Roc",
+    "yearRange": "2018-2023",
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.5,
+        "knownProblems": [
+          {
+            "title": "EGR valfi tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kullanımda EGR valfi kurumlanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Arteon",
+    "yearRange": "2018-2023",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.3,
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Orta",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızaları görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2100000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Toyota",
+    "model": "Auris",
+    "yearRange": "2013-2019",
+    "engines": [
+      {
+        "name": "1.4 D-4D",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 87,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "Enjektör bakım maliyeti",
+            "risk": "Düşük",
+            "description": "Denso enjektörler dayanıklı olsa da bakımsız kullanımda arıza verebilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Vites geçişleri",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      }
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Toyota",
+    "model": "RAV4",
+    "yearRange": "2013-2018",
+    "engines": [
+      {
+        "name": "2.0 D-4D",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 86,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.8,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "4x4 aktarma organları",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1850000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Renault",
+    "model": "Talisman",
+    "yearRange": "2016-2022",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Turbo kontrolü",
+          "Vites geçişleri"
+        ]
+      }
+    ],
+    "referencePrice": 1100000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Renault",
+    "model": "Symbol",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 3.9,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 650000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Fiat",
+    "model": "Linea",
+    "yearRange": "2007-2018",
+    "engines": [
+      {
+        "name": "1.3 Multijet",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.5,
+        "knownProblems": [
+          {
+            "title": "Enjektör/yakıt pompası arızası",
+            "risk": "Orta",
+            "description": "Yakıt sistemi bileşenlerinde yüksek kilometrede arıza oranı artar.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Fiat",
+    "model": "Tipo",
+    "yearRange": "2016-2022",
+    "engines": [
+      {
+        "name": "1.6 Multijet",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.4,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Debriyaj/vites geçişi",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 850000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Ford",
+    "model": "Mondeo",
+    "yearRange": "2007-2015",
+    "engines": [
+      {
+        "name": "2.0 TDCi",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.4,
+        "knownProblems": [
+          {
+            "title": "DPF ve enjektör arızası",
+            "risk": "Orta",
+            "description": "Partikül filtresi ve enjektörlerde yüksek kilometrede arıza oranı artar.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Ford",
+    "model": "EcoSport",
+    "yearRange": "2014-2021",
+    "engines": [
+      {
+        "name": "1.5 TDCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.7,
+        "knownProblems": [
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "Turbo aşırı ısınmaya bağlı olarak erken yıpranabilir.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Peugeot",
+    "model": "508",
+    "yearRange": "2011-2018",
+    "engines": [
+      {
+        "name": "1.6 HDi",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 4.6,
+        "knownProblems": [
+          {
+            "title": "DPF ve AdBlue sistemi arızası",
+            "risk": "Orta",
+            "description": "Partikül filtresi ve AdBlue sisteminde tıkanma ve sensör arızaları görülebilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF/AdBlue ikaz lambaları",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1200000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Peugeot",
+    "model": "2008",
+    "yearRange": "2013-2019",
+    "engines": [
+      {
+        "name": "1.6 BlueHDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.1,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Turbo kontrolü",
+          "Egzoz dumanı rengi"
+        ]
+      }
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Opel",
+    "model": "Mokka",
+    "yearRange": "2013-2019",
+    "engines": [
+      {
+        "name": "1.6 CDTI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.5,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede yakıt sistemi bileşenlerinde arıza oranı artar.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "4x4 aktarma organları (varsa)",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Opel",
+    "model": "Zafira",
+    "yearRange": "2012-2019",
+    "engines": [
+      {
+        "name": "1.6 CDTI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.8,
+        "knownProblems": [
+          {
+            "title": "Timing zinciri gerdiricisi",
+            "risk": "Orta",
+            "description": "Zincir gerdirici aşınması motor sesinde artışa neden olabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor çalışma sesi",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Accent Blue",
+    "yearRange": "2011-2020",
+    "engines": [
+      {
+        "name": "1.6 CRDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.3,
+        "knownProblems": [
+          {
+            "title": "Çift kütleli volan aşınması",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede debriyaj sisteminde ses ve titreşim yapabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Debriyaj/vites geçişi",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
         ]
       }
     ],
     "referencePrice": 750000,
     "referenceYear": 2018,
     "referenceKm": 100000
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Bayon",
+    "yearRange": "2021-2024",
+    "engines": [
+      {
+        "name": "1.4 MPI",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6,
+        "knownProblems": [
+          {
+            "title": "Sınırlı uzun dönem verisi",
+            "risk": "Düşük",
+            "description": "Nispeten yeni bir model olduğu için uzun vadeli arıza istatistiği henüz oturmamıştır.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Motor titreşimi (rölanti)",
+          "Multimedya ve sensörler",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Kia",
+    "model": "Cerato",
+    "yearRange": "2013-2018",
+    "engines": [
+      {
+        "name": "1.6 CRDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.3,
+        "knownProblems": [
+          {
+            "title": "Çift kütleli volan aşınması",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede debriyaj sisteminde ses ve titreşim yapabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Debriyaj/vites geçişi",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 850000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Kia",
+    "model": "Stonic",
+    "yearRange": "2018-2023",
+    "engines": [
+      {
+        "name": "1.4 CRDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 81,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Skoda",
+    "model": "Fabia",
+    "yearRange": "2014-2021",
+    "engines": [
+      {
+        "name": "1.4 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Skoda",
+    "model": "Kodiaq",
+    "yearRange": "2017-2023",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.9,
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Orta",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızaları görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "4x4 aktarma organları",
+          "Turbo kontrolü"
+        ]
+      }
+    ],
+    "referencePrice": 1850000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Citroën",
+    "model": "C3",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "1.6 BlueHDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 3.9,
+        "knownProblems": [
+          {
+            "title": "DPF ve enjektör arızası",
+            "risk": "Orta",
+            "description": "Partikül filtresi ve enjektörlerde yüksek kilometrede arıza oranı artar.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Turbo kontrolü",
+          "Egzoz dumanı rengi"
+        ]
+      }
+    ],
+    "referencePrice": 700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Citroën",
+    "model": "C5 Aircross",
+    "yearRange": "2019-2023",
+    "engines": [
+      {
+        "name": "1.5 BlueHDi",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.1,
+        "knownProblems": [
+          {
+            "title": "AdBlue sensör arızası",
+            "risk": "Orta",
+            "description": "AdBlue seviye sensörü arızası ikaz lambası ile kendini gösterebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "AdBlue ikaz lambası",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Honda",
+    "model": "HR-V",
+    "yearRange": "2015-2021",
+    "engines": [
+      {
+        "name": "1.6 i-DTEC",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 85,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1350000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Nissan",
+    "model": "Juke",
+    "yearRange": "2011-2019",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.3,
+        "knownProblems": [
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "Turbo aşırı ısınmaya bağlı olarak erken yıpranabilir.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Nissan",
+    "model": "X-Trail",
+    "yearRange": "2014-2021",
+    "engines": [
+      {
+        "name": "1.6 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.3,
+        "knownProblems": [
+          {
+            "title": "Timing zinciri gerdiricisi",
+            "risk": "Orta",
+            "description": "Zincir gerdirici aşınması motor sesinde artışa neden olabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor çalışma sesi",
+          "4x4 aktarma organları",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1600000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Seat",
+    "model": "Ibiza",
+    "yearRange": "2017-2023",
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.1,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Seat",
+    "model": "Ateca",
+    "yearRange": "2016-2022",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.5,
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Orta",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızaları görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "4x4 aktarma organları",
+          "Turbo kontrolü"
+        ]
+      }
+    ],
+    "referencePrice": 1300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Dacia",
+    "model": "Logan",
+    "yearRange": "2013-2022",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 3.9,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 600000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mazda",
+    "model": "6",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "2.2 Skyactiv-D",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 86,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.2,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-3",
+    "yearRange": "2015-2021",
+    "engines": [
+      {
+        "name": "1.5 Skyactiv-D",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 85,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.3,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Volvo",
+    "model": "XC60",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "D4",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.4,
+        "knownProblems": [
+          {
+            "title": "Turbo aktüatör arızası",
+            "risk": "Orta",
+            "description": "Turbo aktüatöründe elektronik arızalar güç kaybına neden olabilir.",
+            "checkKm": "110000+"
+          },
+          {
+            "title": "EGR valfi tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kullanımda EGR valfi kurumlanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "4x4 aktarma organları",
+          "Şanzıman geçişleri"
+        ]
+      }
+    ],
+    "referencePrice": 2300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Swift",
+    "yearRange": "2017-2023",
+    "engines": [
+      {
+        "name": "1.3 DDiS",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 3.8,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Suzuki",
+    "model": "S-Cross",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "1.6 DDiS",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.4,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "4x4 aktarma organları (varsa)",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Alfa Romeo",
+    "model": "Giulietta",
+    "yearRange": "2011-2020",
+    "engines": [
+      {
+        "name": "1.6 JTDm",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "Çift kütleli volan aşınması",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede debriyaj sisteminde ses ve titreşim yapabilir.",
+            "checkKm": "110000+"
+          },
+          {
+            "title": "Elektronik arıza lambaları",
+            "risk": "Orta",
+            "description": "Elektronik aksamda ara sıra anlamsız arıza lambaları yanabilir.",
+            "checkKm": "70000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Debriyaj/vites geçişi",
+          "Elektronik sistemler",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Jeep",
+    "model": "Renegade",
+    "yearRange": "2015-2022",
+    "engines": [
+      {
+        "name": "1.6 Multijet",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.5,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "4x4 aktarma organları (varsa)",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1400000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Land Rover",
+    "model": "Range Rover Evoque",
+    "yearRange": "2012-2019",
+    "engines": [
+      {
+        "name": "2.0 eD4",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 74,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.5,
+        "knownProblems": [
+          {
+            "title": "Hava süspansiyonu arızası",
+            "risk": "Yüksek",
+            "description": "Hava süspansiyonu körüklerinde kaçak ve kompresör arızaları sık görülür.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Elektronik aksam arızaları",
+            "risk": "Orta",
+            "description": "Karmaşık elektronik sistemlerde arıza oranı yüksektir, bakım maliyetleri fazladır.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Süspansiyon (hava körüğü)",
+          "Elektronik sistemler",
+          "4x4 aktarma organları",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2600000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Cruze",
+    "yearRange": "2009-2016",
+    "engines": [
+      {
+        "name": "2.0 VCDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yakıt sistemi bileşenlerinde yüksek kilometrede arıza oranı artar.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Subaru",
+    "model": "XV",
+    "yearRange": "2012-2021",
+    "engines": [
+      {
+        "name": "1.6i",
+        "fuelType": "Benzin",
+        "transmission": "Lineartronic CVT",
+        "reliabilityScore": 85,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7,
+        "knownProblems": [
+          {
+            "title": "CVT şanzıman ısınması",
+            "risk": "Düşük",
+            "description": "Uzun süreli ağır yük altında CVT şanzıman ısınabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "CVT tepki süresi",
+          "4x4 aktarma organları",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1450000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Lada",
+    "model": "Vesta",
+    "yearRange": "2016-2023",
+    "engines": [
+      {
+        "name": "1.6",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 72,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7.2,
+        "knownProblems": [
+          {
+            "title": "Kaporta/pas direnci düşük",
+            "risk": "Orta",
+            "description": "Alt kaporta bölgelerinde erken pas oluşumu bildirilmiştir.",
+            "checkKm": "60000+"
+          },
+          {
+            "title": "İç donanım malzeme kalitesi",
+            "risk": "Düşük",
+            "description": "Plastik aksamda erken yıpranma görülebilir.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Kaporta/pas kontrolü",
+          "Motor titreşimi (rölanti)",
+          "Klima performansı",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 500000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "MG",
+    "model": "ZS",
+    "yearRange": "2018-2023",
+    "engines": [
+      {
+        "name": "1.5",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6.8,
+        "knownProblems": [
+          {
+            "title": "Sınırlı uzun dönem verisi",
+            "risk": "Düşük",
+            "description": "Türkiye pazarında nispeten yeni bir marka olduğu için uzun vadeli arıza istatistiği henüz oturmamıştır.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Motor titreşimi (rölanti)",
+          "Multimedya ve sensörler",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "DS",
+    "model": "DS4",
+    "yearRange": "2011-2018",
+    "engines": [
+      {
+        "name": "1.6 BlueHDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4,
+        "knownProblems": [
+          {
+            "title": "DPF ve enjektör arızası",
+            "risk": "Orta",
+            "description": "Partikül filtresi ve enjektörlerde yüksek kilometrede arıza oranı artar.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Turbo kontrolü",
+          "Elektronik sistemler"
+        ]
+      }
+    ],
+    "referencePrice": 1100000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Cupra",
+    "model": "Formentor",
+    "yearRange": "2020-2024",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.3,
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Orta",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızaları görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Jaguar",
+    "model": "XE",
+    "yearRange": "2015-2020",
+    "engines": [
+      {
+        "name": "2.0d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 4.8,
+        "knownProblems": [
+          {
+            "title": "Elektronik aksam arızaları",
+            "risk": "Orta",
+            "description": "Elektronik sistemlerde ara sıra arıza lambaları görülebilir.",
+            "checkKm": "80000+"
+          },
+          {
+            "title": "Hava süspansiyonu kaçağı (varsa)",
+            "risk": "Orta",
+            "description": "Opsiyonel hava süspansiyonlu versiyonlarda körük kaçakları yaşanabilir.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Elektronik sistemler",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Chery",
+    "model": "Tiggo 7 Pro",
+    "yearRange": "2021-2024",
+    "engines": [
+      {
+        "name": "1.5 Turbo",
+        "fuelType": "Benzin",
+        "transmission": "CVT",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7.5,
+        "knownProblems": [
+          {
+            "title": "Sınırlı uzun dönem verisi",
+            "risk": "Düşük",
+            "description": "Türkiye pazarında nispeten yeni olduğu için uzun vadeli arıza istatistiği henüz oturmamıştır.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "CVT tepki süresi",
+          "Multimedya ve sensörler",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "SsangYong",
+    "model": "Korando",
+    "yearRange": "2011-2019",
+    "engines": [
+      {
+        "name": "2.0 Xdi",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 6,
+        "knownProblems": [
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "Turbo aşırı ısınmaya bağlı olarak erken yıpranabilir.",
+            "checkKm": "110000+"
+          },
+          {
+            "title": "Şanzıman geçiş sertliği",
+            "risk": "Orta",
+            "description": "Bakımsız kullanımda vites geçişlerinde sertlik ve gecikme görülebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "4x4 aktarma organları",
+          "Turbo kontrolü"
+        ]
+      }
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Infiniti",
+    "model": "Q30",
+    "yearRange": "2016-2019",
+    "engines": [
+      {
+        "name": "2.2d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 5.2,
+        "knownProblems": [
+          {
+            "title": "DCT şanzıman sarsıntısı",
+            "risk": "Orta",
+            "description": "Düşük hızlarda ve kalkışta sarsıntılı vites geçişleri bildirilmiştir.",
+            "checkKm": "80000-150000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Fiat",
+    "model": "Albea",
+    "yearRange": "2002-2012",
+    "referencePrice": 340000,
+    "referenceYear": 2010,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "1.3 Multijet",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.6,
+        "knownProblems": [
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "Multijet dizel versiyonlarda turboda arıza ve güç kaybı bildirilmiştir.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "EGR valfi tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kullanımda EGR valfi kurumlanabilir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Gösterge paneli ikazları",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.4",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 74,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7.2,
+        "knownProblems": [
+          {
+            "title": "Arıza lambası ve ateşleme sorunları",
+            "risk": "Orta",
+            "description": "Motor arıza lambası sık yanabilir, elektrik/ateşleme kaynaklı sorunlar görülür.",
+            "checkKm": "70000+"
+          },
+          {
+            "title": "Elektrik camı ve gösterge arızaları",
+            "risk": "Düşük",
+            "description": "Cam motoru ve gösterge paneli göstergelerinde arıza sık bildirilir.",
+            "checkKm": "60000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Gösterge paneli ikazları",
+          "Elektronik sistemler (cam/kilit)",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Egea (Facelift)",
+    "yearRange": "2020-2025",
+    "referencePrice": 950000,
+    "referenceYear": 2021,
+    "referenceKm": 60000,
+    "engines": [
+      {
+        "name": "1.3 Multijet",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 81,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Debriyaj/vites geçişi",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.5 Hybrid",
+        "fuelType": "Hibrit",
+        "transmission": "Otomatik",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.2,
+        "knownProblems": [
+          {
+            "title": "Sınırlı uzun dönem verisi",
+            "risk": "Düşük",
+            "description": "Hibrit sistem 2022 sonrası tanıtıldığı için uzun vadeli arıza istatistiği henüz sınırlıdır.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Hibrit sistem ikaz lambaları",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Corolla (E210)",
+    "yearRange": "2019-2024",
+    "referencePrice": 1450000,
+    "referenceYear": 2021,
+    "referenceKm": 60000,
+    "engines": [
+      {
+        "name": "1.8 Hybrid",
+        "fuelType": "Hibrit",
+        "transmission": "e-CVT",
+        "reliabilityScore": 91,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "Hibrit batarya yaşlanması",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede hibrit batarya kapasitesinde azalma olabilir, batarya sağlığı test edilmelidir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Hibrit batarya sağlık testi",
+          "Fren rejeneratif sistemi",
+          "Klima ve multimedya",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.6 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "CVT",
+        "reliabilityScore": 89,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6.1,
+        "knownProblems": [
+          {
+            "title": "Rölanti dalgalanması",
+            "risk": "Düşük",
+            "description": "Gaz kelebeği kirlenmesine bağlı hafif rölanti dalgalanması görülebilir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "CVT tepki süresi",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Focus (Mk2)",
+    "yearRange": "2004-2011",
+    "referencePrice": 420000,
+    "referenceYear": 2009,
+    "referenceKm": 170000,
+    "engines": [
+      {
+        "name": "1.8 TDCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir; zincir tahrikli olduğu için kayış değişim maliyeti yoktur.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Debriyaj/vites geçişi",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Focus (Mk4)",
+    "yearRange": "2018-2023",
+    "referencePrice": 1250000,
+    "referenceYear": 2021,
+    "referenceKm": 60000,
+    "engines": [
+      {
+        "name": "1.5 EcoBlue",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.3,
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Megane (3. Nesil)",
+    "yearRange": "2008-2016",
+    "referencePrice": 480000,
+    "referenceYear": 2013,
+    "referenceKm": 160000,
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4,
+        "knownProblems": [
+          {
+            "title": "Kavrama seti aşınması",
+            "risk": "Orta",
+            "description": "Kavrama seti genellikle 120.000-150.000 km aralığında değişim ister; düzenli bakımda motor dayanıklıdır.",
+            "checkKm": "120000-150000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Debriyaj/vites geçişi",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.2 TCe",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6,
+        "knownProblems": [
+          {
+            "title": "Turbo hortum çatlaması",
+            "risk": "Orta",
+            "description": "Turbo basınç hortumlarında çatlak ve kaçak sık görülür, güç kaybına yol açar.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Turbo kontrolü",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Klima ve elektronik"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Accent Era",
+    "yearRange": "2000-2009",
+    "referencePrice": 380000,
+    "referenceYear": 2007,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "1.5 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7,
+        "knownProblems": [
+          {
+            "title": "EPS (elektrikli direksiyon) arızası",
+            "risk": "Orta",
+            "description": "Elektrikli direksiyon sisteminde kronik arıza bildirimleri yaygındır, özellikle 2008 facelift öncesi modellerde.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Boya/kaporta kalitesi",
+            "risk": "Düşük",
+            "description": "Erken yıl modellerde boya kalitesi ve iç mekan yalıtımı zayıf bulunmuştur.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Direksiyon (EPS) testi",
+          "Kaporta/boya kontrolü",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "301",
+    "yearRange": "2012-2022",
+    "referencePrice": 550000,
+    "referenceYear": 2016,
+    "referenceKm": 140000,
+    "engines": [
+      {
+        "name": "1.6 HDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.3,
+        "knownProblems": [
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "1.6 HDi motorda turbo, özellikle 100.000 km sonrasında arızaya eğilimlidir.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Arka amortisör zayıflaması",
+            "risk": "Orta",
+            "description": "Arka amortisörler 40.000-60.000 km aralığında etkisini kaybedebilir, Türkiye yol şartlarında süspansiyon zorlanır.",
+            "checkKm": "40000-60000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Turbo kontrolü",
+          "Süspansiyon (arka amortisör)",
+          "Vites geçişleri",
+          "Kaporta/boya kontrolü"
+        ]
+      },
+      {
+        "name": "1.6 VTi",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6.5,
+        "knownProblems": [
+          {
+            "title": "Soğuk havada zor çalıştırma",
+            "risk": "Düşük",
+            "description": "Marş motoru parçalarının yıpranmasına bağlı olarak soğuk havada çalıştırma zorluğu bildirilmiştir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Süspansiyon (arka amortisör)",
+          "Kaporta/boya kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Golf (Mk6)",
+    "yearRange": "2008-2012",
+    "referencePrice": 680000,
+    "referenceYear": 2010,
+    "referenceKm": 170000,
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 4.4,
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Yüksek",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite ve debriyaj paketi arızaları görülebilir.",
+            "checkKm": "120000-200000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.4 TSI",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6,
+        "knownProblems": [
+          {
+            "title": "Zincir gerdirici arızası",
+            "risk": "Yüksek",
+            "description": "Erken model yıllarında zincir gerdirici arızası ciddi motor hasarına yol açabilir.",
+            "checkKm": "60000-130000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor çalışma sesi (zincir sesi)",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Golf (Mk5)",
+    "yearRange": "2003-2008",
+    "referencePrice": 480000,
+    "referenceYear": 2006,
+    "referenceKm": 190000,
+    "engines": [
+      {
+        "name": "1.9 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 84,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.8,
+        "knownProblems": [
+          {
+            "title": "Enjektör (pompa-enjektör) arızası",
+            "risk": "Orta",
+            "description": "Pompa-enjektör sistemi yüksek kilometrede arıza verebilir, tamir maliyeti yüksektir.",
+            "checkKm": "180000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Debriyaj/vites geçişi",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.6 FSI",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7.2,
+        "knownProblems": [
+          {
+            "title": "Emme manifoldu kirlenmesi",
+            "risk": "Orta",
+            "description": "Direkt enjeksiyon FSI motorlarda emme manifoldunda karbon birikimi performans kaybına yol açabilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Debriyaj/vites geçişi",
+          "Klima performansı"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Passat (B8)",
+    "yearRange": "2014-2019",
+    "referencePrice": 1350000,
+    "referenceYear": 2017,
+    "referenceKm": 100000,
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 84,
+        "transmissionRisk": "Orta",
+        "avgFuelConsumption": 4.9,
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Orta",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızaları görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "3 Serisi (E90)",
+    "yearRange": "2005-2012",
+    "referencePrice": 620000,
+    "referenceYear": 2009,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "320d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.2,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede enjektör kaçakları ve ateşleme sorunları görülebilir.",
+            "checkKm": "160000+"
+          },
+          {
+            "title": "Su pompası ve termostat arızası",
+            "risk": "Orta",
+            "description": "Elektrikli su pompası ve termostat belirli kilometrede değişim ister.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Süspansiyon (arka amortisör)",
+          "Şanzıman geçişleri"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes",
+    "model": "C Serisi (W204)",
+    "yearRange": "2007-2014",
+    "referencePrice": 750000,
+    "referenceYear": 2011,
+    "referenceKm": 170000,
+    "engines": [
+      {
+        "name": "220 CDI",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.1,
+        "knownProblems": [
+          {
+            "title": "Common-rail enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "160000+"
+          },
+          {
+            "title": "Ön amortisör/salıncak burcu aşınması",
+            "risk": "Orta",
+            "description": "Ön süspansiyon burçlarında yıpranmaya bağlı ses ve titreşim görülebilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Süspansiyon kontrolü",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Astra (Astra H)",
+    "yearRange": "2004-2009",
+    "referencePrice": 380000,
+    "referenceYear": 2007,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "1.3 CDTI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.5,
+        "knownProblems": [
+          {
+            "title": "Enjektör ve yakıt pompası arızası",
+            "risk": "Orta",
+            "description": "Yakıt sistemi bileşenlerinde yüksek kilometrede arıza oranı artmaktadır.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Motor çalışma sesi",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Nissan",
+    "model": "Qashqai (J10)",
+    "yearRange": "2007-2013",
+    "referencePrice": 480000,
+    "referenceYear": 2010,
+    "referenceKm": 170000,
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.7,
+        "knownProblems": [
+          {
+            "title": "Timing zinciri gerdiricisi",
+            "risk": "Orta",
+            "description": "Zincir gerdirici aşınması motor sesinde artışa neden olabilir.",
+            "checkKm": "120000+"
+          },
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Motor çalışma sesi",
+          "DPF ikaz lambası",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Dacia",
+    "model": "Duster (1. Nesil)",
+    "yearRange": "2010-2017",
+    "referencePrice": 480000,
+    "referenceYear": 2013,
+    "referenceKm": 160000,
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "4x4 aktarma organları (varsa)",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Clio (Clio 3)",
+    "yearRange": "2005-2012",
+    "referencePrice": 350000,
+    "referenceYear": 2009,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.2,
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.4 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 6.8,
+        "knownProblems": [
+          {
+            "title": "Elektronik aksam arızaları",
+            "risk": "Düşük",
+            "description": "Cam motoru ve merkezi kilit gibi elektronik aksamda arızalar sık bildirilir.",
+            "checkKm": "70000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Elektronik sistemler",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Skoda",
+    "model": "Octavia (Mk2)",
+    "yearRange": "2004-2013",
+    "referencePrice": 480000,
+    "referenceYear": 2009,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "1.9 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 85,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 4.9,
+        "knownProblems": [
+          {
+            "title": "Enjektör (pompa-enjektör) arızası",
+            "risk": "Orta",
+            "description": "Pompa-enjektör sistemi yüksek kilometrede arıza verebilir, tamir maliyeti yüksektir.",
+            "checkKm": "180000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Debriyaj/vites geçişi",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Hyundai",
+    "model": "i10",
+    "yearRange": "2008-2020",
+    "referencePrice": 420000,
+    "referenceYear": 2014,
+    "referenceKm": 140000,
+    "engines": [
+      {
+        "name": "1.2 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 5.6,
+        "knownProblems": [
+          {
+            "title": "Rölanti dalgalanması",
+            "risk": "Düşük",
+            "description": "Gaz kelebeği kirlenmesine bağlı hafif rölanti dalgalanması görülebilir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Motor titreşimi (rölanti)",
+          "Klima performansı",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Chevrolet",
+    "model": "Lacetti",
+    "yearRange": "2004-2011",
+    "referencePrice": 340000,
+    "referenceYear": 2008,
+    "referenceKm": 180000,
+    "engines": [
+      {
+        "name": "1.6 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 74,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 7.5,
+        "knownProblems": [
+          {
+            "title": "Elektronik aksam arızaları",
+            "risk": "Orta",
+            "description": "Cam motoru, kilit ve gösterge paneli elektronik arızaları sık bildirilir.",
+            "checkKm": "70000+"
+          },
+          {
+            "title": "Kaporta/pas direnci düşük",
+            "risk": "Orta",
+            "description": "Alt kaporta bölgelerinde erken pas oluşumu bildirilmiştir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Elektronik sistemler",
+          "Kaporta/pas kontrolü",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Tofaş",
+    "model": "Şahin",
+    "yearRange": "1996-2001",
+    "referencePrice": 180000,
+    "referenceYear": 1999,
+    "referenceKm": 220000,
+    "engines": [
+      {
+        "name": "1.6",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 70,
+        "transmissionRisk": "Düşük",
+        "avgFuelConsumption": 8.5,
+        "knownProblems": [
+          {
+            "title": "Kaporta/pas direnci çok düşük",
+            "risk": "Yüksek",
+            "description": "Uzun yıllara yayılan kullanımda alt kaporta ve şasi bölgelerinde ciddi pas riski vardır.",
+            "checkKm": "-"
+          },
+          {
+            "title": "Güvenlik donanımı yetersizliği",
+            "risk": "Yüksek",
+            "description": "Modern güvenlik standartlarının (hava yastığı, ABS vb.) bulunmaması günümüz trafiğinde risk oluşturur.",
+            "checkKm": "-"
+          }
+        ],
+        "inspectionChecklist": [
+          "Şasi ve alt kaporta pas kontrolü",
+          "Motor titreşimi (rölanti)",
+          "Fren sistemi",
+          "Lastik ve süspansiyon durumu"
+        ]
+      }
+    ]
   }
 ]

@@ -10,6 +10,7 @@ import ComparePage from './pages/ComparePage'
 import LoanCalculatorPage from './pages/LoanCalculatorPage'
 import ExpertiseNotesPage from './pages/ExpertiseNotesPage'
 import PaintCheckPage from './pages/PaintCheckPage'
+import VehicleComparePage from './pages/VehicleComparePage'
 
 export default function App() {
   const location = useLocation()
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/kredi-hesapla" element={<LoanCalculatorPage />} />
             <Route path="/ekspertiz-notlari" element={<ExpertiseNotesPage />} />
             <Route path="/boya-degisen" element={<PaintCheckPage />} />
+            <Route path="/arac-karsilastir" element={<VehicleComparePage />} />
           </Routes>
         </div>
       </div>

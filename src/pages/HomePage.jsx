@@ -13,6 +13,13 @@ const CARDS = [
     accent: '#3454d1'
   },
   {
+    to: '/arac-karsilastir',
+    title: 'Araç Karşılaştır',
+    description: 'İki marka/modeli fiyat ve artı/eksi yönleriyle yan yana kıyasla.',
+    icon: 'gauge',
+    accent: '#0891b2'
+  },
+  {
     to: '/kronik-sorunlar',
     title: 'Kronik Sorunlar',
     description: 'Marka ve modele göre bilinen arıza kayıtlarını incele.',

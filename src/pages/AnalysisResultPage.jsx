@@ -87,6 +87,9 @@ export default function AnalysisResultPage() {
             <h2>{vehicleLabel}</h2>
             <p className="result-summary-engine">
               {formData.engine || 'Motor belirtilmedi'} &middot; {formData.fuelType} &middot; {formData.transmission}
+              {result.engineData?.avgFuelConsumption && (
+                <> &middot; Ort. {result.engineData.avgFuelConsumption} L/100km</>
+              )}
             </p>
             <div className="result-summary-meta">
               <span>{formatKm(formData.km)}</span>
