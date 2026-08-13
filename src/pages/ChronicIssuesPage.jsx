@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
-import RiskBadge from '../components/RiskBadge'
+import ProblemCard from '../components/ProblemCard'
 import EmptyState from '../components/EmptyState'
 import { getBrands, getModelsByBrand, getVehicleEntry } from '../services/vehicleService'
 import { getNotes, addNote, removeNote } from '../services/communityNotesService'
@@ -121,14 +121,7 @@ export default function ChronicIssuesPage() {
               {engine.knownProblems.length ? (
                 <div className="problem-list">
                   {engine.knownProblems.map((problem) => (
-                    <div className="problem-item" key={problem.title}>
-                      <div className="problem-item-head">
-                        <span className="problem-item-title">{problem.title}</span>
-                        <RiskBadge risk={problem.risk} />
-                      </div>
-                      <p>{problem.description}</p>
-                      <span className="problem-item-km">Kontrol aralığı: {problem.checkKm} km</span>
-                    </div>
+                    <ProblemCard problem={problem} key={problem.title} />
                   ))}
                 </div>
               ) : (

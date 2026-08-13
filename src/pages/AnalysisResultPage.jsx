@@ -3,7 +3,7 @@ import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ScoreGauge from '../components/ScoreGauge'
-import RiskBadge from '../components/RiskBadge'
+import ProblemCard from '../components/ProblemCard'
 import FavoriteButton from '../components/FavoriteButton'
 import { formatKm, formatPrice } from '../utils/formatters'
 import {
@@ -195,14 +195,7 @@ export default function AnalysisResultPage() {
             <h3>Kronik Sorun Detayları</h3>
             <div className="problem-list">
               {result.knownProblems.map((problem) => (
-                <div className="problem-item" key={problem.title}>
-                  <div className="problem-item-head">
-                    <span className="problem-item-title">{problem.title}</span>
-                    <RiskBadge risk={problem.risk} />
-                  </div>
-                  <p>{problem.description}</p>
-                  <span className="problem-item-km">Kontrol aralığı: {problem.checkKm} km</span>
-                </div>
+                <ProblemCard problem={problem} key={problem.title} />
               ))}
             </div>
           </section>

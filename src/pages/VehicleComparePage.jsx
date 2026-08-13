@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import RiskBadge from '../components/RiskBadge'
+import Icon from '../components/icons/Icon'
 import {
   getBrands,
   getModelsByBrand,
@@ -23,55 +24,55 @@ const EMPTY_SIDE = {
   transmission: ''
 }
 
-function VehicleSelector({ label, side, onChange }) {
+function VehicleSelector({ label, badge, side, onChange }) {
   const brands = useMemo(() => getBrands(), [])
   const models = useMemo(() => (side.brand ? getModelsByBrand(side.brand) : []), [side.brand])
   const engines = useMemo(
     () => (side.brand && side.model ? getEngineNames(side.brand, side.model) : []),
     [side.brand, side.model]
   )
+  const entry = useMemo(
+    () => (side.brand && side.model ? getVehicleEntry(side.brand, side.model) : null),
+    [side.brand, side.model]
+  )
 
   function update(field, value) {
     const next = { ...side, [field]: value }
     if (field === 'brand') {
-      next.model = ''
-      next.engine = ''
-      next.fuelType = ''
-      next.transmission = ''
-      next.year = ''
-      next.km = ''
-      next.price = ''
+      Object.assign(next, { model: '', engine: '', fuelType: '', transmission: '', year: '', km: '', price: '' })
     }
     if (field === 'model') {
-      next.engine = ''
-      next.fuelType = ''
-      next.transmission = ''
-      next.year = ''
-      next.km = ''
-      next.price = ''
+      Object.assign(next, { engine: '', fuelType: '', transmission: '', year: '', km: '', price: '' })
     }
     if (field === 'engine') {
       const engineData = getEngineData(next.brand, next.model, value)
-      const entry = getVehicleEntry(next.brand, next.model)
+      const vehicleEntry = getVehicleEntry(next.brand, next.model)
       if (engineData) {
         next.fuelType = engineData.fuelType
         next.transmission = engineData.transmission
       }
-      if (entry) {
-        next.year = String(entry.referenceYear)
-        next.km = String(entry.referenceKm)
-        next.price = String(entry.referencePrice)
+      if (vehicleEntry) {
+        next.year = String(vehicleEntry.referenceYear)
+        next.km = String(vehicleEntry.referenceKm)
+        next.price = String(vehicleEntry.referencePrice)
       }
     }
     onChange(next)
   }
 
+  const isComplete = side.brand && side.model && side.engine
+
   return (
-    <div className="result-card">
-      <h3>{label}</h3>
-      <div className="form-row">
-        <label>
-          Marka
+    <section className={'selector-card' + (isComplete ? ' complete' : '')}>
+      <div className="selector-head">
+        <span className="selector-badge">{badge}</span>
+        <h3>{isComplete ? `${side.brand} ${side.model}` : label}</h3>
+        {isComplete && <Icon name="car" size={20} className="selector-check" />}
+      </div>
+
+      <div className="selector-fields">
+        <label className="field">
+          <span className="field-label">Marka</span>
           <select value={side.brand} onChange={(e) => update('brand', e.target.value)}>
             <option value="">Seçiniz</option>
             {brands.map((b) => (
@@ -81,10 +82,11 @@ function VehicleSelector({ label, side, onChange }) {
             ))}
           </select>
         </label>
-        <label>
-          Model
+
+        <label className="field">
+          <span className="field-label">Model</span>
           <select value={side.model} onChange={(e) => update('model', e.target.value)} disabled={!side.brand}>
-            <option value="">Seçiniz</option>
+            <option value="">{side.brand ? 'Seçiniz' : 'Önce marka'}</option>
             {models.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -92,93 +94,85 @@ function VehicleSelector({ label, side, onChange }) {
             ))}
           </select>
         </label>
-      </div>
-      <label>
-        Motor
-        <select value={side.engine} onChange={(e) => update('engine', e.target.value)} disabled={!engines.length}>
-          <option value="">{engines.length ? 'Seçiniz' : 'Önce marka/model seçin'}</option>
-          {engines.map((e) => (
-            <option key={e} value={e}>
-              {e}
-            </option>
-          ))}
-        </select>
-      </label>
-      {side.engine && (
-        <div className="form-row">
-          <label>
-            Yıl
-            <input type="number" value={side.year} onChange={(e) => onChange({ ...side, year: e.target.value })} />
-          </label>
-          <label>
-            Kilometre
-            <input type="number" value={side.km} onChange={(e) => onChange({ ...side, km: e.target.value })} />
-          </label>
-        </div>
-      )}
-      {side.engine && (
-        <label>
-          İlan Fiyatı (TL)
-          <input type="number" value={side.price} onChange={(e) => onChange({ ...side, price: e.target.value })} />
+
+        <label className="field field-full">
+          <span className="field-label">Motor</span>
+          <select value={side.engine} onChange={(e) => update('engine', e.target.value)} disabled={!engines.length}>
+            <option value="">{engines.length ? 'Seçiniz' : 'Önce marka ve model'}</option>
+            {engines.map((e) => (
+              <option key={e} value={e}>
+                {e}
+              </option>
+            ))}
+          </select>
         </label>
+      </div>
+
+      {isComplete && (
+        <>
+          <div className="selector-divider">
+            <span>Değerleri düzenleyebilirsin</span>
+          </div>
+          <div className="selector-fields">
+            <label className="field">
+              <span className="field-label">Model Yılı</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={side.year}
+                onChange={(e) => onChange({ ...side, year: e.target.value })}
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">Kilometre</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={side.km}
+                onChange={(e) => onChange({ ...side, km: e.target.value })}
+              />
+            </label>
+            <label className="field field-full">
+              <span className="field-label">İlan Fiyatı (TL)</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                value={side.price}
+                onChange={(e) => onChange({ ...side, price: e.target.value })}
+              />
+            </label>
+          </div>
+          {entry?.features && (
+            <p className="selector-hint">
+              {entry.features.bodyType} &middot; {entry.features.segment} segment &middot; {entry.features.driveType}
+            </p>
+          )}
+        </>
       )}
+    </section>
+  )
+}
+
+function SpecRow({ label, a, b, betterSide }) {
+  return (
+    <div className="spec-row">
+      <div className={'spec-value' + (betterSide === 'a' ? ' better' : '')}>{a}</div>
+      <div className="spec-label">{label}</div>
+      <div className={'spec-value' + (betterSide === 'b' ? ' better' : '')}>{b}</div>
     </div>
   )
 }
 
-function ResultColumn({ label, result, market, formData }) {
+function FeatureList({ title, items }) {
+  if (!items?.length) return null
   return (
-    <div className="compare-card">
-      <div className={'compare-score tone-' + result.band.tone}>{result.score}</div>
-      <div className="compare-band">{result.band.label}</div>
-      <h3>{label}</h3>
-      <p className="compare-engine">{formData.engine}</p>
-      <dl className="compare-facts">
-        <div>
-          <dt>Km / Fiyat</dt>
-          <dd>
-            {formatKm(formData.km)} &middot; {formatPrice(formData.price)}
-          </dd>
-        </div>
-        {market && (
-          <div>
-            <dt>Piyasa</dt>
-            <dd>
-              <span className={'market-label tone-' + market.verdict}>{market.label}</span>
-            </dd>
-          </div>
-        )}
-        {result.engineData?.avgFuelConsumption && (
-          <div>
-            <dt>Ort. Yakıt</dt>
-            <dd>{result.engineData.avgFuelConsumption} L/100km</dd>
-          </div>
-        )}
-        <div>
-          <dt>Kronik Sorun</dt>
-          <dd>{result.knownProblems.length}</dd>
-        </div>
-      </dl>
-      {result.advantages.length > 0 && (
-        <div style={{ marginTop: 12, width: '100%', textAlign: 'left' }}>
-          <p className="expertise-category-title">Avantajlar</p>
-          <ul className="result-list positive" style={{ fontSize: '0.78rem' }}>
-            {result.advantages.map((a) => (
-              <li key={a}>{a}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {result.knownProblems.length > 0 && (
-        <div style={{ marginTop: 10, width: '100%', textAlign: 'left' }}>
-          <p className="expertise-category-title">Kronik Sorunlar</p>
-          {result.knownProblems.map((p) => (
-            <div key={p.title} style={{ marginBottom: 6 }}>
-              <RiskBadge risk={p.risk} /> <span style={{ fontSize: '0.78rem' }}>{p.title}</span>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="feature-block">
+      <p className="expertise-category-title">{title}</p>
+      <ul className="feature-list">
+        {items.map((i) => (
+          <li key={i}>{i}</li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -191,30 +185,49 @@ export default function VehicleComparePage() {
   const canCompare =
     sideA.brand && sideA.model && sideA.engine && sideB.brand && sideB.model && sideB.engine
 
+  const entryA = useMemo(
+    () => (sideA.brand && sideA.model ? getVehicleEntry(sideA.brand, sideA.model) : null),
+    [sideA.brand, sideA.model]
+  )
+  const entryB = useMemo(
+    () => (sideB.brand && sideB.model ? getVehicleEntry(sideB.brand, sideB.model) : null),
+    [sideB.brand, sideB.model]
+  )
+
   function handleCompare() {
     if (!canCompare) return
     setComparison(compareTwoVehicles(sideA, sideB))
+  }
+
+  const labelA = `${sideA.brand} ${sideA.model}`
+  const labelB = `${sideB.brand} ${sideB.model}`
+
+  function betterNumeric(a, b, lowerIsBetter = false) {
+    const na = Number(a)
+    const nb = Number(b)
+    if (!na || !nb || na === nb) return null
+    const aWins = lowerIsBetter ? na < nb : na > nb
+    return aWins ? 'a' : 'b'
   }
 
   return (
     <>
       <Header
         title="Araç Karşılaştır"
-        subtitle="İki farklı marka/modeli filtreleyip piyasa fiyatı ve artı/eksi yönlerini kıyasla."
+        subtitle="İki aracı fiyat, donanım ve risk yönünden yan yana kıyasla."
         showBack
       />
       <PageContainer>
-        <VehicleSelector label="1. Araç" side={sideA} onChange={setSideA} />
-        <VehicleSelector label="2. Araç" side={sideB} onChange={setSideB} />
+        <VehicleSelector label="Birinci aracı seç" badge="1. ARAÇ" side={sideA} onChange={setSideA} />
+        <VehicleSelector label="İkinci aracı seç" badge="2. ARAÇ" side={sideB} onChange={setSideB} />
 
         <button
           type="button"
-          className="primary-button"
+          className="primary-button compare-button"
           disabled={!canCompare}
           onClick={handleCompare}
-          style={{ opacity: canCompare ? 1 : 0.5 }}
         >
-          Karşılaştır
+          {canCompare ? 'Karşılaştır' : 'Her iki araç için marka, model ve motor seç'}
         </button>
 
         {comparison && (
@@ -228,21 +241,145 @@ export default function VehicleComparePage() {
               </ul>
             </section>
 
-            <div className="compare-scroll">
-              <div className="compare-grid" style={{ gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))' }}>
-                <ResultColumn
-                  label={`${sideA.brand} ${sideA.model}`}
-                  result={comparison.resultA}
-                  market={comparison.marketA}
-                  formData={sideA}
-                />
-                <ResultColumn
-                  label={`${sideB.brand} ${sideB.model}`}
-                  result={comparison.resultB}
-                  market={comparison.marketB}
-                  formData={sideB}
-                />
+            <section className="result-card">
+              <div className="spec-header">
+                <div className="spec-header-side">
+                  <div className={'compare-score tone-' + comparison.resultA.band.tone}>
+                    {comparison.resultA.score}
+                  </div>
+                  <span>{labelA}</span>
+                  <small>{sideA.engine}</small>
+                </div>
+                <div className="spec-header-vs">VS</div>
+                <div className="spec-header-side">
+                  <div className={'compare-score tone-' + comparison.resultB.band.tone}>
+                    {comparison.resultB.score}
+                  </div>
+                  <span>{labelB}</span>
+                  <small>{sideB.engine}</small>
+                </div>
               </div>
+
+              <div className="spec-table">
+                <SpecRow
+                  label="Risk Skoru"
+                  a={`${comparison.resultA.score}/100`}
+                  b={`${comparison.resultB.score}/100`}
+                  betterSide={betterNumeric(comparison.resultA.score, comparison.resultB.score)}
+                />
+                <SpecRow
+                  label="Değerlendirme"
+                  a={comparison.resultA.band.label}
+                  b={comparison.resultB.band.label}
+                />
+                <SpecRow
+                  label="Model Yılı"
+                  a={sideA.year}
+                  b={sideB.year}
+                  betterSide={betterNumeric(sideA.year, sideB.year)}
+                />
+                <SpecRow
+                  label="Kilometre"
+                  a={formatKm(sideA.km)}
+                  b={formatKm(sideB.km)}
+                  betterSide={betterNumeric(sideA.km, sideB.km, true)}
+                />
+                <SpecRow
+                  label="İlan Fiyatı"
+                  a={formatPrice(sideA.price)}
+                  b={formatPrice(sideB.price)}
+                  betterSide={betterNumeric(sideA.price, sideB.price, true)}
+                />
+                {comparison.marketA && comparison.marketB && (
+                  <SpecRow
+                    label="Piyasaya Göre"
+                    a={comparison.marketA.label}
+                    b={comparison.marketB.label}
+                    betterSide={betterNumeric(comparison.marketA.diffPercent, comparison.marketB.diffPercent, true)}
+                  />
+                )}
+                <SpecRow
+                  label="Ort. Yakıt (L/100km)"
+                  a={comparison.resultA.engineData?.avgFuelConsumption ?? '-'}
+                  b={comparison.resultB.engineData?.avgFuelConsumption ?? '-'}
+                  betterSide={betterNumeric(
+                    comparison.resultA.engineData?.avgFuelConsumption,
+                    comparison.resultB.engineData?.avgFuelConsumption,
+                    true
+                  )}
+                />
+                <SpecRow
+                  label="Yakıt / Şanzıman"
+                  a={`${sideA.fuelType} · ${sideA.transmission}`}
+                  b={`${sideB.fuelType} · ${sideB.transmission}`}
+                />
+                <SpecRow
+                  label="Kronik Sorun Sayısı"
+                  a={comparison.resultA.knownProblems.length}
+                  b={comparison.resultB.knownProblems.length}
+                  betterSide={betterNumeric(
+                    comparison.resultA.knownProblems.length,
+                    comparison.resultB.knownProblems.length,
+                    true
+                  )}
+                />
+                {entryA?.features && entryB?.features && (
+                  <>
+                    <SpecRow label="Kasa Tipi" a={entryA.features.bodyType} b={entryB.features.bodyType} />
+                    <SpecRow label="Segment" a={entryA.features.segment} b={entryB.features.segment} />
+                    <SpecRow label="Çekiş" a={entryA.features.driveType} b={entryB.features.driveType} />
+                    <SpecRow
+                      label="Bagaj (L)"
+                      a={entryA.features.luggageLiters}
+                      b={entryB.features.luggageLiters}
+                      betterSide={betterNumeric(entryA.features.luggageLiters, entryB.features.luggageLiters)}
+                    />
+                  </>
+                )}
+              </div>
+              <p className="market-disclaimer">
+                Yeşil vurgulanan değer, o satırda daha avantajlı olan aracı gösterir. Donanım bilgileri
+                segment ortalamasıdır; pakete ve model yılına göre değişir.
+              </p>
+            </section>
+
+            <div className="compare-columns">
+              {[
+                { label: labelA, entry: entryA, result: comparison.resultA },
+                { label: labelB, entry: entryB, result: comparison.resultB }
+              ].map((col) => (
+                <section className="result-card compare-column" key={col.label}>
+                  <h3>{col.label}</h3>
+                  {col.entry?.features && (
+                    <>
+                      <FeatureList title="Güvenlik" items={col.entry.features.typicalSafety} />
+                      <FeatureList title="Konfor" items={col.entry.features.typicalComfort} />
+                      <FeatureList title="Teknoloji" items={col.entry.features.typicalTech} />
+                    </>
+                  )}
+                  {col.result.advantages.length > 0 && (
+                    <div className="feature-block">
+                      <p className="expertise-category-title">Avantajlar</p>
+                      <ul className="result-list positive" style={{ fontSize: '0.8rem' }}>
+                        {col.result.advantages.map((a) => (
+                          <li key={a}>{a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {col.result.knownProblems.length > 0 && (
+                    <div className="feature-block">
+                      <p className="expertise-category-title">Kronik Sorunlar</p>
+                      {col.result.knownProblems.map((p) => (
+                        <div className="compare-problem" key={p.title}>
+                          <RiskBadge risk={p.risk} />
+                          <span>{p.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              ))}
             </div>
           </>
         )}

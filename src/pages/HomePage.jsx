@@ -13,6 +13,13 @@ const CARDS = [
     accent: '#3454d1'
   },
   {
+    to: '/aracimin-nesi-var',
+    title: 'Aracımın Nesi Var?',
+    description: 'Şikayetini yaz, olası arızaları ve çözümlerini sırala.',
+    icon: 'stethoscope',
+    accent: '#b91c1c'
+  },
+  {
     to: '/arac-karsilastir',
     title: 'Araç Karşılaştır',
     description: 'İki marka/modeli fiyat ve artı/eksi yönleriyle yan yana kıyasla.',
