@@ -46,6 +46,13 @@ const CARDS = [
     description: 'Kontrol ettiğin kalemleri işaretle, bulguları kaydet.',
     icon: 'note',
     accent: '#17a2b8'
+  },
+  {
+    to: '/boya-degisen',
+    title: 'Boya / Değişen Kontrolü',
+    description: 'Panel panel fotoğraf çek, sistem birbiriyle kıyaslasın.',
+    icon: 'paint',
+    accent: '#c2410c'
   }
 ]
 

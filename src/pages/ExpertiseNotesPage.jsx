@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import EmptyState from '../components/EmptyState'
+import PhotoUpload from '../components/PhotoUpload'
 import { GENERAL_INSPECTION_CATEGORIES } from '../utils/constants'
 import { resolveEngineData } from '../services/analysisService'
 import {
@@ -35,6 +36,8 @@ export default function ExpertiseNotesPage() {
   )
   const [flagged, setFlagged] = useState({})
   const [notes, setNotes] = useState('')
+  const [photos, setPhotos] = useState([])
+  const [saveError, setSaveError] = useState('')
   const [savedNotes, setSavedNotes] = useState(() => getExpertiseNotes())
 
   const flaggedItems = Object.keys(flagged).filter((key) => flagged[key])
@@ -43,13 +46,32 @@ export default function ExpertiseNotesPage() {
     setFlagged((prev) => ({ ...prev, [item]: !prev[item] }))
   }
 
+  function handleAddPhoto(photo) {
+    setPhotos((prev) => [...prev, photo])
+  }
+
+  function handleRemovePhoto(id) {
+    setPhotos((prev) => prev.filter((p) => p.id !== id))
+  }
+
   function handleSave(event) {
     event.preventDefault()
     if (!vehicleLabel.trim()) return
-    addExpertiseNote({ vehicleLabel: vehicleLabel.trim(), flaggedItems, notes: notes.trim() })
+    const { saved } = addExpertiseNote({
+      vehicleLabel: vehicleLabel.trim(),
+      flaggedItems,
+      notes: notes.trim(),
+      photos
+    })
+    if (!saved) {
+      setSaveError('Kaydedilemedi — muhtemelen depolama alanı doldu. Bazı fotoğrafları silip tekrar dene.')
+      return
+    }
+    setSaveError('')
     setSavedNotes(getExpertiseNotes())
     setFlagged({})
     setNotes('')
+    setPhotos([])
   }
 
   function handleRemove(id) {
@@ -103,6 +125,13 @@ export default function ExpertiseNotesPage() {
             />
           </label>
 
+          <div>
+            <p className="expertise-category-title">Fotoğraflar</p>
+            <PhotoUpload photos={photos} onAddPhoto={handleAddPhoto} onRemovePhoto={handleRemovePhoto} />
+          </div>
+
+          {saveError && <p className="field-error">{saveError}</p>}
+
           <button type="submit" className="primary-button">
             Notu Kaydet
           </button>
@@ -139,6 +168,15 @@ export default function ExpertiseNotesPage() {
                     <p className="expertise-note-items">{note.flaggedItems.join(', ')}</p>
                   )}
                   {note.notes && <p className="expertise-note-text">{note.notes}</p>}
+                  {note.photos?.length > 0 && (
+                    <div className="photo-grid" style={{ marginTop: 10 }}>
+                      {note.photos.map((photo) => (
+                        <div className="photo-thumb" key={photo.id}>
+                          <img src={photo.dataUrl} alt="Kayıtlı ekspertiz fotoğrafı" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )
             })}

@@ -13,8 +13,10 @@ function readStore() {
 function writeStore(list) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
+    return true
   } catch (err) {
     console.error('Ekspertiz notları kaydedilemedi:', err)
+    return false
   }
 }
 
@@ -22,17 +24,18 @@ export function getExpertiseNotes() {
   return readStore().sort((a, b) => b.createdAt - a.createdAt)
 }
 
-export function addExpertiseNote({ vehicleLabel, flaggedItems, notes }) {
+export function addExpertiseNote({ vehicleLabel, flaggedItems, notes, photos = [] }) {
   const list = readStore()
   const record = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     vehicleLabel,
     flaggedItems,
     notes,
+    photos,
     createdAt: Date.now()
   }
-  writeStore([...list, record])
-  return record
+  const saved = writeStore([...list, record])
+  return { record, saved }
 }
 
 export function removeExpertiseNote(id) {

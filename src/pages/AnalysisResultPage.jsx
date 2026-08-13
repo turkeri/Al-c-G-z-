@@ -230,6 +230,13 @@ export default function AnalysisResultPage() {
           >
             Deneyim Notu Ekle
           </Link>
+          <Link
+            className="action-link"
+            to="/boya-degisen"
+            state={{ formData }}
+          >
+            Boya / Değişen Kontrolü
+          </Link>
         </section>
       </PageContainer>
     </>

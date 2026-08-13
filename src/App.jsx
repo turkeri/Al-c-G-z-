@@ -9,6 +9,7 @@ import FavoritesPage from './pages/FavoritesPage'
 import ComparePage from './pages/ComparePage'
 import LoanCalculatorPage from './pages/LoanCalculatorPage'
 import ExpertiseNotesPage from './pages/ExpertiseNotesPage'
+import PaintCheckPage from './pages/PaintCheckPage'
 
 export default function App() {
   const location = useLocation()
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/karsilastir" element={<ComparePage />} />
             <Route path="/kredi-hesapla" element={<LoanCalculatorPage />} />
             <Route path="/ekspertiz-notlari" element={<ExpertiseNotesPage />} />
+            <Route path="/boya-degisen" element={<PaintCheckPage />} />
           </Routes>
         </div>
       </div>
