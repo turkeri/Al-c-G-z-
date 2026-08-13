@@ -3,6 +3,52 @@ import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
 import { getDatabaseStats } from '../services/vehicleService'
 
+const CARDS = [
+  {
+    to: '/analiz',
+    title: 'Araç Analizi',
+    description: 'Bilgileri gir, risk skorunu ve detaylı raporu gör.',
+    badge: 'Başla',
+    icon: 'car',
+    accent: '#3454d1'
+  },
+  {
+    to: '/kronik-sorunlar',
+    title: 'Kronik Sorunlar',
+    description: 'Marka ve modele göre bilinen arıza kayıtlarını incele.',
+    icon: 'wrench',
+    accent: '#e0724d'
+  },
+  {
+    to: '/kontrol-listesi',
+    title: 'Ekspertiz Kontrol Listesi',
+    description: 'Motor, şanzıman, kaporta ve elektronik kontrol maddeleri.',
+    icon: 'clipboard',
+    accent: '#1fa971'
+  },
+  {
+    to: '/favoriler',
+    title: 'Favoriler',
+    description: 'Analiz ettiğin araçları kaydet, sonra karşılaştır.',
+    icon: 'heart',
+    accent: '#d9447a'
+  },
+  {
+    to: '/kredi-hesapla',
+    title: 'Kredi Hesaplayıcı',
+    description: 'Peşinat ve vadeye göre tahmini aylık ödemeyi hesapla.',
+    icon: 'calculator',
+    accent: '#7c5cf0'
+  },
+  {
+    to: '/ekspertiz-notlari',
+    title: 'Ekspertiz Notları',
+    description: 'Kontrol ettiğin kalemleri işaretle, bulguları kaydet.',
+    icon: 'note',
+    accent: '#17a2b8'
+  }
+]
+
 export default function HomePage() {
   const stats = useMemo(() => getDatabaseStats(), [])
 
@@ -19,37 +65,15 @@ export default function HomePage() {
 
       <PageContainer>
         <div className="card-grid">
-          <VehicleCard
-            to="/analiz"
-            title="Araç Analizi"
-            description="Bilgileri gir, risk skorunu ve detaylı raporu gör."
-            badge="Başla"
-          />
-          <VehicleCard
-            to="/kronik-sorunlar"
-            title="Kronik Sorunlar"
-            description="Marka ve modele göre bilinen arıza kayıtlarını incele."
-          />
-          <VehicleCard
-            to="/kontrol-listesi"
-            title="Ekspertiz Kontrol Listesi"
-            description="Motor, şanzıman, kaporta ve elektronik kontrol maddeleri."
-          />
-          <VehicleCard
-            to="/favoriler"
-            title="Favoriler"
-            description="Analiz ettiğin araçları kaydet, sonra karşılaştır."
-          />
-          <VehicleCard
-            to="/kredi-hesapla"
-            title="Kredi Hesaplayıcı"
-            description="Peşinat ve vadeye göre tahmini aylık ödemeyi hesapla."
-          />
-          <VehicleCard
-            to="/ekspertiz-notlari"
-            title="Ekspertiz Notları"
-            description="Kontrol ettiğin kalemleri işaretle, bulguları kaydet."
-          />
+          {CARDS.map((card, index) => (
+            <div
+              className="card-grid-item"
+              key={card.to}
+              style={{ animationDelay: `${index * 60}ms` }}
+            >
+              <VehicleCard {...card} />
+            </div>
+          ))}
         </div>
 
         <section className="info-strip">

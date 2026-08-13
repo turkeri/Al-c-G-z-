@@ -1,8 +1,8 @@
 const TONE_COLORS = {
-  excellent: '#2fb872',
-  good: '#4f8ff0',
-  warning: '#e0a83e',
-  danger: '#e0524d'
+  excellent: '#15803d',
+  good: '#3454d1',
+  warning: '#b45309',
+  danger: '#b91c1c'
 }
 
 export default function ScoreGauge({ score, label, tone }) {
@@ -22,7 +22,7 @@ export default function ScoreGauge({ score, label, tone }) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="#e9ecf3"
           strokeWidth={stroke}
         />
         <circle
