@@ -9,7 +9,13 @@
  * API anahtarı bu dosyada YOKTUR ve olmamalıdır; anahtar yalnızca proxy'de durur.
  */
 
-const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || ''
+// Analiz proxy'sinin adresi. Bu bir sır değildir (API anahtarı sunucuda durur),
+// bu yüzden varsayılan adres doğrudan burada tutulur — böylece uygulama ek
+// yapılandırma gerekmeden derlenip dağıtılabilir.
+// Kendi sunucunu kurarsan .env dosyasına VITE_AI_PROXY_URL yazarak burayı ezebilirsin.
+const DEFAULT_PROXY_URL = 'https://arac-dedektifi-ai.turkerinurullah.workers.dev'
+
+const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || DEFAULT_PROXY_URL
 const TIMEOUT_MS = 25000
 const CACHE_KEY = 'arac-dedektifi:ai-cache'
 const CACHE_LIMIT = 20
