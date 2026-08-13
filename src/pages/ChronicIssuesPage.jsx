@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import RiskBadge from '../components/RiskBadge'
+import EmptyState from '../components/EmptyState'
 import { getBrands, getModelsByBrand, getVehicleEntry } from '../services/vehicleService'
 
 export default function ChronicIssuesPage() {
@@ -48,9 +49,11 @@ export default function ChronicIssuesPage() {
         </div>
 
         {!entry && (
-          <p className="result-empty">
-            Kronik sorunları görmek için önce marka ve model seçin.
-          </p>
+          <EmptyState
+            icon="search"
+            title="Kronik sorunları görmek için marka ve model seçin"
+            description="Seçtiğin motora göre bilinen arıza kayıtları burada listelenecek."
+          />
         )}
 
         {entry &&

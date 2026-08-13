@@ -1,7 +1,11 @@
+import { useMemo } from 'react'
 import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
+import { getDatabaseStats } from '../services/vehicleService'
 
 export default function HomePage() {
+  const stats = useMemo(() => getDatabaseStats(), [])
+
   return (
     <>
       <header className="hero">
@@ -40,16 +44,16 @@ export default function HomePage() {
 
         <section className="info-strip">
           <div className="info-strip-item">
-            <span className="info-strip-value">10+</span>
+            <span className="info-strip-value">{stats.brandCount}</span>
             <span className="info-strip-label">Marka</span>
           </div>
           <div className="info-strip-item">
-            <span className="info-strip-value">20+</span>
-            <span className="info-strip-label">Motor varyantı</span>
+            <span className="info-strip-value">{stats.modelCount}</span>
+            <span className="info-strip-label">Model</span>
           </div>
           <div className="info-strip-item">
-            <span className="info-strip-value">4</span>
-            <span className="info-strip-label">Kontrol kategorisi</span>
+            <span className="info-strip-value">{stats.engineCount}</span>
+            <span className="info-strip-label">Motor varyantı</span>
           </div>
         </section>
       </PageContainer>

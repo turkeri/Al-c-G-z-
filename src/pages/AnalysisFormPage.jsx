@@ -59,6 +59,12 @@ export default function AnalysisFormPage() {
       }
       return next
     })
+    setErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
   }
 
   function validate() {
@@ -69,16 +75,23 @@ export default function AnalysisFormPage() {
       nextErrors.year = `Geçerli bir model yılı giriniz (1990-${CURRENT_YEAR + 1}).`
     }
     if (!form.fuelType) nextErrors.fuelType = 'Yakıt tipi seçiniz.'
-    if (!form.transmission) nextErrors.transmission = 'Şanzıman bilgisi giriniz.'
+    if (!form.transmission.trim()) nextErrors.transmission = 'Şanzıman bilgisi giriniz.'
     if (form.km === '' || Number(form.km) < 0) nextErrors.km = 'Geçerli bir kilometre giriniz.'
     if (form.price === '' || Number(form.price) < 0) nextErrors.price = 'Geçerli bir fiyat giriniz.'
     setErrors(nextErrors)
-    return Object.keys(nextErrors).length === 0
+    return nextErrors
   }
 
   function handleSubmit(event) {
     event.preventDefault()
-    if (!validate()) return
+    const nextErrors = validate()
+    const firstInvalidField = Object.keys(nextErrors)[0]
+    if (firstInvalidField) {
+      const el = document.querySelector(`[name="${firstInvalidField}"]`)
+      el?.focus({ preventScroll: false })
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
 
     const result = analyzeVehicle(form)
     navigate('/sonuc', { state: { formData: form, result } })
@@ -92,7 +105,12 @@ export default function AnalysisFormPage() {
           <div className="form-row">
             <label>
               Marka
-              <select value={form.brand} onChange={(e) => updateField('brand', e.target.value)}>
+              <select
+                name="brand"
+                className={errors.brand ? 'invalid' : ''}
+                value={form.brand}
+                onChange={(e) => updateField('brand', e.target.value)}
+              >
                 <option value="">Seçiniz</option>
                 {brands.map((brand) => (
                   <option key={brand} value={brand}>
@@ -106,6 +124,8 @@ export default function AnalysisFormPage() {
             <label>
               Model
               <select
+                name="model"
+                className={errors.model ? 'invalid' : ''}
                 value={form.model}
                 onChange={(e) => updateField('model', e.target.value)}
                 disabled={!form.brand}
@@ -125,6 +145,8 @@ export default function AnalysisFormPage() {
             <label>
               Model Yılı
               <input
+                name="year"
+                className={errors.year ? 'invalid' : ''}
                 type="number"
                 inputMode="numeric"
                 placeholder="Örn. 2017"
@@ -154,7 +176,12 @@ export default function AnalysisFormPage() {
           <div className="form-row">
             <label>
               Yakıt Tipi
-              <select value={form.fuelType} onChange={(e) => updateField('fuelType', e.target.value)}>
+              <select
+                name="fuelType"
+                className={errors.fuelType ? 'invalid' : ''}
+                value={form.fuelType}
+                onChange={(e) => updateField('fuelType', e.target.value)}
+              >
                 <option value="">Seçiniz</option>
                 {FUEL_TYPES.map((fuel) => (
                   <option key={fuel} value={fuel}>
@@ -168,6 +195,8 @@ export default function AnalysisFormPage() {
             <label>
               Şanzıman
               <input
+                name="transmission"
+                className={errors.transmission ? 'invalid' : ''}
                 type="text"
                 placeholder="Örn. S tronic, Manuel, Otomatik"
                 value={form.transmission}
@@ -181,6 +210,8 @@ export default function AnalysisFormPage() {
             <label>
               Kilometre
               <input
+                name="km"
+                className={errors.km ? 'invalid' : ''}
                 type="number"
                 inputMode="numeric"
                 placeholder="Örn. 142000"
@@ -193,6 +224,8 @@ export default function AnalysisFormPage() {
             <label>
               İlan Fiyatı (TL)
               <input
+                name="price"
+                className={errors.price ? 'invalid' : ''}
                 type="number"
                 inputMode="numeric"
                 placeholder="Örn. 1420000"

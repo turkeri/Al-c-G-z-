@@ -42,3 +42,11 @@ export function findMatchingEngine(brand, model, fuelType, transmission) {
     ) || entry.engines[0]
   )
 }
+
+export function getDatabaseStats() {
+  return {
+    brandCount: getBrands().length,
+    modelCount: vehicles.length,
+    engineCount: vehicles.reduce((sum, v) => sum + v.engines.length, 0)
+  }
+}

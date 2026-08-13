@@ -43,7 +43,7 @@ npm run lint      # ESLint kontrolü
 
 1. **Ana Ekran** — Araç Analizi, Kronik Sorunlar, Ekspertiz Kontrol Listesi, Favoriler kartları.
 2. **Araç Analiz Formu** — marka, model, model yılı, motor, yakıt tipi, şanzıman, kilometre, ilan fiyatı.
-3. **Araç Veritabanı** (`src/data/vehicles.json`) — Audi, BMW, Mercedes, Volkswagen, Toyota, Renault, Fiat, Ford, Peugeot, Opel markalarından popüler modeller; her motor için güvenilirlik puanı, kronik sorunlar ve kontrol listesi.
+3. **Araç Veritabanı** (`src/data/vehicles.json`) — Audi, BMW, Mercedes, Volkswagen, Toyota, Renault, Fiat, Ford, Peugeot, Opel, Hyundai, Kia, Skoda, Citroën, Honda, Nissan markalarından popüler modeller (16 marka, 40+ model, 50+ motor varyantı); her motor için güvenilirlik puanı, kronik sorunlar ve kontrol listesi.
 4. **Analiz Motoru** (`src/services/analysisService.js`) — yaş, kilometre, motor puanı, şanzıman riski ve kronik sorun sayısına göre 0-100 arası risk skoru hesaplar; AI kullanmaz, kural tabanlıdır.
 5. **Sonuç Ekranı** — genel skor, avantajlar, riskler ve kontrol edilmesi gerekenler.
 6. **Ekspertiz Kontrol Listesi** — Motor, Şanzıman, Kaporta, Elektronik kategorilerinde genel kontrol maddeleri; araç seçildiğinde motora özel ek kontrol noktaları.
