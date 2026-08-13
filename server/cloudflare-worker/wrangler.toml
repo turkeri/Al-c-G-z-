@@ -1,0 +1,19 @@
+name = "arac-dedektifi-ai"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Model tercihi (ücretsiz katmanda çalışan bir model seçin)
+[vars]
+GEMINI_MODEL = "gemini-2.0-flash"
+
+# Sadece kendi uygulamanızın çağırmasını isterseniz burayı doldurun.
+# Boş bırakılırsa tüm kaynaklara izin verilir (geliştirme için pratik, yayında daraltın).
+# ALLOWED_ORIGINS = "https://uygulamaniz.com,capacitor://localhost"
+
+# GEMINI_API_KEY buraya YAZILMAZ. Şu komutla gizli olarak eklenir:
+#   npx wrangler secret put GEMINI_API_KEY
+
+# Hız limiti istiyorsanız bir KV namespace oluşturup aşağıyı açın:
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "buraya_kv_namespace_id"

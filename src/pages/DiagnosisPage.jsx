@@ -6,6 +6,7 @@ import EmptyState from '../components/EmptyState'
 import RiskBadge from '../components/RiskBadge'
 import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/vehicleService'
 import { diagnose } from '../services/diagnosisService'
+import { fetchAiAnalysis, isAiConfigured } from '../services/aiService'
 
 const QUICK_COMPLAINTS = [
   'Soğukta zor çalışıyor',
@@ -28,16 +29,45 @@ export default function DiagnosisPage() {
   const [engine, setEngine] = useState(incoming?.engine || '')
   const [complaint, setComplaint] = useState('')
   const [result, setResult] = useState(null)
+  const [aiState, setAiState] = useState({ status: 'idle', data: null, message: '' })
 
   const models = useMemo(() => (brand ? getModelsByBrand(brand) : []), [brand])
   const engines = useMemo(() => (brand && model ? getEngineNames(brand, model) : []), [brand, model])
 
-  function handleDiagnose(text) {
+  async function handleDiagnose(text) {
     const query = typeof text === 'string' ? text : complaint
     if (!query.trim()) return
+
     const engineData = brand && model && engine ? getEngineData(brand, model, engine) : null
-    const formData = brand && model ? { brand, model, engine, fuelType: engineData?.fuelType, transmission: engineData?.transmission } : null
-    setResult(diagnose(query, formData))
+    const formData = brand && model
+      ? { brand, model, engine, fuelType: engineData?.fuelType, transmission: engineData?.transmission }
+      : null
+
+    const localResult = diagnose(query, formData)
+    setResult(localResult)
+
+    if (!isAiConfigured()) {
+      setAiState({ status: 'idle', data: null, message: '' })
+      return
+    }
+
+    setAiState({ status: 'loading', data: null, message: '' })
+    const response = await fetchAiAnalysis({
+      vehicle: formData ? { ...formData, year: undefined, km: undefined } : null,
+      complaint: query,
+      localFindings: {
+        knownProblems: localResult.engineData?.knownProblems || [],
+        matchedSymptoms: localResult.matches.map((m) => m.symptom.title)
+      }
+    })
+
+    if (!response) {
+      setAiState({ status: 'idle', data: null, message: '' })
+    } else if (response.error) {
+      setAiState({ status: 'error', data: null, message: response.error })
+    } else {
+      setAiState({ status: 'ready', data: response.result, message: '' })
+    }
   }
 
   function handleQuickPick(text) {
@@ -135,6 +165,77 @@ export default function DiagnosisPage() {
             Analiz Et
           </button>
         </section>
+
+        {aiState.status === 'loading' && (
+          <section className="result-card ai-card">
+            <div className="ai-loading">
+              <span className="ai-spinner" aria-hidden="true" />
+              <span>Detaylı analiz hazırlanıyor...</span>
+            </div>
+          </section>
+        )}
+
+        {aiState.status === 'error' && (
+          <p className="market-disclaimer" style={{ marginTop: -4 }}>{aiState.message}</p>
+        )}
+
+        {aiState.status === 'ready' && aiState.data && (
+          <section className="result-card ai-card">
+            <div className="ai-head">
+              <h3>Detaylı Analiz</h3>
+              <span className="ai-tag">Otomatik değerlendirme</span>
+            </div>
+
+            {aiState.data.summary && <p className="ai-summary">{aiState.data.summary}</p>}
+
+            {aiState.data.causes.length > 0 && (
+              <div className="cause-list">
+                {aiState.data.causes.map((cause) => (
+                  <div className="cause-item" key={cause.cause}>
+                    <div className="cause-head">
+                      <span className="cause-title">{cause.cause}</span>
+                      <RiskBadge risk={cause.likelihood} />
+                    </div>
+                    {cause.solution && <p className="cause-solution">{cause.solution}</p>}
+                    <div className="cause-meta">
+                      {cause.estimatedCost && <span>Tahmini maliyet: {cause.estimatedCost}</span>}
+                      <span className={'cause-urgency tone-' + URGENCY_TONE[cause.urgency]}>
+                        Aciliyet: {cause.urgency}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {aiState.data.checks.length > 0 && (
+              <div className="diagnosis-checks">
+                <p className="expertise-category-title">Kontrol edilmesi gerekenler</p>
+                <div className="check-tags">
+                  {aiState.data.checks.map((c) => (
+                    <span className="check-tag" key={c}>{c}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {aiState.data.askMechanic.length > 0 && (
+              <div className="diagnosis-checks">
+                <p className="expertise-category-title">Ustaya sorman gerekenler</p>
+                <ul className="result-list neutral" style={{ fontSize: '0.82rem' }}>
+                  {aiState.data.askMechanic.map((q) => (
+                    <li key={q}>{q}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <p className="market-disclaimer">
+              Bu değerlendirme otomatik olarak üretilmiştir ve kesin teşhis yerine geçmez. Aracın
+              bir ustaya gösterilmesi ve arıza kodlarının okutulması gerekir.
+            </p>
+          </section>
+        )}
 
         {result && result.matches.length === 0 && (
           <EmptyState
