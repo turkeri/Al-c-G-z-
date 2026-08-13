@@ -1,0 +1,623 @@
+[
+  {
+    "brand": "Audi",
+    "model": "A3",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "S tronic",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Orta",
+        "knownProblems": [
+          {
+            "title": "Devirdaim (su pompası) arızası",
+            "risk": "Orta",
+            "description": "Soğutma sistemindeki devirdaim/su pompası belirli kilometrelerde arızalanabilir, düzenli kontrol edilmelidir.",
+            "checkKm": "100000-180000"
+          },
+          {
+            "title": "S tronic (DSG) mekatronik arızası",
+            "risk": "Yüksek",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite arızaları ve sarsıntılı vites geçişleri görülebilir.",
+            "checkKm": "120000-200000"
+          },
+          {
+            "title": "EGR valfi tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kullanımda EGR valfi kurumlanabilir, güç kaybına yol açabilir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.4 TFSI",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Yağ tüketimi",
+            "risk": "Orta",
+            "description": "Piston segmanlarına bağlı aşırı yağ tüketimi bazı üretim yıllarında görülmüştür.",
+            "checkKm": "60000-150000"
+          },
+          {
+            "title": "Enjektör arızaları",
+            "risk": "Orta",
+            "description": "Direkt enjeksiyonlu benzinli motorlarda enjektör tıkanıklığı yaşanabilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Yağ seviyesi ve tüketimi",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Audi",
+    "model": "A4",
+    "yearRange": "2012-2019",
+    "engines": [
+      {
+        "name": "2.0 TDI",
+        "fuelType": "Dizel",
+        "transmission": "Multitronic",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Orta",
+        "knownProblems": [
+          {
+            "title": "Zincir gerdirici (timing chain) sorunu",
+            "risk": "Yüksek",
+            "description": "Erken üretim yıllarında zincir gerdirici arızası motor hasarına yol açabilir.",
+            "checkKm": "90000-160000"
+          },
+          {
+            "title": "Multitronic şanzıman kayış aşınması",
+            "risk": "Orta",
+            "description": "Sürekli değişken şanzımanda çelik kayış aşınması ve bakım maliyeti yüksektir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor çalışma sesi (zincir sesi)",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "BMW",
+    "model": "3 Serisi",
+    "yearRange": "2012-2019",
+    "engines": [
+      {
+        "name": "2.0d",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 84,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede enjektör kaçakları ve ateşleme sorunları görülebilir.",
+            "checkKm": "150000+"
+          },
+          {
+            "title": "Turbo aktüatör arızası",
+            "risk": "Orta",
+            "description": "Turbo aktüatöründe elektronik arızalar güç kaybına neden olabilir.",
+            "checkKm": "100000-170000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Şanzıman geçişleri",
+          "Süspansiyon (arka amortisör)"
+        ]
+      },
+      {
+        "name": "320i",
+        "fuelType": "Benzin",
+        "transmission": "Otomatik",
+        "reliabilityScore": 81,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Valf kapağı contası kaçağı",
+            "risk": "Düşük",
+            "description": "Valf kapağı contasından yağ sızıntısı yaygın görülen bir bakım kalemidir.",
+            "checkKm": "80000+"
+          },
+          {
+            "title": "Su pompası ve termostat arızası",
+            "risk": "Orta",
+            "description": "Elektrikli su pompası ve termostat belirli kilometrede değişim ister.",
+            "checkKm": "100000-160000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğutma suyu seviyesi",
+          "Yağ kaçakları",
+          "Motor titreşimi (rölanti)",
+          "Şanzıman geçişleri"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Mercedes",
+    "model": "A Serisi",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "180d",
+        "fuelType": "Dizel",
+        "transmission": "7G-DCT",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Orta",
+        "knownProblems": [
+          {
+            "title": "Çift kavrama (DCT) sarsıntısı",
+            "risk": "Orta",
+            "description": "Düşük hızlarda ve kalkışta sarsıntılı vites geçişleri bildirilmiştir.",
+            "checkKm": "60000-140000"
+          },
+          {
+            "title": "Turbo basınç sensörü arızası",
+            "risk": "Düşük",
+            "description": "Arıza lambası ile birlikte güç kısıtlaması yaşanabilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Kalkışta vites geçişi",
+          "Turbo kontrolü",
+          "Multimedya ve sensör testi",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "200",
+        "fuelType": "Benzin",
+        "transmission": "Otomatik",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Zincir gerdirici sesi",
+            "risk": "Orta",
+            "description": "Soğuk çalıştırmada zincirden gelen metalik ses dikkatle dinlenmelidir.",
+            "checkKm": "70000-150000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Motor çalışma sesi",
+          "Şanzıman geçişleri",
+          "Elektronik sistemler"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Golf",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Orta",
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Yüksek",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite ve debriyaj paketi arızaları görülebilir.",
+            "checkKm": "120000-200000"
+          },
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede enjektör performans kaybı yaşanabilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.4 TSI",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Zincir gerdirici arızası",
+            "risk": "Yüksek",
+            "description": "Erken model yıllarında zincir gerdirici arızası ciddi motor hasarına yol açabilir.",
+            "checkKm": "60000-130000"
+          },
+          {
+            "title": "Turbo intercooler kaçağı",
+            "risk": "Orta",
+            "description": "Intercooler hortumlarında çatlak ve basınç kaçağı sık görülür.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Motor çalışma sesi (zincir sesi)",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Passat",
+    "yearRange": "2011-2019",
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 81,
+        "transmissionRisk": "Orta",
+        "knownProblems": [
+          {
+            "title": "DSG debriyaj aşınması",
+            "risk": "Orta",
+            "description": "Şehir içi ağır trafik kullanımında debriyaj paketleri erken aşınabilir.",
+            "checkKm": "100000-170000"
+          },
+          {
+            "title": "EGR ve susturucu tıkanması",
+            "risk": "Düşük",
+            "description": "Kısa mesafe kullanımda egzoz sisteminde tıkanıklık oluşabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Egzoz dumanı rengi",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Toyota",
+    "model": "Corolla",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "1.4 D-4D",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 88,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör bakım maliyeti",
+            "risk": "Düşük",
+            "description": "Denso enjektörler dayanıklı olsa da bakımsız kullanımda arıza verebilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Vites geçişleri",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      },
+      {
+        "name": "1.6 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "CVT",
+        "reliabilityScore": 90,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "CVT şanzıman ısınması",
+            "risk": "Düşük",
+            "description": "Uzun süreli ağır yük altında CVT şanzıman ısınabilir, bakım aralıklarına dikkat edilmelidir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "CVT tepki süresi",
+          "Yağ kaçakları",
+          "Klima ve multimedya"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Renault",
+    "model": "Clio",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "Turbo aşırı ısınmaya bağlı olarak erken yıpranabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Elektronik arıza lambaları"
+        ]
+      },
+      {
+        "name": "1.2 Benzin",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 74,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Elektronik aksam arızaları",
+            "risk": "Orta",
+            "description": "Cam motoru, merkezi kilit ve gösterge paneli elektronik arızaları sık bildirilir.",
+            "checkKm": "70000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Elektronik sistemler",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Fiat",
+    "model": "Egea",
+    "yearRange": "2015-2022",
+    "engines": [
+      {
+        "name": "1.6 Multijet",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 79,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "DPF (partikül filtresi) tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda DPF tıkanıklığı ve rejenerasyon sorunları yaşanabilir.",
+            "checkKm": "80000+"
+          },
+          {
+            "title": "Çift kütleli volan aşınması",
+            "risk": "Orta",
+            "description": "Debriyaj sistemindeki çift kütleli volan yüksek kilometrede ses ve titreşim yapabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Debriyaj/vites geçişi",
+          "Egzoz dumanı rengi"
+        ]
+      },
+      {
+        "name": "1.4 Fire",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 75,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Triger kayışı bakım takibi",
+            "risk": "Orta",
+            "description": "Zamanında değişmeyen triger kayışı ciddi motor hasarına yol açabilir, bakım geçmişi kontrol edilmeli.",
+            "checkKm": "60000-90000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Triger bakım kaydı",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Klima performansı"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Ford",
+    "model": "Focus",
+    "yearRange": "2011-2019",
+    "engines": [
+      {
+        "name": "1.6 TDCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 78,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Yüksek basınçlı yakıt pompası ve enjektörlerde arızalar görülebilir.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Çift kütleli volan sesi",
+            "risk": "Orta",
+            "description": "Rölantide gelen metalik ses çift kütleli volan aşınmasına işaret edebilir.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Debriyaj/vites geçişi",
+          "Turbo kontrolü",
+          "Egzoz dumanı rengi"
+        ]
+      },
+      {
+        "name": "1.0 EcoBoost",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 73,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Triger kayışı (yağ banyolu) arızası",
+            "risk": "Yüksek",
+            "description": "Yağ banyolu triger kayışı erken yıpranıp motor hasarına neden olabilir, bakım geçmişi kritik önemdedir.",
+            "checkKm": "60000-100000"
+          },
+          {
+            "title": "Soğutma sistemi (çatlak silindir kapağı)",
+            "risk": "Yüksek",
+            "description": "Bazı üretim yıllarında silindir kapağı çatlağı ve antifriz kaybı bildirilmiştir.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğutma suyu seviyesi",
+          "Motor çalışma sesi",
+          "Triger bakım kaydı",
+          "Yağ kaçakları"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Peugeot",
+    "model": "308",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "1.6 BlueHDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "DPF ve AdBlue sistemi arızası",
+            "risk": "Orta",
+            "description": "Partikül filtresi ve AdBlue sisteminde tıkanma ve sensör arızaları görülebilir.",
+            "checkKm": "90000+"
+          },
+          {
+            "title": "Turbo arızası",
+            "risk": "Orta",
+            "description": "Turbo aktüatöründe elektronik kaynaklı arızalar bildirilmiştir.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF/AdBlue ikaz lambaları",
+          "Turbo kontrolü",
+          "Egzoz dumanı rengi"
+        ]
+      }
+    ]
+  },
+  {
+    "brand": "Opel",
+    "model": "Astra",
+    "yearRange": "2012-2021",
+    "engines": [
+      {
+        "name": "1.6 CDTI",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 77,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör ve yakıt pompası arızası",
+            "risk": "Orta",
+            "description": "Yakıt sistemi bileşenlerinde yüksek kilometrede arıza oranı artmaktadır.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "Timing zinciri gerdiricisi",
+            "risk": "Orta",
+            "description": "Zincir gerdirici aşınması motor sesinde artışa neden olabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Motor çalışma sesi",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      },
+      {
+        "name": "1.4 Turbo",
+        "fuelType": "Benzin",
+        "transmission": "Manuel",
+        "reliabilityScore": 76,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Turbo intercooler kaçağı",
+            "risk": "Düşük",
+            "description": "Basınç hortumlarında çatlak ve kaçak sık görülür.",
+            "checkKm": "80000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Turbo kontrolü",
+          "Motor titreşimi (rölanti)",
+          "Yağ kaçakları",
+          "Klima ve elektronik"
+        ]
+      }
+    ]
+  }
+]
