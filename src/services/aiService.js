@@ -16,7 +16,9 @@
 const DEFAULT_PROXY_URL = 'https://arac-dedektifi-ai.turkerinurullah.workers.dev'
 
 const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || DEFAULT_PROXY_URL
-const TIMEOUT_MS = 25000
+// Sunucudaki üst sınırdan (30 sn) biraz uzun tutulur ki hata mesajı
+// zaman aşımı yerine sunucudan gelen gerçek nedeni gösterebilsin.
+const TIMEOUT_MS = 40000
 const CACHE_KEY = 'arac-dedektifi:ai-cache'
 const CACHE_LIMIT = 20
 

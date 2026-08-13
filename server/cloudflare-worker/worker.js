@@ -14,19 +14,21 @@
  * çalışan ilk model bulunup hafızada tutulur. Böylece bir model kapansa bile
  * servis kendiliğinden diğerine geçer ve uygulama bozulmaz.
  */
+// Hızlı ("lite") modeller başta: yeni nesil modellerde varsayılan "düşünme"
+// modu yanıtı çok yavaşlatıyor, bu kullanımda gerekmiyor.
 const MODEL_CANDIDATES = [
-  'gemini-flash-latest',
-  'gemini-2.5-flash',
   'gemini-2.5-flash-lite',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash'
+  'gemini-flash-lite-latest',
+  'gemini-2.5-flash',
+  'gemini-flash-latest',
+  'gemini-2.0-flash'
 ]
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
 
 const MAX_COMPLAINT_LENGTH = 1200
-const REQUEST_TIMEOUT_MS = 20000
+const REQUEST_TIMEOUT_MS = 30000
 
 // Basit hız limiti: aynı IP için dakikada kaç istek
 const RATE_LIMIT_PER_MINUTE = 12
@@ -119,8 +121,19 @@ KURALLAR:
 - Yanıtın sadece istenen JSON şemasında olsun.`
 }
 
-async function tryModel(env, model, prompt) {
+async function tryModel(env, model, prompt, { disableThinking = true } = {}) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`
+
+  const generationConfig = {
+    temperature: 0.3,
+    maxOutputTokens: 1600,
+    responseMimeType: 'application/json',
+    responseSchema: RESPONSE_SCHEMA
+  }
+  // Yeni nesil modellerde "düşünme" varsayılan açık; kapatmak yanıtı çok hızlandırır.
+  if (disableThinking) {
+    generationConfig.thinkingConfig = { thinkingBudget: 0 }
+  }
 
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
@@ -132,17 +145,19 @@ async function tryModel(env, model, prompt) {
       signal: controller.signal,
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 1600,
-          responseMimeType: 'application/json',
-          responseSchema: RESPONSE_SCHEMA
-        }
+        generationConfig
       })
     })
 
     if (!res.ok) {
       const detail = await res.text()
+
+      // Model "thinkingConfig" desteklemiyorsa, aynı modeli o ayar olmadan bir kez daha dene
+      if (res.status === 400 && disableThinking && /thinking/i.test(detail)) {
+        clearTimeout(timer)
+        return tryModel(env, model, prompt, { disableThinking: false })
+      }
+
       // 404 / 400 -> model yok veya desteklenmiyor, sıradakini dene
       const retryable = res.status === 404 || res.status === 400
       return { ok: false, status: res.status, detail: detail.slice(0, 400), retryable }
@@ -190,7 +205,8 @@ async function callGemini(env, prompt) {
     }
 
     lastFailure = { ...outcome, model }
-    if (!outcome.retryable) break
+    // Zaman aşımı da olsa sıradaki (daha hızlı) modeli denemeye değer
+    if (!outcome.retryable && outcome.status !== 504) break
 
     // Bu model kapanmışsa önbelleği temizle ki bir dahakine boşuna denenmesin
     if (cachedWorkingModel === model) cachedWorkingModel = null
