@@ -7,6 +7,8 @@ import ChronicIssuesPage from './pages/ChronicIssuesPage'
 import InspectionChecklistPage from './pages/InspectionChecklistPage'
 import FavoritesPage from './pages/FavoritesPage'
 import ComparePage from './pages/ComparePage'
+import LoanCalculatorPage from './pages/LoanCalculatorPage'
+import ExpertiseNotesPage from './pages/ExpertiseNotesPage'
 
 export default function App() {
   const location = useLocation()
@@ -23,6 +25,8 @@ export default function App() {
             <Route path="/kontrol-listesi" element={<InspectionChecklistPage />} />
             <Route path="/favoriler" element={<FavoritesPage />} />
             <Route path="/karsilastir" element={<ComparePage />} />
+            <Route path="/kredi-hesapla" element={<LoanCalculatorPage />} />
+            <Route path="/ekspertiz-notlari" element={<ExpertiseNotesPage />} />
           </Routes>
         </div>
       </div>

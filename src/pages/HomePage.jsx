@@ -40,6 +40,16 @@ export default function HomePage() {
             title="Favoriler"
             description="Analiz ettiğin araçları kaydet, sonra karşılaştır."
           />
+          <VehicleCard
+            to="/kredi-hesapla"
+            title="Kredi Hesaplayıcı"
+            description="Peşinat ve vadeye göre tahmini aylık ödemeyi hesapla."
+          />
+          <VehicleCard
+            to="/ekspertiz-notlari"
+            title="Ekspertiz Notları"
+            description="Kontrol ettiğin kalemleri işaretle, bulguları kaydet."
+          />
         </div>
 
         <section className="info-strip">

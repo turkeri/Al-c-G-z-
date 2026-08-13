@@ -54,11 +54,19 @@ Uygulama, sunucu taraflı yönlendirme (URL rewrite) gerektirmeyen `HashRouter` 
 
 1. **Ana Ekran** — Araç Analizi, Kronik Sorunlar, Ekspertiz Kontrol Listesi, Favoriler kartları.
 2. **Araç Analiz Formu** — marka, model, model yılı, motor, yakıt tipi, şanzıman, kilometre, ilan fiyatı.
-3. **Araç Veritabanı** (`src/data/vehicles.json`) — Audi, BMW, Mercedes, Volkswagen, Toyota, Renault, Fiat, Ford, Peugeot, Opel, Hyundai, Kia, Skoda, Citroën, Honda, Nissan markalarından popüler modeller (16 marka, 40+ model, 50+ motor varyantı); her motor için güvenilirlik puanı, kronik sorunlar ve kontrol listesi.
+3. **Araç Veritabanı** (`src/data/vehicles.json`) — Audi, BMW, Mercedes, Volkswagen, Toyota, Renault, Fiat, Ford, Peugeot, Opel, Hyundai, Kia, Skoda, Citroën, Honda, Nissan, Seat, Dacia, Mazda, Mitsubishi, Volvo, Suzuki markalarından popüler modeller (22 marka, 52 model, 60+ motor varyantı); her motor için güvenilirlik puanı, kronik sorunlar, kontrol listesi ve referans fiyat verisi.
 4. **Analiz Motoru** (`src/services/analysisService.js`) — yaş, kilometre, motor puanı, şanzıman riski ve kronik sorun sayısına göre 0-100 arası risk skoru hesaplar; AI kullanmaz, kural tabanlıdır.
-5. **Sonuç Ekranı** — genel skor, avantajlar, riskler ve kontrol edilmesi gerekenler.
-6. **Ekspertiz Kontrol Listesi** — Motor, Şanzıman, Kaporta, Elektronik kategorilerinde genel kontrol maddeleri; araç seçildiğinde motora özel ek kontrol noktaları.
-7. **Favori Sistemi** — analiz edilen araçlar `localStorage` üzerinde saklanır.
+5. **İlan Metninden Otomatik Doldur** (`src/services/listingParserService.js`) — kopyalanan ilan metnini yapıştırınca marka, model, motor, yıl, km ve fiyatı otomatik algılayıp formu doldurur.
+6. **Piyasa Fiyat Karşılaştırması** (`src/services/marketService.js`) — girilen ilan fiyatını, marka/model/yaş/km'ye dayalı kaba bir amortisman modeliyle tahmini piyasa değeriyle karşılaştırıp "piyasanın altında / normal / üzerinde" etiketi verir. Bu **gerçek zamanlı piyasa verisi değildir**, yönlendirici bir tahmindir.
+7. **Pazarlık Önerisi** (`src/services/negotiationService.js`) — fiyat farkı ve kronik sorun riskine göre önerilen indirim tutarı ve gerekçesi.
+8. **Karar Özeti** (`src/services/decisionService.js`) — skor ve piyasa karşılaştırmasını tek bir "Al / Dikkatli değerlendir / Alma" kartına indirger.
+9. **Sonuç Ekranı** — genel skor, karar özeti, piyasa karşılaştırması, pazarlık önerisi, avantajlar, riskler, kontrol edilmesi gerekenler ve kronik sorun detayları.
+10. **Ekspertiz Kontrol Listesi** — Motor, Şanzıman, Kaporta, Elektronik kategorilerinde genel kontrol maddeleri; araç seçildiğinde motora özel ek kontrol noktaları.
+11. **Ekspertiz Notları** (`/ekspertiz-notlari`) — ekspertizde bulunan sorunlu kalemleri işaretleyip serbest not eklemeni sağlar; işaretlenen kalem sayısına göre otomatik bir önem özeti (Az/Orta/Çok bulgu) üretir. `localStorage`'da saklanır.
+12. **Yakında Ekspertiz Bul** — tarayıcı konumunu kullanarak yakındaki oto ekspertiz/servis noktalarını Google Haritalar'da açar.
+13. **Deneyim Notları (Topluluk)** (`src/services/communityNotesService.js`) — her marka/model/motor için kendi gözlemlerini ekleyebildiğin, Kronik Sorunlar sayfasında görünen notlar. **Not:** backend olmadığı için bu notlar yalnızca kullanıldığı cihazda saklanır, cihazlar arası paylaşılmaz — gerçek bir topluluk özelliği için Firebase gibi bir arka uç gerekir (bkz. İleriye Hazırlık).
+14. **Kredi / Taksit Hesaplayıcı** (`/kredi-hesapla`, `src/services/loanService.js`) — peşinat yüzdesi, vade ve örnek bir aylık faiz oranına göre tahmini aylık ödeme simülasyonu.
+15. **Favori Sistemi** — analiz edilen araçlar `localStorage` üzerinde saklanır; favorilerden en fazla 3 araç seçip yan yana karşılaştırabilirsin.
 
 ### Skor Bantları
 

@@ -10,6 +10,7 @@ import {
   getEngineData
 } from '../services/vehicleService'
 import { analyzeVehicle } from '../services/analysisService'
+import { parseListingText } from '../services/listingParserService'
 
 const CURRENT_YEAR = new Date().getFullYear()
 
@@ -28,6 +29,8 @@ export default function AnalysisFormPage() {
   const navigate = useNavigate()
   const [form, setForm] = useState(EMPTY_FORM)
   const [errors, setErrors] = useState({})
+  const [listingText, setListingText] = useState('')
+  const [autoFillCount, setAutoFillCount] = useState(null)
 
   const brands = useMemo(() => getBrands(), [])
   const models = useMemo(() => (form.brand ? getModelsByBrand(form.brand) : []), [form.brand])
@@ -67,6 +70,22 @@ export default function AnalysisFormPage() {
     })
   }
 
+  function handleAutoFill() {
+    const parsed = parseListingText(listingText)
+    const foundKeys = Object.keys(parsed)
+    if (foundKeys.length === 0) {
+      setAutoFillCount(0)
+      return
+    }
+    setForm((prev) => ({ ...prev, ...parsed }))
+    setErrors((prev) => {
+      const next = { ...prev }
+      foundKeys.forEach((key) => delete next[key])
+      return next
+    })
+    setAutoFillCount(foundKeys.length)
+  }
+
   function validate() {
     const nextErrors = {}
     if (!form.brand) nextErrors.brand = 'Marka seçiniz.'
@@ -101,6 +120,31 @@ export default function AnalysisFormPage() {
     <>
       <Header title="Araç Analiz Formu" subtitle="Bilgileri eksiksiz doldur, en doğru sonucu al." showBack />
       <PageContainer>
+        <section className="result-card">
+          <h3>İlan Metninden Otomatik Doldur</h3>
+          <p className="market-disclaimer" style={{ marginTop: 0 }}>
+            Sahibinden veya başka bir sitedeki ilan metnini buraya yapıştır; marka, model, yıl, km, fiyat gibi
+            bilgileri saptayabildiğimiz kadarıyla otomatik dolduralım.
+          </p>
+          <textarea
+            className="listing-textarea"
+            rows={4}
+            placeholder="Örn. Audi A3 2017 model 1.6 TDI dizel S tronic şanzıman 142.000 km 1.420.000 TL..."
+            value={listingText}
+            onChange={(e) => setListingText(e.target.value)}
+          />
+          <button type="button" className="favorite-button" onClick={handleAutoFill}>
+            Otomatik Doldur
+          </button>
+          {autoFillCount !== null && (
+            <p className="market-disclaimer">
+              {autoFillCount > 0
+                ? `${autoFillCount} alan otomatik dolduruldu, aşağıdan kontrol et.`
+                : 'Metinden bilgi çıkarılamadı, formu elle doldurabilirsin.'}
+            </p>
+          )}
+        </section>
+
         <form className="analysis-form" onSubmit={handleSubmit} noValidate>
           <div className="form-row">
             <label>

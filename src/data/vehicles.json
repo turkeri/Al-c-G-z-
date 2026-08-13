@@ -64,7 +64,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1550000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Audi",
@@ -98,7 +101,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1850000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "BMW",
@@ -159,7 +165,10 @@
           "Şanzıman geçişleri"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Mercedes",
@@ -214,7 +223,10 @@
           "Elektronik sistemler"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Volkswagen",
@@ -275,7 +287,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1400000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Volkswagen",
@@ -309,7 +324,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1650000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Toyota",
@@ -358,7 +376,10 @@
           "Klima ve multimedya"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1300000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Renault",
@@ -413,7 +434,10 @@
           "Klima performansı"
         ]
       }
-    ]
+    ],
+    "referencePrice": 750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Fiat",
@@ -468,7 +492,10 @@
           "Klima performansı"
         ]
       }
-    ]
+    ],
+    "referencePrice": 800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Ford",
@@ -529,7 +556,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Peugeot",
@@ -563,7 +593,10 @@
           "Egzoz dumanı rengi"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Opel",
@@ -639,7 +672,10 @@
           "Klima ve elektronik"
         ]
       }
-    ]
+    ],
+    "referencePrice": 900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Opel",
@@ -673,7 +709,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Audi",
@@ -707,7 +746,10 @@
           "4x4 aktarma organları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 2000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "BMW",
@@ -741,7 +783,10 @@
           "Şanzıman geçişleri"
         ]
       }
-    ]
+    ],
+    "referencePrice": 2400000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "BMW",
@@ -775,7 +820,10 @@
           "4x4 aktarma organları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 2100000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Mercedes",
@@ -809,7 +857,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 2200000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Mercedes",
@@ -837,7 +888,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 2100000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Volkswagen",
@@ -865,7 +919,10 @@
           "4x4 aktarma organları (varsa)"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Volkswagen",
@@ -893,7 +950,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Toyota",
@@ -921,7 +981,10 @@
           "Klima performansı"
         ]
       }
-    ]
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Toyota",
@@ -949,7 +1012,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Renault",
@@ -983,7 +1049,10 @@
           "Vites geçişleri"
         ]
       }
-    ]
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Renault",
@@ -1011,7 +1080,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Fiat",
@@ -1045,7 +1117,10 @@
           "Yük altında performans"
         ]
       }
-    ]
+    ],
+    "referencePrice": 900000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Fiat",
@@ -1073,7 +1148,10 @@
           "Klima performansı"
         ]
       }
-    ]
+    ],
+    "referencePrice": 650000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Ford",
@@ -1101,7 +1179,10 @@
           "Egzoz dumanı rengi"
         ]
       }
-    ]
+    ],
+    "referencePrice": 800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Ford",
@@ -1135,7 +1216,10 @@
           "Şanzıman geçişleri"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1500000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Peugeot",
@@ -1163,7 +1247,10 @@
           "Egzoz dumanı rengi"
         ]
       }
-    ]
+    ],
+    "referencePrice": 800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Peugeot",
@@ -1191,7 +1278,10 @@
           "Multimedya ve sensörler"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1550000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Hyundai",
@@ -1219,7 +1309,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 800000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Hyundai",
@@ -1247,7 +1340,10 @@
           "4x4 aktarma organları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1500000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Kia",
@@ -1275,7 +1371,10 @@
           "4x4 aktarma organları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1500000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Kia",
@@ -1303,7 +1402,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Skoda",
@@ -1337,7 +1439,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Skoda",
@@ -1365,7 +1470,10 @@
           "4x4 aktarma organları (varsa)"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1550000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Citroën",
@@ -1393,7 +1501,10 @@
           "Egzoz dumanı rengi"
         ]
       }
-    ]
+    ],
+    "referencePrice": 750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Citroën",
@@ -1421,7 +1532,10 @@
           "Egzoz dumanı rengi"
         ]
       }
-    ]
+    ],
+    "referencePrice": 650000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Honda",
@@ -1449,7 +1563,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Honda",
@@ -1477,7 +1594,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Nissan",
@@ -1511,7 +1631,10 @@
           "Yağ kaçakları"
         ]
       }
-    ]
+    ],
+    "referencePrice": 1350000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   },
   {
     "brand": "Nissan",
@@ -1539,6 +1662,331 @@
           "Klima ve elektronik"
         ]
       }
-    ]
+    ],
+    "referencePrice": 700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Seat",
+    "model": "Leon",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "1.6 TDI",
+        "fuelType": "Dizel",
+        "transmission": "DSG",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Orta",
+        "knownProblems": [
+          {
+            "title": "DSG mekatronik arızası",
+            "risk": "Yüksek",
+            "description": "Çift kavramalı şanzımanda mekatronik ünite ve debriyaj paketi arızaları görülebilir.",
+            "checkKm": "120000-200000"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Dacia",
+    "model": "Duster",
+    "yearRange": "2014-2022",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 81,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          },
+          {
+            "title": "4x4 aktarma organı arızası",
+            "risk": "Düşük",
+            "description": "Dört çeker versiyonlarda aktarma organlarında ses ve titreşim yaşanabilir.",
+            "checkKm": "110000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "4x4 aktarma organları",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 950000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Dacia",
+    "model": "Sandero",
+    "yearRange": "2013-2021",
+    "engines": [
+      {
+        "name": "1.5 dCi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Orta",
+            "description": "Kalitesiz yakıt kullanımında enjektör tıkanıklığı ve güç kaybı görülebilir.",
+            "checkKm": "100000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 650000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mazda",
+    "model": "3",
+    "yearRange": "2014-2021",
+    "engines": [
+      {
+        "name": "1.5 Skyactiv-D",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 85,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-5",
+    "yearRange": "2015-2022",
+    "engines": [
+      {
+        "name": "2.2 Skyactiv-D",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 86,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "150000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Şanzıman geçişleri",
+          "4x4 aktarma organları",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1700000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Mitsubishi",
+    "model": "ASX",
+    "yearRange": "2013-2020",
+    "engines": [
+      {
+        "name": "1.6 DI-D",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Orta",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1100000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Volvo",
+    "model": "S60",
+    "yearRange": "2011-2018",
+    "engines": [
+      {
+        "name": "D3",
+        "fuelType": "Dizel",
+        "transmission": "Otomatik",
+        "reliabilityScore": 83,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Turbo aktüatör arızası",
+            "risk": "Orta",
+            "description": "Turbo aktüatöründe elektronik arızalar güç kaybına neden olabilir.",
+            "checkKm": "110000+"
+          },
+          {
+            "title": "EGR valfi tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kullanımda EGR valfi kurumlanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Şanzıman geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 2000000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Suzuki",
+    "model": "Vitara",
+    "yearRange": "2015-2022",
+    "engines": [
+      {
+        "name": "1.6 DDiS",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 84,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "DPF tıkanması",
+            "risk": "Düşük",
+            "description": "Şehir içi kısa mesafe kullanımda partikül filtresi tıkanabilir.",
+            "checkKm": "90000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "DPF ikaz lambası",
+          "4x4 aktarma organları",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1150000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Elantra",
+    "yearRange": "2011-2020",
+    "engines": [
+      {
+        "name": "1.6 CRDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 82,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Çift kütleli volan aşınması",
+            "risk": "Orta",
+            "description": "Yüksek kilometrede debriyaj sisteminde ses ve titreşim yapabilir.",
+            "checkKm": "120000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Debriyaj/vites geçişi",
+          "Turbo kontrolü",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 1050000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
+  },
+  {
+    "brand": "Kia",
+    "model": "Rio",
+    "yearRange": "2012-2020",
+    "engines": [
+      {
+        "name": "1.4 CRDi",
+        "fuelType": "Dizel",
+        "transmission": "Manuel",
+        "reliabilityScore": 80,
+        "transmissionRisk": "Düşük",
+        "knownProblems": [
+          {
+            "title": "Enjektör arızası",
+            "risk": "Düşük",
+            "description": "Yüksek kilometrede enjektörlerde performans kaybı görülebilir.",
+            "checkKm": "130000+"
+          }
+        ],
+        "inspectionChecklist": [
+          "Soğuk çalıştırma",
+          "Turbo kontrolü",
+          "Vites geçişleri",
+          "Yağ kaçakları"
+        ]
+      }
+    ],
+    "referencePrice": 750000,
+    "referenceYear": 2018,
+    "referenceKm": 100000
   }
 ]
