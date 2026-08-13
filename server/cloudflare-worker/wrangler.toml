@@ -4,7 +4,7 @@ compatibility_date = "2024-11-01"
 
 # Model tercihi (ücretsiz katmanda çalışan bir model seçin)
 [vars]
-GEMINI_MODEL = "gemini-2.0-flash"
+# GEMINI_MODEL = "gemini-2.5-flash"   # bos birakilirsa calisan model otomatik bulunur
 
 # Sadece kendi uygulamanızın çağırmasını isterseniz burayı doldurun.
 # Boş bırakılırsa tüm kaynaklara izin verilir (geliştirme için pratik, yayında daraltın).

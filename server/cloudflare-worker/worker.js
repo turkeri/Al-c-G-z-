@@ -8,7 +8,23 @@
  * Kurulum için: server/README.md
  */
 
-const DEFAULT_MODEL = 'gemini-2.0-flash'
+/**
+ * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
+ * Bu yüzden tek bir isme bağlı kalmıyoruz: aşağıdaki adaylar sırayla denenir,
+ * çalışan ilk model bulunup hafızada tutulur. Böylece bir model kapansa bile
+ * servis kendiliğinden diğerine geçer ve uygulama bozulmaz.
+ */
+const MODEL_CANDIDATES = [
+  'gemini-flash-latest',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash'
+]
+
+// Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
+let cachedWorkingModel = null
+
 const MAX_COMPLAINT_LENGTH = 1200
 const REQUEST_TIMEOUT_MS = 20000
 
@@ -103,8 +119,7 @@ KURALLAR:
 - Yanıtın sadece istenen JSON şemasında olsun.`
 }
 
-async function callGemini(env, prompt) {
-  const model = env.GEMINI_MODEL || DEFAULT_MODEL
+async function tryModel(env, model, prompt) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`
 
   const controller = new AbortController()
@@ -122,28 +137,81 @@ async function callGemini(env, prompt) {
           maxOutputTokens: 1600,
           responseMimeType: 'application/json',
           responseSchema: RESPONSE_SCHEMA
-        },
-        safetySettings: []
+        }
       })
     })
 
     if (!res.ok) {
       const detail = await res.text()
-      return { ok: false, status: res.status, detail: detail.slice(0, 500) }
+      // 404 / 400 -> model yok veya desteklenmiyor, sıradakini dene
+      const retryable = res.status === 404 || res.status === 400
+      return { ok: false, status: res.status, detail: detail.slice(0, 400), retryable }
     }
 
     const data = await res.json()
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) return { ok: false, status: 502, detail: 'Boş yanıt' }
+    if (!text) return { ok: false, status: 502, detail: 'Boş yanıt', retryable: false }
 
     try {
       return { ok: true, result: JSON.parse(text) }
     } catch {
-      return { ok: false, status: 502, detail: 'JSON ayrıştırılamadı' }
+      return { ok: false, status: 502, detail: 'JSON ayrıştırılamadı', retryable: false }
+    }
+  } catch (err) {
+    return {
+      ok: false,
+      status: 504,
+      detail: err?.name === 'AbortError' ? 'Zaman aşımı' : String(err).slice(0, 200),
+      retryable: false
     }
   } finally {
     clearTimeout(timer)
   }
+}
+
+async function callGemini(env, prompt) {
+  // Elde çalıştığı bilinen model varsa önce onu dene
+  const candidates = []
+  if (cachedWorkingModel) candidates.push(cachedWorkingModel)
+  if (env.GEMINI_MODEL) candidates.push(env.GEMINI_MODEL)
+  MODEL_CANDIDATES.forEach((m) => candidates.push(m))
+
+  const tried = new Set()
+  let lastFailure = null
+
+  for (const model of candidates) {
+    if (tried.has(model)) continue
+    tried.add(model)
+
+    const outcome = await tryModel(env, model, prompt)
+    if (outcome.ok) {
+      cachedWorkingModel = model
+      return { ...outcome, model }
+    }
+
+    lastFailure = { ...outcome, model }
+    if (!outcome.retryable) break
+
+    // Bu model kapanmışsa önbelleği temizle ki bir dahakine boşuna denenmesin
+    if (cachedWorkingModel === model) cachedWorkingModel = null
+  }
+
+  return lastFailure || { ok: false, status: 502, detail: 'Model bulunamadı' }
+}
+
+/** Tanılama: hangi modellerin kullanılabilir olduğunu listeler */
+async function listModels(env) {
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models?key=${env.GEMINI_API_KEY}&pageSize=100`
+  )
+  if (!res.ok) {
+    return { ok: false, detail: (await res.text()).slice(0, 400) }
+  }
+  const data = await res.json()
+  const usable = (data.models || [])
+    .filter((m) => (m.supportedGenerationMethods || []).includes('generateContent'))
+    .map((m) => m.name.replace('models/', ''))
+  return { ok: true, models: usable }
 }
 
 export default {
@@ -155,12 +223,22 @@ export default {
       return new Response(null, { status: 204, headers: cors })
     }
 
-    if (request.method !== 'POST') {
-      return json({ error: 'Sadece POST destekleniyor' }, 405, cors)
-    }
-
     if (!env.GEMINI_API_KEY) {
       return json({ error: 'Sunucu yapılandırılmamış' }, 503, cors)
+    }
+
+    // Tanılama: tarayıcıdan .../?debug=models açılırsa kullanılabilir modelleri listeler
+    if (request.method === 'GET') {
+      const url = new URL(request.url)
+      if (url.searchParams.get('debug') === 'models') {
+        const outcome = await listModels(env)
+        return json(outcome, outcome.ok ? 200 : 502, cors)
+      }
+      return json({ status: 'calisiyor', activeModel: cachedWorkingModel || '(henuz belirlenmedi)' }, 200, cors)
+    }
+
+    if (request.method !== 'POST') {
+      return json({ error: 'Sadece POST destekleniyor' }, 405, cors)
     }
 
     const ip = request.headers.get('CF-Connecting-IP') || 'bilinmeyen'
@@ -188,10 +266,14 @@ export default {
 
     const outcome = await callGemini(env, prompt)
     if (!outcome.ok) {
-      return json({ error: 'Analiz alınamadı', detail: outcome.detail }, outcome.status || 502, cors)
+      return json(
+        { error: 'Analiz alınamadı', model: outcome.model, detail: outcome.detail },
+        outcome.status || 502,
+        cors
+      )
     }
 
-    return json({ result: outcome.result }, 200, {
+    return json({ result: outcome.result, model: outcome.model }, 200, {
       ...cors,
       'Cache-Control': 'no-store'
     })
