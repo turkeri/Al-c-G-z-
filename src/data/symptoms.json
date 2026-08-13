@@ -1071,7 +1071,7 @@
     "id": "motor-tikirti",
     "title": "Motordan tıkırtı / metalik ses geliyor",
     "category": "Sesler",
-    "keywords": ["motordan tikirti", "metalik ses", "motor sesi degisti", "tik tik sesi motor", "zincir sesi", "triger sesi", "sogukta ses geliyor"],
+    "keywords": ["motordan tikirti", "metalik tikirti", "metalik ses", "tikirti sesi", "motor tikirdiyor", "sogukta tikirti", "motor sesi degisti", "tik tik sesi motor", "zincir sesi", "zincir sesi geliyor", "triger sesi", "sogukta ses geliyor", "sogukta metalik ses"],
     "causes": [
       {
         "cause": "Triger zinciri / gerdirici aşınmış",
