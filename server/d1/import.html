@@ -59,6 +59,9 @@
       <label for="revision">Revizyon numarası</label>
       <input id="revision" type="number" min="1" value="1" />
 
+      <label for="file">Veri dosyası <span style="font-weight:400">(otomatik bulunamazsa seç)</span></label>
+      <input id="file" type="file" accept="application/json,.json" />
+
       <button id="start">Veriyi Yükle</button>
 
       <div class="bar"><span id="bar"></span></div>
@@ -80,6 +83,47 @@
         logBox.scrollTop = logBox.scrollHeight
       }
 
+      /**
+       * Veri dosyasını bulur.
+       *
+       * Önce bilinen göreli yollar denenir; önizleme sunucusunun kökü projeye
+       * göre değişebildiği için tek bir yola güvenilmez. Hiçbiri tutmazsa
+       * kullanıcının seçtiği dosya kullanılır.
+       */
+      async function loadVehicles() {
+        const picked = $('file').files?.[0]
+        if (picked) {
+          log('Seçilen dosya okunuyor: ' + picked.name)
+          return JSON.parse(await picked.text())
+        }
+
+        const candidates = [
+          '../../src/data/vehicles.json',
+          '/src/data/vehicles.json',
+          'src/data/vehicles.json',
+          '../src/data/vehicles.json'
+        ]
+
+        for (const path of candidates) {
+          try {
+            const res = await fetch(path)
+            if (!res.ok) continue
+            const data = await res.json()
+            if (Array.isArray(data) && data.length) {
+              log('Veri dosyası bulundu: ' + path)
+              return data
+            }
+          } catch {
+            // sıradaki yola geç
+          }
+        }
+
+        throw new Error(
+          'vehicles.json otomatik bulunamadı. Yukarıdaki "Veri dosyası" alanından ' +
+            'src/data/vehicles.json dosyasını elle seç ve tekrar dene.'
+        )
+      }
+
       $('start').addEventListener('click', async () => {
         const base = $('url').value.trim().replace(/\/+$/, '')
         const token = $('token').value.trim()
@@ -94,10 +138,7 @@
         logBox.textContent = ''
 
         try {
-          log('Veri dosyası okunuyor...')
-          const response = await fetch('../../src/data/vehicles.json')
-          if (!response.ok) throw new Error('vehicles.json okunamadı (HTTP ' + response.status + ')')
-          const vehicles = await response.json()
+          const vehicles = await loadVehicles()
           log(vehicles.length + ' kayıt bulundu.')
 
           const total = Math.ceil(vehicles.length / BATCH)

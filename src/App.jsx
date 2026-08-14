@@ -29,7 +29,7 @@ export default function App() {
   const [splashDone, setSplashDone] = useState(false)
   const handleSplashDone = useCallback(() => setSplashDone(true), [])
   // Veri deposu güncellenince ekranlar yeniden çizilsin.
-  const [, setDataVersion] = useState(0)
+  const [dataVersion, setDataVersion] = useState(0)
 
   useEffect(() => {
     const unsubscribe = subscribeDataset(() => setDataVersion((v) => v + 1))
@@ -43,7 +43,10 @@ export default function App() {
     <div className="app-shell">
       {!splashDone && <SplashScreen onDone={handleSplashDone} />}
       <div className="app-content">
-        <div className="route-transition" key={location.pathname}>
+        {/* Anahtara veri sürümü de girer: sayfalar listeleri useMemo ile bir kez
+            hesapladığı için, sunucudan yeni veri geldiğinde yeniden kurulmaları
+            gerekir. Veri en fazla açılışta bir kez değişir, maliyeti yok. */}
+        <div className="route-transition" key={location.pathname + ':' + dataVersion}>
           <Routes location={location}>
             <Route path="/" element={<HomePage />} />
 
