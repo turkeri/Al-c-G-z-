@@ -24,12 +24,13 @@ export function getPaintChecks() {
   return readStore().sort((a, b) => b.createdAt - a.createdAt)
 }
 
-export function savePaintCheck({ vehicleLabel, results }) {
+export function savePaintCheck({ vehicleLabel, results, summary = null }) {
   const list = readStore()
   const record = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     vehicleLabel,
     results,
+    summary,
     createdAt: Date.now()
   }
   const saved = writeStore([...list, record])

@@ -4,16 +4,34 @@ import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import EmptyState from '../components/EmptyState'
 import Icon from '../components/icons/Icon'
+import HeadlightLoader from '../components/HeadlightLoader'
 import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
 import { PANELS, MIN_PANELS_FOR_ANALYSIS, analyzePanelPhoto, comparePanels } from '../services/paintDetectionService'
 import { getPaintChecks, savePaintCheck, removePaintCheck } from '../services/paintCheckStorageService'
 import { updateSession } from '../services/inspectionSessionService'
 
 const VERDICT_LABEL = {
-  orijinal: { label: 'Muhtemelen orijinal', tone: 'excellent' },
-  incele: { label: 'Yakından incele', tone: 'danger' },
-  belirsiz: { label: 'Belirsiz (ışık farkı)', tone: 'warning' }
+  orijinal: { label: 'Uyumlu', tone: 'excellent' },
+  supheli: { label: 'Şüpheli', tone: 'warning' },
+  'guclu-suphe': { label: 'Güçlü şüphe', tone: 'danger' },
+  yetersiz: { label: 'Ölçülemedi', tone: 'warning' }
 }
+
+/**
+ * Çekim protokolü.
+ *
+ * Bu ekranın doğruluğunu belirleyen asıl şey algoritma değil, fotoğrafların
+ * nasıl çekildiğidir. Işık farkı, boya farkından büyüktür; kullanıcıya ışığı
+ * sabitletmek, motoru iyileştirmekten daha fazla kazandırır.
+ */
+const PROTOCOL = [
+  'Aracı gölgeye çek veya bulutlu havada çek. Doğrudan güneş ışığı ölçümü bozar.',
+  'Flaşı kapat. Telefonun HDR ayarı varsa onu da kapat.',
+  'Her paneli aynı mesafeden çek (yaklaşık yarım metre) ve panel kareyi doldursun.',
+  'Panele mümkün olduğunca dik dur; yandan açı yansımayı artırır.',
+  'Fitil, kulp, cam ve arka planı olabildiğince çerçeve dışında tut.',
+  'Bütün panelleri arka arkaya, aynı ışıkta çek. Yarısını sabah yarısını akşam çekme.'
+]
 
 export default function PaintCheckPage() {
   const location = useLocation()
@@ -23,24 +41,27 @@ export default function PaintCheckPage() {
     formData ? `${formData.brand} ${formData.model} ${formData.year}` : ''
   )
   const [panelPhotos, setPanelPhotos] = useState({})
-  const [results, setResults] = useState(null)
+  const [report, setReport] = useState(null)
   const [processing, setProcessing] = useState('')
+  const [analyzing, setAnalyzing] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
+  const [showDetails, setShowDetails] = useState(false)
   const [savedReports, setSavedReports] = useState(() => getPaintChecks())
 
   const capturedCount = Object.keys(panelPhotos).length
-  const canAnalyze = capturedCount >= MIN_PANELS_FOR_ANALYSIS
+  const usableCount = Object.values(panelPhotos).filter((p) => p.signature.quality.usable).length
+  const canAnalyze = usableCount >= MIN_PANELS_FOR_ANALYSIS
 
-  async function handlePanelFile(panelName, file) {
+  async function handlePanelFile(panelId, file) {
     if (!file) return
-    setProcessing(panelName)
+    setProcessing(panelId)
     try {
       const img = await loadImageFromFile(file)
       const signature = analyzePanelPhoto(img)
       const previewCanvas = drawToCanvas(img, 400)
       const dataUrl = canvasToJpeg(previewCanvas)
-      setPanelPhotos((prev) => ({ ...prev, [panelName]: { dataUrl, signature } }))
-      setResults(null)
+      setPanelPhotos((prev) => ({ ...prev, [panelId]: { dataUrl, signature } }))
+      setReport(null)
     } catch (err) {
       console.error('Panel fotoğrafı işlenemedi:', err)
     } finally {
@@ -48,44 +69,49 @@ export default function PaintCheckPage() {
     }
   }
 
-  function handleRemovePanel(panelName) {
+  function handleRemovePanel(panelId) {
     setPanelPhotos((prev) => {
       const next = { ...prev }
-      delete next[panelName]
+      delete next[panelId]
       return next
     })
-    setResults(null)
+    setReport(null)
   }
 
   function handleAnalyze() {
-    const panels = Object.entries(panelPhotos).map(([name, data]) => ({
-      name,
-      id: name,
-      dataUrl: data.dataUrl,
-      signature: data.signature
-    }))
-    setResults(comparePanels(panels))
-    setSaveMessage('')
+    setAnalyzing(true)
+    // Ölçüm senkron çalışıyor; far göstergesinin görünmesi için bir kare beklenir.
+    setTimeout(() => {
+      const panels = Object.entries(panelPhotos).map(([id, data]) => {
+        const def = PANELS.find((p) => p.id === id)
+        return { id, name: def?.name || id, dataUrl: data.dataUrl, signature: data.signature }
+      })
+      setReport(comparePanels(panels))
+      setAnalyzing(false)
+      setSaveMessage('')
+    }, 60)
   }
 
   function handleSaveReport() {
-    if (!results) return
+    if (!report) return
     const { saved } = savePaintCheck({
       vehicleLabel: vehicleLabel.trim() || 'İsimsiz araç',
-      results
+      results: report.panels,
+      summary: report.summary
     })
     if (!saved) {
       setSaveMessage('Kaydedilemedi — depolama alanı dolu olabilir.')
       return
     }
-    // Yerinde kontrol akışında bu adım tamamlandı olarak görünsün.
-    const flagged = results.filter((r) => r.verdict === 'incele').length
     updateSession({
       paint: {
-        summary: results.length + ' panel incelendi, ' + flagged + ' panel şüpheli'
+        summary:
+          report.summary.measuredCount +
+          ' panel ölçüldü, ' +
+          report.summary.flaggedCount +
+          ' şüpheli'
       }
     })
-
     setSaveMessage('Rapor kaydedildi.')
     setSavedReports(getPaintChecks())
   }
@@ -94,29 +120,34 @@ export default function PaintCheckPage() {
     setSavedReports(removePaintCheck(id))
   }
 
-  const flaggedCount = useMemo(
-    () => (results ? results.filter((r) => r.verdict === 'incele').length : 0),
-    [results]
-  )
+  const sortedPanels = useMemo(() => {
+    if (!report) return []
+    const rank = { 'guclu-suphe': 0, supheli: 1, yetersiz: 2, orijinal: 3 }
+    return [...report.panels].sort(
+      (a, b) => rank[a.verdict] - rank[b.verdict] || b.evidence - a.evidence
+    )
+  }, [report])
 
   return (
     <>
       <Header
         title="Boya / Değişen Kontrolü"
-        subtitle="Panel panel fotoğraf çek, sistem birbirleriyle karşılaştırsın."
+        subtitle="Panelleri fotoğrafla, sistem renk ve dokuyu ölçüp kıyaslasın."
         showBack
       />
       <PageContainer>
         <section className="result-card">
-          <h3>Nasıl çalışır</h3>
-          <p className="market-disclaimer" style={{ marginTop: 0, fontSize: '0.78rem' }}>
-            Aşağıdaki panellerden en az {MIN_PANELS_FOR_ANALYSIS} tanesinin fotoğrafını çek — mümkünse hepsini
-            aynı gün, benzer ışıkta ve panele yakından çek. Sistem panellerin renk tonunu ve yüzey dokusunu
-            birbiriyle kıyaslayıp diğerlerinden belirgin şekilde farklı olanları işaretler. Bu, boya kalınlığı
-            ölçüm cihazının yerini TUTMAZ; fiziksel ekspertizde hangi panellere daha dikkatli bakman gerektiğini
-            gösteren kaba, kısmi bir ön tahmindir.
+          <h3>Doğru Sonuç İçin Çekim Kuralları</h3>
+          <p className="market-disclaimer" style={{ marginTop: 0 }}>
+            Bu ölçümün doğruluğunu en çok belirleyen şey fotoğrafların nasıl çekildiğidir.
+            Aşağıdakilere uyarsan sonuç ciddi biçimde güvenilir olur.
           </p>
-          <label>
+          <ol className="protocol-list">
+            {PROTOCOL.map((rule) => (
+              <li key={rule}>{rule}</li>
+            ))}
+          </ol>
+          <label style={{ marginTop: 14 }}>
             Araç
             <input
               type="text"
@@ -129,22 +160,33 @@ export default function PaintCheckPage() {
         </section>
 
         <section className="result-card">
-          <h3>
-            Panel Fotoğrafları ({capturedCount}/{PANELS.length})
-          </h3>
+          <div className="market-row">
+            <h3 style={{ margin: 0 }}>Panel Fotoğrafları</h3>
+            <span className="market-label tone-normal">
+              {capturedCount}/{PANELS.length}
+            </span>
+          </div>
+          {capturedCount > usableCount && (
+            <p className="market-disclaimer" style={{ color: 'var(--color-warning)', fontWeight: 600 }}>
+              {capturedCount - usableCount} fotoğraf ölçüme uygun değil (bulanık ya da parlama
+              baskın). Kırmızı çerçeveli olanları tekrar çek.
+            </p>
+          )}
+
           <div className="panel-grid">
             {PANELS.map((panel) => {
-              const captured = panelPhotos[panel]
+              const captured = panelPhotos[panel.id]
+              const bad = captured && !captured.signature.quality.usable
               return (
-                <div className="panel-slot" key={panel}>
+                <div className="panel-slot" key={panel.id}>
                   {captured ? (
-                    <div className="panel-slot-photo">
-                      <img src={captured.dataUrl} alt={panel} />
+                    <div className={'panel-slot-photo' + (bad ? ' is-bad' : '')}>
+                      <img src={captured.dataUrl} alt={panel.name} />
                       <button
                         type="button"
                         className="photo-thumb-remove"
-                        onClick={() => handleRemovePanel(panel)}
-                        aria-label={`${panel} fotoğrafını kaldır`}
+                        onClick={() => handleRemovePanel(panel.id)}
+                        aria-label={`${panel.name} fotoğrafını kaldır`}
                       >
                         ×
                       </button>
@@ -155,62 +197,170 @@ export default function PaintCheckPage() {
                         type="file"
                         accept="image/*"
                         capture="environment"
-                        onChange={(e) => handlePanelFile(panel, e.target.files?.[0])}
+                        onChange={(e) => handlePanelFile(panel.id, e.target.files?.[0])}
                         style={{ display: 'none' }}
                       />
                       <Icon name="camera" size={20} strokeWidth={1.7} />
-                      <span>{processing === panel ? 'İşleniyor...' : 'Ekle'}</span>
+                      <span>{processing === panel.id ? 'Ölçülüyor...' : 'Ekle'}</span>
                     </label>
                   )}
-                  <p className="panel-slot-label">{panel}</p>
+                  <p className="panel-slot-label">
+                    {panel.name}
+                    {panel.substrate === 'plastik' && <span className="micron-tag">plastik</span>}
+                  </p>
                 </div>
               )
             })}
           </div>
 
+          <p className="market-disclaimer">
+            Simetrik paneller (sol/sağ çamurluk, sol/sağ kapılar) ikili olarak da kıyaslanır ve en
+            güvenilir sinyali onlar verir — mümkünse ikizleri birlikte çek.
+          </p>
+
           <button
             type="button"
             className="primary-button"
-            disabled={!canAnalyze}
+            disabled={!canAnalyze || analyzing}
             onClick={handleAnalyze}
-            style={{ opacity: canAnalyze ? 1 : 0.5 }}
+            style={{ opacity: canAnalyze && !analyzing ? 1 : 0.5 }}
           >
-            {canAnalyze ? 'Analiz Et' : `En az ${MIN_PANELS_FOR_ANALYSIS} panel fotoğrafı ekle`}
+            {canAnalyze
+              ? 'Ölç ve Karşılaştır'
+              : `Ölçüme uygun en az ${MIN_PANELS_FOR_ANALYSIS} panel gerekiyor (${usableCount} hazır)`}
           </button>
         </section>
 
-        {results && (
+        {analyzing && (
           <section className="result-card">
-            <div className="market-row">
-              <h3 style={{ margin: 0 }}>Analiz Sonucu</h3>
-              <span className={'market-label tone-' + (flaggedCount > 0 ? 'pahali' : 'ucuz')}>
-                {flaggedCount > 0 ? `${flaggedCount} panel incelemeli` : 'Belirgin fark yok'}
-              </span>
-            </div>
-            <div className="panel-results">
-              {results.map((panel) => {
-                const verdictMeta = VERDICT_LABEL[panel.verdict]
-                return (
-                  <div className="panel-result-item" key={panel.id}>
-                    <img src={panel.dataUrl} alt={panel.name} />
-                    <div className="panel-result-text">
-                      <div className="panel-result-head">
-                        <span>{panel.name}</span>
-                        <span className={'severity-badge tone-' + verdictMeta.tone}>{verdictMeta.label}</span>
-                      </div>
-                      {panel.reasons.length > 0 && (
-                        <p>{panel.reasons.join(', ')}</p>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-            <button type="button" className="favorite-button" onClick={handleSaveReport} style={{ marginTop: 12 }}>
-              Raporu Kaydet
-            </button>
-            {saveMessage && <p className="market-disclaimer">{saveMessage}</p>}
+            <HeadlightLoader label="Paneller ölçülüyor..." />
           </section>
+        )}
+
+        {report && (
+          <>
+            <section className={'verdict-card tone-' + report.summary.tone}>
+              <span className="verdict-card-label">{report.summary.label}</span>
+              <p>{report.summary.text}</p>
+            </section>
+
+            {report.summary.confidence > 0 && (
+              <section className="result-card">
+                <h3>Ölçüm Kalitesi</h3>
+                <div className="market-facts">
+                  <div>
+                    <span>Ölçülen panel</span>
+                    <strong>{report.summary.measuredCount}</strong>
+                  </div>
+                  <div>
+                    <span>Referans küme</span>
+                    <strong>{report.summary.consensusSize}</strong>
+                  </div>
+                  <div>
+                    <span>Güven</span>
+                    <strong>%{report.summary.confidence}</strong>
+                  </div>
+                </div>
+                {!report.summary.lightingConsistent && (
+                  <p className="market-disclaimer" style={{ color: 'var(--color-warning)', fontWeight: 600 }}>
+                    Fotoğraflar arasında belirgin ışık farkı var. Sonuç yine de hesaplandı ama
+                    güveni düşük; hepsini aynı ortamda tekrar çekmen sonucu ciddi biçimde
+                    iyileştirir.
+                  </p>
+                )}
+                {report.summary.neutralColour && (
+                  <p className="market-disclaimer">
+                    Araç rengi nötr (beyaz/gri/siyah). Bu renklerde ton bilgisi zayıftır; karar
+                    ağırlıklı olarak doku ve panel içi tutarlılığa dayanır.
+                  </p>
+                )}
+              </section>
+            )}
+
+            <section className="result-card">
+              <div className="market-row">
+                <h3 style={{ margin: 0 }}>Panel Sonuçları</h3>
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => setShowDetails((prev) => !prev)}
+                >
+                  {showDetails ? 'Sayıları gizle' : 'Ölçüm sayılarını göster'}
+                </button>
+              </div>
+
+              <div className="panel-results">
+                {sortedPanels.map((panel) => {
+                  const meta = VERDICT_LABEL[panel.verdict]
+                  return (
+                    <div className="panel-result-item" key={panel.id}>
+                      <img src={panel.dataUrl} alt={panel.name} />
+                      <div className="panel-result-text">
+                        <div className="panel-result-head">
+                          <span>{panel.name}</span>
+                          <span className={'severity-badge tone-' + meta.tone}>{meta.label}</span>
+                        </div>
+
+                        {panel.verdict !== 'yetersiz' && (
+                          <div className="evidence-bar">
+                            <span
+                              className={'evidence-fill tone-' + meta.tone}
+                              style={{ width: Math.max(3, panel.evidence) + '%' }}
+                            />
+                          </div>
+                        )}
+
+                        <p>{panel.reasons.join('. ')}.</p>
+
+                        {showDetails && panel.metrics && (
+                          <div className="metric-grid">
+                            <span>
+                              Renk sapması <strong>{panel.metrics.chromatic}</strong>
+                            </span>
+                            <span>
+                              Işık farkı <strong>{panel.metrics.lightness}</strong>
+                            </span>
+                            <span>
+                              Doku oranı <strong>{panel.metrics.textureRatio}</strong>
+                            </span>
+                            <span>
+                              Panel içi dağılım <strong>{panel.metrics.internalSpread}</strong>
+                            </span>
+                            {panel.metrics.pairDelta !== null && (
+                              <span>
+                                İkizinden fark <strong>{panel.metrics.pairDelta}</strong>
+                              </span>
+                            )}
+                            <span>
+                              Güven <strong>%{panel.confidence}</strong>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+
+            <p className="market-disclaimer">
+              Bu ölçüm boya kalınlığı cihazının yerini tutmaz. Renk ve doku farkı, boyanın
+              kalınlığını değil yalnızca panellerin birbirinden ayrışıp ayrışmadığını gösterir.
+              İyi yapılmış bir boya bu yöntemle görünmeyebilir; bu yüzden &quot;fark bulunamadı&quot;
+              sonucu boyasızlık garantisi değildir. Şüpheli çıkan paneller için ekspertizde mikron
+              ölçümü iste.
+            </p>
+
+            <div className="button-row">
+              <button type="button" className="primary-button" onClick={handleSaveReport}>
+                Raporu Kaydet
+              </button>
+              <a className="favorite-button" href="#/ekspertiz-raporu">
+                Mikron Değerlerini Gir
+              </a>
+            </div>
+            {saveMessage && <p className="market-disclaimer">{saveMessage}</p>}
+          </>
         )}
 
         <h3 className="section-title">Kayıtlı Raporlar</h3>
@@ -218,24 +368,26 @@ export default function PaintCheckPage() {
           <EmptyState
             icon="clipboard"
             title="Henüz kayıtlı rapor yok"
-            description="Analiz ettikten sonra raporu kaydedersen burada listelenir."
+            description="Ölçüm yaptıktan sonra raporu kaydedersen burada listelenir."
           />
         ) : (
           <div className="favorites-list">
-            {savedReports.map((report) => {
-              const flagged = report.results.filter((r) => r.verdict === 'incele').length
+            {savedReports.map((saved) => {
+              const flagged = saved.results.filter(
+                (r) => r.verdict === 'supheli' || r.verdict === 'guclu-suphe'
+              ).length
               return (
-                <div className="expertise-note-card" key={report.id}>
+                <div className="expertise-note-card" key={saved.id}>
                   <div className="expertise-note-head">
                     <div>
-                      <h3>{report.vehicleLabel}</h3>
+                      <h3>{saved.vehicleLabel}</h3>
                       <span className={'severity-badge tone-' + (flagged > 0 ? 'danger' : 'excellent')}>
-                        {flagged > 0 ? `${flagged} panel incelemeli` : 'Belirgin fark yok'}
+                        {flagged > 0 ? `${flagged} panel şüpheli` : 'Belirgin fark yok'}
                       </span>
                     </div>
                     <button
                       className="favorite-item-remove"
-                      onClick={() => handleRemoveReport(report.id)}
+                      onClick={() => handleRemoveReport(saved.id)}
                       aria-label="Raporu sil"
                       type="button"
                     >
@@ -243,7 +395,7 @@ export default function PaintCheckPage() {
                     </button>
                   </div>
                   <p className="expertise-note-items">
-                    {report.results.map((r) => r.name).join(', ')}
+                    {saved.results.map((r) => r.name).join(', ')}
                   </p>
                 </div>
               )
