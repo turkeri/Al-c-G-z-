@@ -1,7 +1,39 @@
 import vehicles from '../data/vehicles.json'
+import { archetypeFor } from '../data/problemArchetypes'
 
 export function getAllVehicles() {
   return vehicles
+}
+
+/**
+ * Bir kronik arıza kaydını arketip bilgisiyle zenginleştirir.
+ *
+ * Veritabanındaki kayıt "ne olduğunu" söyler (başlık, risk, çözüm, maliyet);
+ * arketip ise "nasıl hissedilir" (belirtiler), "hangi kod düşer", "kaç
+ * kilometrede çıkar" ve "bu araçtan vazgeçirir mi" sorularını cevaplar.
+ * İkisi çalışma anında birleştirilir, böylece 740 kaydın tamamı ek alan
+ * kazanır.
+ */
+export function enrichProblem(problem) {
+  const archetype = archetypeFor(problem.title)
+  if (!archetype) return { ...problem, symptoms: [], obdCodes: [] }
+  return {
+    ...problem,
+    symptoms: archetype.symptoms,
+    obdCodes: archetype.obdCodes,
+    typicalKm: problem.checkKm || archetype.typicalKm,
+    dealbreaker: archetype.dealbreaker,
+    laborHours: archetype.laborHours,
+    partNote: archetype.partNote,
+    archetypeId: archetype.id
+  }
+}
+
+/** Motorun kronik arızalarını zenginleştirilmiş biçimde döner. */
+export function getEnrichedProblems(brand, model, engineName) {
+  const engine = getEngineData(brand, model, engineName)
+  if (!engine) return []
+  return engine.knownProblems.map(enrichProblem)
 }
 
 export function getBrands() {
@@ -47,6 +79,10 @@ export function getDatabaseStats() {
   return {
     brandCount: getBrands().length,
     modelCount: vehicles.length,
-    engineCount: vehicles.reduce((sum, v) => sum + v.engines.length, 0)
+    engineCount: vehicles.reduce((sum, v) => sum + v.engines.length, 0),
+    problemCount: vehicles.reduce(
+      (sum, v) => sum + v.engines.reduce((s, e) => s + e.knownProblems.length, 0),
+      0
+    )
   }
 }

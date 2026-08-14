@@ -1,4 +1,5 @@
 import symptoms from '../data/symptoms.json'
+import { archetypeFor } from '../data/problemArchetypes'
 import { resolveEngineData } from './analysisService'
 
 const TR_MAP = { ı: 'i', İ: 'i', ş: 's', Ş: 's', ğ: 'g', Ğ: 'g', ü: 'u', Ü: 'u', ö: 'o', Ö: 'o', ç: 'c', Ç: 'c' }
@@ -102,6 +103,63 @@ function findVehicleLinks(symptom, engineData) {
   })
 }
 
+/**
+ * Şikayeti doğrudan bu motorun kronik arızalarıyla eşleştirir.
+ *
+ * Genel semptom bankası "bu belirti ne olabilir" sorusunu cevaplar; burası ise
+ * "bu belirti SENİN motorunun bilinen sorunlarından hangisi olabilir" sorusunu.
+ * Belirti listeleri arıza arketiplerinden gelir, böylece veritabanındaki 740
+ * kaydın tamamı teşhiste kullanılabilir hale gelir.
+ */
+function matchVehicleProblems(queryNormalized, queryTokens, engineData) {
+  if (!engineData?.knownProblems?.length) return []
+
+  const results = []
+
+  engineData.knownProblems.forEach((problem) => {
+    const archetype = archetypeFor(problem.title)
+    if (!archetype || archetype.symptoms.length === 0) return
+
+    let score = 0
+    const matchedSymptoms = []
+
+    archetype.symptoms.forEach((symptomText) => {
+      const normalized = normalizeText(symptomText)
+      if (normalized && queryNormalized.includes(normalized)) {
+        score += WEIGHT_PHRASE
+        matchedSymptoms.push(symptomText)
+        return
+      }
+      const tokens = tokenize(normalized)
+      const hits = tokens.filter(
+        (t) => queryTokens.includes(t) || queryTokens.some((q) => prefixOf(q) === prefixOf(t))
+      )
+      // Tek kelimelik çakışma ("motor", "ses") yanıltıcıdır; en az iki kelime aranır.
+      if (hits.length >= 2) {
+        score += hits.length * WEIGHT_TOKEN_EXACT
+        matchedSymptoms.push(symptomText)
+      }
+    })
+
+    if (score > 0) {
+      results.push({
+        problem: {
+          ...problem,
+          symptoms: archetype.symptoms,
+          obdCodes: archetype.obdCodes,
+          typicalKm: problem.checkKm || archetype.typicalKm,
+          dealbreaker: archetype.dealbreaker,
+          partNote: archetype.partNote
+        },
+        score,
+        matchedSymptoms
+      })
+    }
+  })
+
+  return results.sort((a, b) => b.score - a.score).slice(0, 4)
+}
+
 const URGENCY_RANK = { Yüksek: 3, Orta: 2, Düşük: 1 }
 
 function highestUrgency(causes) {
@@ -143,6 +201,9 @@ export function diagnose(complaintText, formData = null, limit = 5) {
 
   return {
     matches,
+    vehicleProblemMatches: engineData
+      ? matchVehicleProblems(queryNormalized, queryTokens, engineData)
+      : [],
     queryTokens,
     hasVehicleContext: !!engineData,
     engineData

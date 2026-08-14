@@ -283,38 +283,36 @@ export default function AnalysisResultPage() {
           </section>
         )}
 
-        <section className="action-links">
-          <Link
-            className="action-link"
-            to="/kredi-hesapla"
-            state={{ price: formData.price }}
-          >
-            Kredi Hesapla
-          </Link>
-          <Link
-            className="action-link"
-            to="/ekspertiz-notlari"
-            state={{ formData }}
-          >
-            Ekspertiz Notu Ekle
-          </Link>
-          <button className="action-link" onClick={handleFindNearbyExpertise} type="button">
-            Yakında Ekspertiz Bul
-          </button>
-          <Link
-            className="action-link"
-            to="/kronik-sorunlar"
-            state={{ brand: formData.brand, model: formData.model }}
-          >
-            Deneyim Notu Ekle
-          </Link>
-          <Link
-            className="action-link"
-            to="/boya-degisen"
-            state={{ formData }}
-          >
-            Boya / Değişen Kontrolü
-          </Link>
+        {/* Bu araçla ilgili devam yolları; ayrı menülerde aramak yerine
+            kararın verildiği yerde toplanır. */}
+        <section className="result-card">
+          <h3>Bu Araçla Devam Et</h3>
+          <div className="action-links">
+            <Link className="action-link" to="/maliyet" state={{ formData }}>
+              Yıllık Maliyeti Hesapla
+            </Link>
+            <Link className="action-link" to="/tramer" state={{ price: formData.price }}>
+              Hasar ve Değer Kaybı
+            </Link>
+            <Link className="action-link" to="/satici-sorulari" state={{ formData }}>
+              Satıcıya Sorulacaklar
+            </Link>
+            <Link className="action-link" to="/yerinde-kontrol">
+              Yerinde Kontrole Başla
+            </Link>
+            <Link className="action-link" to="/kredi-hesapla" state={{ price: formData.price }}>
+              Kredi Hesapla
+            </Link>
+            <Link className="action-link" to="/boya-degisen" state={{ formData }}>
+              Boya / Değişen Kontrolü
+            </Link>
+            <Link className="action-link" to="/ekspertiz-notlari" state={{ formData }}>
+              Ekspertiz Notu Ekle
+            </Link>
+            <button className="action-link" onClick={handleFindNearbyExpertise} type="button">
+              Yakında Ekspertiz Bul
+            </button>
+          </div>
         </section>
       </PageContainer>
     </>

@@ -7,6 +7,7 @@ import Icon from '../components/icons/Icon'
 import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
 import { PANELS, MIN_PANELS_FOR_ANALYSIS, analyzePanelPhoto, comparePanels } from '../services/paintDetectionService'
 import { getPaintChecks, savePaintCheck, removePaintCheck } from '../services/paintCheckStorageService'
+import { updateSession } from '../services/inspectionSessionService'
 
 const VERDICT_LABEL = {
   orijinal: { label: 'Muhtemelen orijinal', tone: 'excellent' },
@@ -77,6 +78,14 @@ export default function PaintCheckPage() {
       setSaveMessage('Kaydedilemedi — depolama alanı dolu olabilir.')
       return
     }
+    // Yerinde kontrol akışında bu adım tamamlandı olarak görünsün.
+    const flagged = results.filter((r) => r.verdict === 'incele').length
+    updateSession({
+      paint: {
+        summary: results.length + ' panel incelendi, ' + flagged + ' panel şüpheli'
+      }
+    })
+
     setSaveMessage('Rapor kaydedildi.')
     setSavedReports(getPaintChecks())
   }

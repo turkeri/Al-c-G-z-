@@ -50,10 +50,26 @@ npm run lint      # ESLint kontrolü
 
 Uygulama, sunucu taraflı yönlendirme (URL rewrite) gerektirmeyen `HashRouter` kullanır (`/#/analiz` gibi), böylece statik/dosya tabanlı önizlemelerde ve ileride Capacitor paketlemesinde sayfa geçişleri kesintisiz çalışır.
 
+## Menü Yapısı
+
+Menü, özellik listesi değil **satın alma yolculuğunun aşamaları** üzerine kuruludur. Alt menüde beş sekme vardır:
+
+| Sekme | Ne zaman kullanılır | İçindekiler |
+| --- | --- | --- |
+| **Ana Ekran** | Giriş | En sık başlatılan sekiz işin kare kartları + veritabanı özeti |
+| **Analiz** | İlanı gördüm | Analiz formu → sonuç ekranı; maliyet, hasar, satıcı soruları, kredi bağlantıları sonucun altında |
+| **Yerinde** | Aracın başındayım | Tek akış: araç bilgisi → kontrol listesi → mikron → boya → hasar kaydı → satıcı soruları → notlar |
+| **Rehber** | Araştırıyorum | Kronik sorunlar, teşhis, karşılaştırma, arıza kodu sözlüğü, maliyet, güvenli alım |
+| **Garajım** | Biriktirdiklerim | Devam eden kontrol, favoriler, ekspertiz notları, boya kontrolleri |
+
+Kredi hesaplayıcı ve pazarlık gibi ekranlar bilerek ana menüde değildir: ikisi de "analiz ettim, şimdi karar veriyorum" anının parçası olduğu için sonuç ekranının altında durur.
+
+**Yerinde Kontrol tek akıştır** (`src/services/inspectionSessionService.js`). Adımların hepsi aynı araca bağlanır, tamamlananlar işaretlenir ve mikron ekranında bulunan boyalı/değişen paneller değer kaybı hesabına otomatik taşınır. Başka bir araca geçerken "Yeni Araç İçin Sıfırla" ile temizlenir; araç bilgisi değişirse eski bulgular otomatik silinir, çünkü iki aracın bulgusunun karışması en tehlikeli hatadır.
+
 ## Uygulama Modülleri
 
-1. **Ana Ekran** — Araç Analizi, Kronik Sorunlar, Ekspertiz Kontrol Listesi, Favoriler kartları.
-2. **Araç Analiz Formu** — marka, model, model yılı, motor, yakıt tipi, şanzıman, kilometre, ilan fiyatı.
+1. **Ana Ekran** — yan yana ikişerli kare kartlar (Araç Analizi, Yerinde Kontrol, Aracımın Nesi Var, Hasar ve Değer Kaybı, Sahip Olma Maliyeti, Araç Karşılaştır, Kronik Sorunlar, Güvenli Alım).
+2. **Araç Analiz Formu** — marka, model, model yılı, motor, yakıt tipi, şanzıman, kilometre, ilan fiyatı. Kilometre elle yazılmak yerine **bant olarak seçilir** (0-30 bin, 30-60 bin, … 400 bin üzeri; hesapta bandın orta değeri kullanılır, kesin değeri bilen için "Tam km gir" seçeneği vardır). Model yılı listesi **seçilen modelin üretim aralığıyla sınırlıdır** (nesil geçişleri için ±1 yıl tolerans), aralık dışına çıkılırsa uyarı verilir. Yıl ve kilometre birlikte değerlendirilip **yıllık ortalama kilometre yorumu** üretilir: 45.000 km/yıl üzeri ticari kullanım uyarısı, 5.000 km/yıl altı ise "ya garajda durmuş ya da kilometre düşürülmüş" uyarısı (`src/utils/vehicleOptions.js`).
 3. **Araç Veritabanı** (`src/data/vehicles.json`) — **36 marka, 213 model/nesil kaydı, 335 motor varyantı, 740 kronik sorun kaydı.** Türkiye'de en çok ikinci el ilanı bulunan segmentlere odaklanır. Aynı nameplate'in farklı nesilleri ayrı kayıtlar olarak tutulur (örn. **Golf (Mk5/Mk6/Mk7)**, **BMW 3 Serisi (E46/E90/F30/G20)**, **Mercedes C Serisi (W203/W204/W205/W206)**, **Audi A3 (8P/8V/8Y)**, **Clio (2/3/4/5)**, **Corolla (E120/E140/E170/E210)**; **Fiat Albea**, **Tofaş Şahin** gibi 2000 öncesi/bütçe segmenti dahil), çünkü kronik sorunlar ve güvenilirlik nesilden nesile tamamen değişir.
 
    **Sekiz markada derinlemesine kapsam:** Renault (21 model / 48 motor), BMW (24 / 44), Mercedes (18 / 29), Audi (17 / 31), Toyota (15 / 24), Hyundai (14 / 22), Kia (14 / 19), Honda (10 / 14). Bu markalarda nesil bazlı ayrım ve motor koduna özgü gerçek kronik sorunlar işlenmiştir — örneğin BMW **N47 motor arkası triger zinciri**, Audi **EA888 zincir gerdirici ve yağ tüketimi**, Mercedes **M271 zincir / W211 SBC fren ünitesi**, Renault **TCe yağ banyolu triger ve EDC sarsıntısı**, Hyundai/Kia **Theta II GDI yatak arızası ve 7DCT sarsıntısı**, Honda **1.5 VTEC Turbo yakıt-yağ karışması**, Toyota **D-4D enjektör/EGR ve hibrit batarya**.
@@ -83,6 +99,20 @@ Uygulama, sunucu taraflı yönlendirme (URL rewrite) gerektirmeyen `HashRouter` 
 
     Motoru: Türkçe metni normalize eder (büyük/küçük harf, ı/ş/ğ/ü/ö/ç aksanları, noktalama), Türkçe durak kelimelerini ayıklar, çok kelimeli ifade eşleşmesine yüksek ağırlık verir ve ek almış kelimeleri yakalamak için kök-önek eşleştirmesi yapar. Araç seçilirse, o motorun bilinen kronik sorunlarıyla örtüşen arızalar öne çıkarılır ve ayrıca işaretlenir. **Bu bir yapay zeka modeli değil, deterministik bir kural/eşleştirme motorudur** ve kesin teşhis yerine geçmez — arıza kodlarının okutulması ve ustaya gösterilmesi şarttır.
 
+20. **Hasar Kaydı ve Değer Kaybı** (`/tramer`, `src/services/damageService.js`) — kayıtlı hasar (tramer) tutarını, ruhsat kayıt durumunu (kayıt yok / hasar kayıtlı / ağır hasar / pert) ve boyalı-değişen parça adetlerini alıp **tahmini değer kaybı yüzdesi, tutar karşılığı ve hasarsız eşdeğer fiyatı** hesaplar. Parçalar civatalı/kaynaklı ayrımıyla ağırlıklandırılır (kaynaklı parça değişimi taşıyıcı gövdeye müdahaledir, çok daha ağır sayılır) ve aynı gruptaki ikinci-üçüncü parçanın etkisi azalarak eklenir. Çıktıda pazarlıkta kullanılacak gerekçeler ve şasi/airbag/pert gibi durumlar için ayrı uyarılar yer alır. Oranlar piyasa teamülüdür, **bilirkişi raporu değildir**.
+
+21. **Ekspertiz Raporu Okuyucu (mikron)** (`/ekspertiz-raporu`, `src/services/micronService.js`) — ekspertizden çıkan boya kalınlığı ölçümlerini panel panel girersin, her panel için "orijinal / şüpheli / boyalı / macunlu-değişen" yorumu üretilir. İki katmanlı çalışır: mutlak eşikler (60 altı ince, 60-130 fabrika, 130-200 sınırda, 200-350 boyalı, 350 üzeri dolgu) **ve aracın kendi ortalamasına göre göreli karşılaştırma** — fabrika ortalaması 105 olan bir araçta 175 mikron mutlak eşiği geçmese bile işaretlenir. Taşıyıcı paneller (tavan, marşpiyel, arka panel, arka çamurluklar) ayrıca vurgulanır. Sonuç, tek tuşla değer kaybı hesabına aktarılır. Tamponlar plastik olduğu için listede yoktur.
+
+22. **Sahip Olma Maliyeti** (`/maliyet`, `src/services/ownershipCostService.js`) — "bu araç bana yılda ne yakar" sorusunu tek tabloda cevaplar: yakıt (motorun ortalama tüketimi × yıllık km × güncel pompa fiyatı — fiyat ekrandan değiştirilebilir), **MTV** (silindir hacmi + yaş tablosu, elektrikte kW), zorunlu trafik sigortası, kasko (araç değerinin oranı, premium markalarda daha yüksek), periyodik bakım (marka seviyesine göre), lastik ve muayene amortismanı, ve **bilinen arıza risk payı** — o motorun kronik sorunlarının çıkma olasılığıyla çarpılmış beklenen yıllık maliyeti. Aylık ve kilometre başı maliyet de gösterilir. Vergi/sigorta tutarları yaklaşık değerlerdir; kesin MTV için GİB tarifesine bakılmalıdır.
+
+23. **Arıza Kodu Sözlüğü** (`/obd`, `src/data/obd-codes.json`) — cihazdan okunan OBD kodunu yazarsın; anlamı, olası sebepleri, çözüm yolu, tahmini maliyeti ve **araçla yola devam edilip edilemeyeceği** gösterilir. Kelimeyle de aranabilir ("egr", "turbo"). Sözlükte olmayan bir kod girilirse bile kodun yapısından hangi sisteme ait olduğu (P motor, C fren/ABS, B gövde, U haberleşme) ve genel mi üretici tanımlı mı olduğu söylenir.
+
+24. **Güvenli Alım Kontrolü** (`/guvenli-alim`, `src/data/safe-purchase.json`) — aracın mekaniği sağlam olsa bile süreç tuzaklıdır. Evrak/sahiplik (rehin-haciz, vekaletname, şasi numarası eşleşmesi, yurt dışı çıkışlı araç), para (kapora tuzağı, kapora sözleşmesi, hesap sahibi, aşırı ucuz fiyat), kilometre (servis kayıtları, TÜVTÜRK muayene km'si, aşınma uyumu, lastik yaşı) ve görme/test (soğuk çalıştırma, gündüz ışığı, 15 dakikalık test sürüşü, bağımsız ekspertiz) başlıklarında maddeler; her maddede **neden önemli olduğu** yazılıdır. Kritik maddeler ayrı sayılır ve tamamı kapanmadan uyarı verilir.
+
+25. **Satıcıya Sorulacaklar** (`/satici-sorulari`, `src/services/sellerQuestionsService.js`) — yeni veri yazmadan, **mevcut kronik arıza kayıtlarından modele özel soru listesi üretilir**. N47 motorlu bir BMW seçilirse ilk soru "triger zinciri ve gergisi değişti mi, kaç kilometrede yapıldı" olur; DSG'li bir araçta şanzıman yağı/mekatronik sorusu öne çıkar. Kilometre ve yaşa göre bağlamsal sorular (yüksek km'de debriyaj/süspansiyon, 8 yaş üzerinde kauçuk parçalar) ve her araçta sorulacak genel sorular eklenir.
+
+26. **Arıza Arketipleri — veri derinleştirme** (`src/data/problemArchetypes.js`) — veritabanındaki 740 arıza kaydı 137 farklı başlık altında toplanıyor: "DPF tıkanması" 53 ayrı motorda, "EGR valfi tıkanması" 38 motorda geçiyor. Bir arızanın **belirtileri, OBD kodu, hangi kilometrede çıktığı, parça/işçilik maliyeti ve aracı almaktan vazgeçirip vazgeçirmediği** ise motordan motora değişmez. Bu yüzden bu alanlar 740 kayda tek tek yazılmak yerine arketip olarak bir kez tanımlanır ve çalışma anında eşleştirilir. Sonuç: her kayıt yeni sütunlar kazanır ve **teşhis motoru bu belirtiler üzerinden araca özel eşleştirme yapabilir** — "sabah soğukta metalik tıkırtı geliyor" yazan bir N47 sahibine, genel semptom listesinden önce kendi motorunun zincir arızası "Alımdan vazgeçirebilir" damgasıyla gösterilir.
+
 ### Skor Bantları
 
 | Skor | Değerlendirme |
@@ -91,6 +121,10 @@ Uygulama, sunucu taraflı yönlendirme (URL rewrite) gerektirmeyen `HashRouter` 
 | 70-89 | Kontrol ederek değerlendir |
 | 50-69 | Dikkatli incele |
 | 0-49 | Yüksek risk |
+
+## Görsel Kimlik
+
+Açılış ekranında sağ ve sol ön far sırayla **selektör** yapar, ardından ikisi birden güçlü yanar ve uygulama açılır (yaklaşık 3,6 saniye; ekrana dokununca atlanır). Aynı far görseli uygulama genelindeki **yükleniyor göstergesi** olarak da kullanılır: işlem sürerken far yavaştan yanıp söner, tamamlanınca tek seferlik güçlü bir parlama yapar (`src/components/Headlight.jsx`, `SplashScreen.jsx`, `HeadlightLoader.jsx`). `prefers-reduced-motion` açık olan cihazlarda animasyonlar kapatılır.
 
 ## Veri Bakımı
 

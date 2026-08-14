@@ -5,6 +5,7 @@ import PageContainer from '../components/Layout/PageContainer'
 import { GENERAL_INSPECTION_CATEGORIES } from '../utils/constants'
 import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/vehicleService'
 import { addExpertiseNote } from '../services/expertiseNotesService'
+import { updateSession, setSessionVehicle } from '../services/inspectionSessionService'
 
 const STATUS = { OK: 'ok', PROBLEM: 'problem' }
 
@@ -80,6 +81,18 @@ export default function InspectionChecklistPage() {
       notes: `Kontrol listesi: ${allKeys.length} kalemden ${checkedCount} tanesi kontrol edildi, ${okCount} sorunsuz, ${problemItems.length} sorunlu.`,
       photos: []
     })
+
+    // Yerinde kontrol akışının bu adımı tamamlandı olarak işaretlenir.
+    if (brand && model) setSessionVehicle({ brand, model, engine: engineName })
+    updateSession({
+      checklist: {
+        checkedCount,
+        totalCount: allKeys.length,
+        problemCount: problemItems.length,
+        problemItems
+      }
+    })
+
     setSaveMessage(saved ? 'Rapor Ekspertiz Notları\'na kaydedildi.' : 'Kaydedilemedi — depolama alanı dolu olabilir.')
   }
 

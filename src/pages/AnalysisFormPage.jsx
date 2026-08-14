@@ -2,17 +2,26 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
+import ChipSelect from '../components/ChipSelect'
 import { FUEL_TYPES } from '../utils/constants'
 import {
   getBrands,
   getModelsByBrand,
   getEngineNames,
-  getEngineData
+  getEngineData,
+  getVehicleEntry
 } from '../services/vehicleService'
 import { analyzeVehicle } from '../services/analysisService'
 import { parseListingText } from '../services/listingParserService'
-
-const CURRENT_YEAR = new Date().getFullYear()
+import { setSessionVehicle } from '../services/inspectionSessionService'
+import {
+  CURRENT_YEAR,
+  KM_BANDS,
+  bandForKm,
+  yearOptions,
+  isYearOutsideRange,
+  usageNote
+} from '../utils/vehicleOptions'
 
 const EMPTY_FORM = {
   brand: '',
@@ -31,6 +40,7 @@ export default function AnalysisFormPage() {
   const [errors, setErrors] = useState({})
   const [listingText, setListingText] = useState('')
   const [autoFillCount, setAutoFillCount] = useState(null)
+  const [exactKm, setExactKm] = useState(false)
 
   const brands = useMemo(() => getBrands(), [])
   const models = useMemo(() => (form.brand ? getModelsByBrand(form.brand) : []), [form.brand])
@@ -38,6 +48,15 @@ export default function AnalysisFormPage() {
     () => (form.brand && form.model ? getEngineNames(form.brand, form.model) : []),
     [form.brand, form.model]
   )
+
+  const entry = useMemo(
+    () => (form.brand && form.model ? getVehicleEntry(form.brand, form.model) : null),
+    [form.brand, form.model]
+  )
+  const years = useMemo(() => yearOptions(entry?.yearRange), [entry])
+  const selectedKmBand = useMemo(() => bandForKm(form.km), [form.km])
+  const usage = useMemo(() => usageNote(form.year, form.km), [form.year, form.km])
+  const yearWarning = isYearOutsideRange(form.year, entry?.yearRange)
 
   function updateField(field, value) {
     setForm((prev) => {
@@ -111,6 +130,9 @@ export default function AnalysisFormPage() {
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return
     }
+
+    // Yerinde kontrol akışı bu araç üzerinden ilerleyecek.
+    setSessionVehicle(form)
 
     const result = analyzeVehicle(form)
     navigate('/sonuc', { state: { formData: form, result } })
@@ -188,16 +210,25 @@ export default function AnalysisFormPage() {
           <div className="form-row">
             <label>
               Model Yılı
-              <input
+              <select
                 name="year"
                 className={errors.year ? 'invalid' : ''}
-                type="number"
-                inputMode="numeric"
-                placeholder="Örn. 2017"
                 value={form.year}
                 onChange={(e) => updateField('year', e.target.value)}
-              />
+              >
+                <option value="">Seçiniz</option>
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
               {errors.year && <span className="field-error">{errors.year}</span>}
+              {!errors.year && yearWarning && (
+                <span className="field-hint field-hint-warning">
+                  Bu model {entry.yearRange} arasında üretildi. Seçtiğin yılı ilan üzerinden doğrula.
+                </span>
+              )}
             </label>
 
             <label>
@@ -250,9 +281,19 @@ export default function AnalysisFormPage() {
             </label>
           </div>
 
-          <div className="form-row">
-            <label>
-              Kilometre
+          <div className="field-block">
+            <div className="field-block-head">
+              <span className="field-block-title">Kilometre</span>
+              <button
+                type="button"
+                className="link-button"
+                onClick={() => setExactKm((prev) => !prev)}
+              >
+                {exactKm ? 'Bant seç' : 'Tam km gir'}
+              </button>
+            </div>
+
+            {exactKm ? (
               <input
                 name="km"
                 className={errors.km ? 'invalid' : ''}
@@ -262,9 +303,34 @@ export default function AnalysisFormPage() {
                 value={form.km}
                 onChange={(e) => updateField('km', e.target.value)}
               />
-              {errors.km && <span className="field-error">{errors.km}</span>}
-            </label>
+            ) : (
+              <ChipSelect
+                ariaLabel="Kilometre aralığı"
+                options={KM_BANDS.map((band) => ({ id: band.id, label: band.label }))}
+                value={selectedKmBand?.id || ''}
+                onChange={(id) => {
+                  const band = KM_BANDS.find((b) => b.id === id)
+                  if (band) updateField('km', String(band.value))
+                }}
+              />
+            )}
+            {errors.km && <span className="field-error">{errors.km}</span>}
+            {!exactKm && selectedKmBand && (
+              <span className="field-hint">
+                Hesaplarda bandın orta değeri ({selectedKmBand.value.toLocaleString('tr-TR')} km)
+                kullanılır. Kesin kilometreyi biliyorsan &quot;Tam km gir&quot; ile yazabilirsin.
+              </span>
+            )}
+          </div>
 
+          {usage && (
+            <div className={'usage-note usage-note-' + usage.tone}>
+              <span className="usage-note-title">{usage.title}</span>
+              <p>{usage.text}</p>
+            </div>
+          )}
+
+          <div className="form-row form-row-single">
             <label>
               İlan Fiyatı (TL)
               <input

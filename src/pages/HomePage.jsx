@@ -3,70 +3,70 @@ import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
 import { getDatabaseStats } from '../services/vehicleService'
 
+/**
+ * Ana ekran kareleri.
+ *
+ * Her özellik burada listelenmez; kullanıcının en sık başlattığı sekiz iş
+ * gösterilir. Geri kalanı ait olduğu bölümün (Yerinde Kontrol, Rehber, Garaj)
+ * içinde durur, böylece ana ekran uzayıp gitmez.
+ */
 const CARDS = [
   {
     to: '/analiz',
     title: 'Araç Analizi',
-    description: 'Bilgileri gir, risk skorunu ve detaylı raporu gör.',
-    badge: 'Başla',
+    description: 'Bilgileri gir, risk skorunu ve raporu gör.',
+    badge: 'BAŞLA',
     icon: 'car',
     accent: '#3454d1'
   },
   {
+    to: '/yerinde-kontrol',
+    title: 'Yerinde Kontrol',
+    description: 'Aracın başındayken adım adım ilerle.',
+    icon: 'clipboard',
+    accent: '#1fa971'
+  },
+  {
     to: '/aracimin-nesi-var',
     title: 'Aracımın Nesi Var?',
-    description: 'Şikayetini yaz, olası arızaları ve çözümlerini sırala.',
+    description: 'Şikayetini yaz, olası arızaları gör.',
     icon: 'stethoscope',
     accent: '#b91c1c'
   },
   {
+    to: '/tramer',
+    title: 'Hasar ve Değer Kaybı',
+    description: 'Tramer tutarını gir, pazarlık payını hesapla.',
+    icon: 'crash',
+    accent: '#c2410c'
+  },
+  {
+    to: '/maliyet',
+    title: 'Sahip Olma Maliyeti',
+    description: 'Bu araç bana yılda ne yakar?',
+    icon: 'wallet',
+    accent: '#15803d'
+  },
+  {
     to: '/arac-karsilastir',
     title: 'Araç Karşılaştır',
-    description: 'İki marka/modeli fiyat ve artı/eksi yönleriyle yan yana kıyasla.',
+    description: 'İki modeli yan yana kıyasla.',
     icon: 'gauge',
     accent: '#0891b2'
   },
   {
     to: '/kronik-sorunlar',
     title: 'Kronik Sorunlar',
-    description: 'Marka ve modele göre bilinen arıza kayıtlarını incele.',
+    description: 'Modele göre bilinen arıza kayıtları.',
     icon: 'wrench',
     accent: '#e0724d'
   },
   {
-    to: '/kontrol-listesi',
-    title: 'Ekspertiz Kontrol Listesi',
-    description: 'Motor, şanzıman, kaporta ve elektronik kontrol maddeleri.',
-    icon: 'clipboard',
-    accent: '#1fa971'
-  },
-  {
-    to: '/favoriler',
-    title: 'Favoriler',
-    description: 'Analiz ettiğin araçları kaydet, sonra karşılaştır.',
-    icon: 'heart',
-    accent: '#d9447a'
-  },
-  {
-    to: '/kredi-hesapla',
-    title: 'Kredi Hesaplayıcı',
-    description: 'Peşinat ve vadeye göre tahmini aylık ödemeyi hesapla.',
-    icon: 'calculator',
-    accent: '#7c5cf0'
-  },
-  {
-    to: '/ekspertiz-notlari',
-    title: 'Ekspertiz Notları',
-    description: 'Kontrol ettiğin kalemleri işaretle, bulguları kaydet.',
-    icon: 'note',
-    accent: '#17a2b8'
-  },
-  {
-    to: '/boya-degisen',
-    title: 'Boya / Değişen Kontrolü',
-    description: 'Panel panel fotoğraf çek, sistem birbiriyle kıyaslasın.',
-    icon: 'paint',
-    accent: '#c2410c'
+    to: '/guvenli-alim',
+    title: 'Güvenli Alım',
+    description: 'Evrak, kapora ve dolandırıcılık kontrolü.',
+    icon: 'shield',
+    accent: '#b45309'
   }
 ]
 
@@ -107,8 +107,8 @@ export default function HomePage() {
             <span className="info-strip-label">Model</span>
           </div>
           <div className="info-strip-item">
-            <span className="info-strip-value">{stats.engineCount}</span>
-            <span className="info-strip-label">Motor varyantı</span>
+            <span className="info-strip-value">{stats.problemCount}</span>
+            <span className="info-strip-label">Arıza kaydı</span>
           </div>
         </section>
       </PageContainer>

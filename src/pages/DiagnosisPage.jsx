@@ -4,6 +4,7 @@ import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import EmptyState from '../components/EmptyState'
 import RiskBadge from '../components/RiskBadge'
+import HeadlightLoader from '../components/HeadlightLoader'
 import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/vehicleService'
 import { diagnose } from '../services/diagnosisService'
 import { fetchAiAnalysis, isAiConfigured } from '../services/aiService'
@@ -168,10 +169,7 @@ export default function DiagnosisPage() {
 
         {aiState.status === 'loading' && (
           <section className="result-card ai-card">
-            <div className="ai-loading">
-              <span className="ai-spinner" aria-hidden="true" />
-              <span>Detaylı analiz hazırlanıyor...</span>
-            </div>
+            <HeadlightLoader label="Detaylı analiz hazırlanıyor..." />
           </section>
         )}
 
@@ -237,7 +235,69 @@ export default function DiagnosisPage() {
           </section>
         )}
 
-        {result && result.matches.length === 0 && (
+        {/* Seçilen motorun kendi kronik arızalarıyla doğrudan eşleşme.
+            Genel semptom listesinden daha güçlü bir sinyaldir, bu yüzden üstte durur. */}
+        {result?.vehicleProblemMatches?.length > 0 && (
+          <section className="result-card">
+            <h3>Bu Motorun Bilinen Sorunlarıyla Eşleşme</h3>
+            <p className="market-disclaimer" style={{ marginTop: 0 }}>
+              Yazdığın belirti, seçtiğin motorda zaten kayıtlı olan şu arızalarla örtüşüyor.
+            </p>
+            <div className="problem-list">
+              {result.vehicleProblemMatches.map((match) => (
+                <div className="problem-item" key={match.problem.title}>
+                  <div className="problem-item-head">
+                    <span className="problem-item-title">{match.problem.title}</span>
+                    <RiskBadge risk={match.problem.risk} />
+                  </div>
+                  <p>{match.problem.description}</p>
+
+                  {match.matchedSymptoms.length > 0 && (
+                    <div className="check-tags" style={{ marginTop: 8 }}>
+                      {match.matchedSymptoms.map((s) => (
+                        <span className="check-tag" key={s}>
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {match.problem.solution && (
+                    <div className="problem-solution">
+                      <span className="problem-solution-label">Çözüm</span>
+                      <p>{match.problem.solution}</p>
+                    </div>
+                  )}
+
+                  {match.problem.partNote && (
+                    <p className="counter-hint" style={{ marginTop: 8 }}>
+                      {match.problem.partNote}
+                    </p>
+                  )}
+
+                  <div className="problem-item-meta">
+                    {match.problem.typicalKm && (
+                      <span className="problem-item-km">{match.problem.typicalKm}</span>
+                    )}
+                    {match.problem.estimatedCost && (
+                      <span className="problem-item-cost">{match.problem.estimatedCost}</span>
+                    )}
+                    {match.problem.obdCodes?.length > 0 && (
+                      <span className="problem-item-km">
+                        Kod: {match.problem.obdCodes.join(', ')}
+                      </span>
+                    )}
+                    {match.problem.dealbreaker && (
+                      <span className="severity-badge tone-danger">Alımdan vazgeçirebilir</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {result && result.matches.length === 0 && result.vehicleProblemMatches.length === 0 && (
           <EmptyState
             icon="search"
             title="Eşleşen bir arıza bulunamadı"

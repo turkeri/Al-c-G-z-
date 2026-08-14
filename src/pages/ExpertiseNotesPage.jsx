@@ -12,6 +12,7 @@ import {
   removeExpertiseNote,
   summarizeSeverity
 } from '../services/expertiseNotesService'
+import { updateSession } from '../services/inspectionSessionService'
 
 export default function ExpertiseNotesPage() {
   const location = useLocation()
@@ -68,6 +69,12 @@ export default function ExpertiseNotesPage() {
       return
     }
     setSaveError('')
+    updateSession({
+      notes: {
+        summary:
+          flaggedItems.length + ' sorunlu madde' + (photos.length ? ', ' + photos.length + ' fotoğraf' : '')
+      }
+    })
     setSavedNotes(getExpertiseNotes())
     setFlagged({})
     setNotes('')

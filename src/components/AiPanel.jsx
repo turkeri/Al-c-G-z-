@@ -1,3 +1,5 @@
+import HeadlightLoader from './HeadlightLoader'
+
 /**
  * Sunucu tabanlı detaylı değerlendirme için ortak kabuk.
  * Butona basılmadan istek atılmaz (kota korunur), yükleme ve hata durumlarını
@@ -30,10 +32,7 @@ export default function AiPanel({
   if (status === 'loading') {
     return (
       <section className="result-card ai-card">
-        <div className="ai-loading">
-          <span className="ai-spinner" aria-hidden="true" />
-          <span>Değerlendirme hazırlanıyor...</span>
-        </div>
+        <HeadlightLoader label="Değerlendirme hazırlanıyor..." />
       </section>
     )
   }
