@@ -185,7 +185,13 @@ async function callTask(task, payload) {
       return { error: 'Çok fazla istek gönderildi, birkaç dakika sonra tekrar deneyin.' }
     }
     if (!response.ok) {
-      return { error: 'Detaylı değerlendirme şu an alınamadı.' }
+      // Sunucu anlaşılır bir neden gönderdiyse onu göster
+      const detail = await response.json().catch(() => null)
+      return {
+        error: typeof detail?.error === 'string' && detail.error.length < 160
+          ? detail.error
+          : 'Detaylı değerlendirme şu an alınamadı.'
+      }
     }
 
     const data = await response.json()

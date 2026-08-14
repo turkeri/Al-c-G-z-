@@ -285,8 +285,12 @@ async function tryModel(env, model, prompt, schema, { disableThinking = true } =
         return tryModel(env, model, prompt, schema, { disableThinking: false })
       }
 
-      // 404 / 400 -> model yok veya desteklenmiyor, sıradakini dene
-      const retryable = res.status === 404 || res.status === 400
+      // Sıradaki modeli denemeye değer durumlar:
+      //  404/400 -> model yok veya desteklenmiyor
+      //  503     -> model o an aşırı yoğun (Google'da sık görülür)
+      //  429     -> bu model için kota/hız sınırı doldu
+      //  500/502 -> geçici sunucu hatası
+      const retryable = [400, 404, 429, 500, 502, 503].includes(res.status)
       return { ok: false, status: res.status, detail: detail.slice(0, 400), retryable }
     }
 
@@ -332,11 +336,22 @@ async function callGemini(env, prompt, schema) {
     }
 
     lastFailure = { ...outcome, model }
+
+    // Bu model şu an kullanılamıyor: hatırlanan modeli temizle ki
+    // sonraki isteklerde ilk sırada tekrar denenmesin
+    if (cachedWorkingModel === model) cachedWorkingModel = null
+
     // Zaman aşımı da olsa sıradaki (daha hızlı) modeli denemeye değer
     if (!outcome.retryable && outcome.status !== 504) break
+  }
 
-    // Bu model kapanmışsa önbelleği temizle ki bir dahakine boşuna denenmesin
-    if (cachedWorkingModel === model) cachedWorkingModel = null
+  // Hepsi başarısızsa kullanıcıya anlaşılır bir neden ver
+  if (lastFailure && [429, 503].includes(lastFailure.status)) {
+    return {
+      ...lastFailure,
+      status: 503,
+      userMessage: 'Değerlendirme servisi şu an yoğun. Birkaç dakika sonra tekrar deneyin.'
+    }
   }
 
   return lastFailure || { ok: false, status: 502, detail: 'Model bulunamadı' }
@@ -422,7 +437,11 @@ export default {
     const outcome = await callGemini(env, prompt, task.schema)
     if (!outcome.ok) {
       return json(
-        { error: 'Analiz alınamadı', model: outcome.model, detail: outcome.detail },
+        {
+          error: outcome.userMessage || 'Analiz alınamadı',
+          model: outcome.model,
+          detail: outcome.detail
+        },
         outcome.status || 502,
         cors
       )
