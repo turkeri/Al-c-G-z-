@@ -1,7 +1,8 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import BottomNav from './components/Layout/BottomNav'
 import SplashScreen from './components/SplashScreen'
+import { hydrateVehicleData, subscribeDataset } from './services/vehicleDataStore'
 import HomePage from './pages/HomePage'
 import AnalysisFormPage from './pages/AnalysisFormPage'
 import AnalysisResultPage from './pages/AnalysisResultPage'
@@ -27,6 +28,16 @@ export default function App() {
   const location = useLocation()
   const [splashDone, setSplashDone] = useState(false)
   const handleSplashDone = useCallback(() => setSplashDone(true), [])
+  // Veri deposu güncellenince ekranlar yeniden çizilsin.
+  const [, setDataVersion] = useState(0)
+
+  useEffect(() => {
+    const unsubscribe = subscribeDataset(() => setDataVersion((v) => v + 1))
+    // Senkronizasyon açılış animasyonu sürerken arka planda yapılır;
+    // başarısız olursa uygulama gömülü veriyle çalışmaya devam eder.
+    hydrateVehicleData()
+    return unsubscribe
+  }, [])
 
   return (
     <div className="app-shell">

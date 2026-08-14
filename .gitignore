@@ -6,3 +6,6 @@ dist-ssr
 .env
 .env.local
 dev-dist
+
+# Uretilen D1 tohum dosyasi (server/README.md ile yeniden uretilir)
+server/d1/seed.sql

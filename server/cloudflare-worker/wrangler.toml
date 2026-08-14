@@ -2,6 +2,14 @@ name = "arac-dedektifi-ai"
 main = "worker.js"
 compatibility_date = "2024-11-01"
 
+# Araç veritabanı (Cloudflare D1).
+# database_id'yi şu komut verir:  npx wrangler d1 create arac-dedektifi
+# Bağlanmazsa uygulama gömülü veriyle çalışmaya devam eder, hiçbir şey bozulmaz.
+[[d1_databases]]
+binding = "DB"
+database_name = "arac-dedektifi"
+database_id = "BURAYA_D1_DATABASE_ID"
+
 # Model tercihi (ücretsiz katmanda çalışan bir model seçin)
 [vars]
 # GEMINI_MODEL = "gemini-2.5-flash"   # bos birakilirsa calisan model otomatik bulunur

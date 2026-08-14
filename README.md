@@ -142,6 +142,29 @@ Kredi hesaplayıcı ve pazarlık gibi ekranlar bilerek ana menüde değildir: ik
 
 Açılış ekranında sağ ve sol ön far sırayla **selektör** yapar, ardından ikisi birden güçlü yanar ve uygulama açılır (yaklaşık 3,6 saniye; ekrana dokununca atlanır). Aynı far görseli uygulama genelindeki **yükleniyor göstergesi** olarak da kullanılır: işlem sürerken far yavaştan yanıp söner, tamamlanınca tek seferlik güçlü bir parlama yapar (`src/components/Headlight.jsx`, `SplashScreen.jsx`, `HeadlightLoader.jsx`). `prefers-reduced-motion` açık olan cihazlarda animasyonlar kapatılır.
 
+## Veri Katmanı
+
+Veri iki katmanlıdır (`src/services/vehicleDataStore.js`):
+
+1. **Gömülü çekirdek** — `src/data/vehicles.json` uygulamayla birlikte gelir. İnternet olmasa da her şey çalışır; alıcı çoğu zaman kapalı bir otoparkta, çekmeyen bir yerde araca bakar.
+2. **Sunucu katmanı** — Cloudflare D1. Yalnızca **değişen kayıtlar** indirilir, cihazda IndexedDB'de saklanır ve çekirdeğin üzerine bindirilir.
+
+Her sunucu kaydının artan bir `revision` numarası vardır; istemci elindeki en yüksek revizyonu gönderir, sunucu sadece ondan yenilerini döner. İlk kurulumdan sonra her açılışta birkaç yüz baytlık trafik olur. Senkronizasyon açılış ekranı (far animasyonu) sürerken arka planda çalışır, kullanıcı bekleme hissetmez.
+
+Böylece fiyat güncellemek veya yeni model eklemek için **yeni uygulama sürümü yayınlamak gerekmez**, ve veri büyüdükçe uygulama büyümez.
+
+Sunucu kurulmamışsa, internet yoksa veya D1 bağlı değilse bu katman sessizce atlanır ve uygulama gömülü veriyle eksiksiz çalışır. Kurulum: [`server/README.md`](server/README.md).
+
+## Eksik Veriyle Çalışma
+
+Zorunlu alan yalnızca **marka ve model**. Kullanıcı ilanda yazmayan bir bilgiyi uydurmak zorunda bırakılmaz; diğer her alan boş geçilebilir. Buna karşılık eksik veri gizlenmez:
+
+- Boş alanlar için **nötr varsayım** uygulanır, sıfır ceza değil. Sıfır ceza skoru yukarı çeker ve aracı olduğundan iyi gösterir — eksik veriyle yapılabilecek en tehlikeli hata budur.
+- Sonuç ekranında **veri tamlığı yüzdesi** ve hangi alanların eksik olduğu gösterilir.
+- Tamlık %60'ın altındaysa karar kartı hüküm vermez: "Karar için veri yetersiz" der ve hangi alanları girmesi gerektiğini söyler.
+
+**Listede olmayan araçlar** için formda "Elle yaz" seçeneği vardır: marka, model ve motor serbest metin olarak girilir (örn. Volvo XC90). Bu durumda skor yalnızca yaş ve kilometreye dayanır ve motora özgü kronik sorun verisi olmadığı için **hiçbir yönde kesin hüküm verilmez** — ne "alınabilir", ne "tavsiye edilmez". Elimizde o motoru suçlayacak da aklayacak da veri yoktur. Sonuç ekranındaki "Bu Aracı Araştır" bölümü bu boşluğu doldurur.
+
 ## Veri Bakımı
 
 Veritabanındaki iki tür veri farklı hızlarda eskir; bakımı da ayrıdır:

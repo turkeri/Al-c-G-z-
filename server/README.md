@@ -101,3 +101,111 @@ JSON içinde `result.causes` dizisi dönüyorsa her şey çalışıyor demektir.
 `VITE_AI_PROXY_URL` boş bırakılırsa "Detaylı Analiz" bölümü hiç görünmez ve uygulama
 tamamen cihaz içi kural motoruyla (50 belirti, 740 kronik sorun kaydı) çalışır.
 İnternet kesildiğinde de aynı şey olur. Yani sunucu kurmadan da uygulama eksiksiz kullanılabilir.
+
+---
+
+# Araç Veritabanı (Cloudflare D1)
+
+Bu adım **opsiyoneldir**. Kurmazsan uygulama, içine gömülü veriyle (36 marka, 213 model,
+740 arıza kaydı) bugünkü gibi çalışmaya devam eder — hiçbir şey bozulmaz.
+
+## Neden kuruluyor
+
+Veri uygulamanın içinde gömülü olduğu sürece:
+
+- Her veri güncellemesi için yeni bir uygulama sürümü yayınlaman gerekir.
+- Veri büyüdükçe uygulama boyutu büyür (şu an veri tek başına 624 KB).
+
+D1'e geçince veri sunucuda durur, uygulama açılışta yalnızca **değişenleri** indirir.
+Fiyat güncellemesi ya da yeni model eklemek için artık uygulama yayınlamana gerek kalmaz.
+
+Gömülü veri yine de silinmez: internet yokken (kapalı otoparkta araca bakarken)
+uygulamanın çalışmaya devam etmesi için çekirdek kopya uygulamanın içinde kalır.
+Sunucudan gelenler onun **üzerine** bindirilir.
+
+## Kurulum
+
+Aşağıdaki komutları `server/cloudflare-worker` klasöründe çalıştır.
+
+**1. Veritabanını oluştur**
+
+```bash
+npx wrangler d1 create arac-dedektifi
+```
+
+Komut sana bir `database_id` verir. Bunu `wrangler.toml` içindeki
+`BURAYA_D1_DATABASE_ID` yazan yere yapıştır.
+
+**2. Tabloları kur**
+
+```bash
+npx wrangler d1 execute arac-dedektifi --remote --file=../d1/schema.sql
+```
+
+**3. Yönetici anahtarını belirle**
+
+Veriyi yükleyebilmek için bir parola belirlersin (kendi uydurduğun bir metin):
+
+```bash
+npx wrangler secret put ADMIN_TOKEN
+```
+
+Bu anahtar tanımlı değilse yükleme ucu tamamen kapalıdır.
+
+**4. Veriyi yükle**
+
+İki yol var, birini seç.
+
+*Yol A — tarayıcıdan (tablet için önerilen):*
+
+`server/d1/import.html` dosyasını Spck önizlemesiyle aç. Worker adresini ve yönetici
+anahtarını gir, **Veriyi Yükle** butonuna bas. Kayıtlar 40'arlı parçalar halinde
+gönderilir, ilerleme çubuğundan takip edersin. Komut satırına gerek yoktur.
+
+*Yol B — komut satırından:*
+
+```bash
+node server/d1/generate-seed.mjs
+npx wrangler d1 execute arac-dedektifi --remote --file=../d1/seed.sql
+```
+
+(`seed.sql` üretilen bir dosyadır, depoya dahil edilmez.)
+
+**5. Worker'ı yeniden yayınla**
+
+```bash
+npx wrangler deploy
+```
+
+**6. Doğrula**
+
+Tarayıcıdan worker adresini aç. `"database": "bagli"` yazıyorsa tamam.
+Ardından `ADRES/data/version` açıldığında `{"revision":1,"count":213}` görmelisin.
+
+## Veriyi güncellemek
+
+`src/data/vehicles.json` dosyasında bir kaydı değiştirdikten sonra:
+
+1. Yükleyici sayfasındaki **Revizyon numarası** alanını bir artır (1 → 2).
+2. Yüklemeyi tekrar çalıştır.
+3. Uygulamalar bir sonraki açılışta yalnızca değişen kayıtları indirir.
+
+Revizyon numarasını artırmayı unutursan istemciler güncellemeyi görmez.
+
+## Uçlar
+
+| Uç | Ne yapar |
+| --- | --- |
+| `GET /data/version` | Sunucudaki güncel revizyon ve kayıt sayısı |
+| `GET /data/vehicles?since=N` | N'den yeni kayıtlar (sayfalı, 60'arlı) |
+| `POST /data/import` | Veri yükleme (ADMIN_TOKEN ister, 40'arlı parçalar) |
+
+Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalı olsa da veritabanı çalışır.
+D1 bağlı değilse uçlar 503 döner ve uygulama sessizce gömülü veriye düşer.
+
+## `submissions` tablosu
+
+Şemada ayrıca bir `submissions` tablosu var. Topluluk katkıları ve yapay zekâ
+araştırmaları buraya düşer ve elle doğrulanmış `vehicles` tablosuyla **karıştırılmaz** —
+kullanıcıya ayrı etiketle gösterilmesi ve ancak sen onayladıktan sonra asıl veriye
+taşınması için. Bu akış henüz uygulamaya bağlanmadı, tablo ileriye hazırlık olarak duruyor.

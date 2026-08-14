@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
 import AiPanel from '../components/AiPanel'
-import { fetchVerdict, isAiConfigured } from '../services/aiService'
+import { fetchVerdict, fetchVehicleInfo, isAiConfigured } from '../services/aiService'
+import RiskBadge from '../components/RiskBadge'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ScoreGauge from '../components/ScoreGauge'
@@ -18,7 +19,7 @@ import { estimateMarketPrice } from '../services/marketService'
 import { buildNegotiationAdvice } from '../services/negotiationService'
 import { buildDecisionSummary } from '../services/decisionService'
 
-const DECISION_ICON = { al: '✓', dikkatli: '!', alma: '×' }
+const DECISION_ICON = { al: '✓', dikkatli: '!', alma: '×', belirsiz: '?' }
 
 export default function AnalysisResultPage() {
   const location = useLocation()
@@ -38,13 +39,15 @@ export default function AnalysisResultPage() {
   )
 
   const [ai, setAi] = useState({ status: 'idle', data: null, message: '' })
+  const [lookup, setLookup] = useState({ status: 'idle', data: null, message: '' })
 
   if (!state) {
     return <Navigate to="/analiz" replace />
   }
 
   const { formData, result } = state
-  const vehicleLabel = `${formData.brand} ${formData.model} ${formData.year}`
+  const vehicleLabel = [formData.brand, formData.model, formData.year].filter(Boolean).join(' ')
+  const quality = result.dataQuality
 
   async function handleRequestVerdict() {
     setAi({ status: 'loading', data: null, message: '' })
@@ -89,6 +92,20 @@ export default function AnalysisResultPage() {
     navigate('.', { replace: true, state })
   }
 
+  /** Veritabanında olmayan araç için bilgi araştırması. */
+  async function handleLookup() {
+    setLookup({ status: 'loading', data: null, message: '' })
+    const response = await fetchVehicleInfo({
+      brand: formData.brand,
+      model: formData.model,
+      year: formData.year,
+      engine: formData.engine
+    })
+    if (!response) setLookup({ status: 'idle', data: null, message: '' })
+    else if (response.error) setLookup({ status: 'error', data: null, message: response.error })
+    else setLookup({ status: 'ready', data: response.result, message: '' })
+  }
+
   function handleFindNearbyExpertise() {
     if (!navigator.geolocation) {
       window.open('https://www.google.com/maps/search/oto+ekspertiz', '_blank', 'noopener')
@@ -118,18 +135,37 @@ export default function AnalysisResultPage() {
           <div className="result-summary-details">
             <h2>{vehicleLabel}</h2>
             <p className="result-summary-engine">
-              {formData.engine || 'Motor belirtilmedi'} &middot; {formData.fuelType} &middot; {formData.transmission}
+              {[formData.engine, formData.fuelType, formData.transmission]
+                .filter(Boolean)
+                .join(' · ') || 'Motor bilgisi girilmedi'}
               {result.engineData?.avgFuelConsumption && (
                 <> &middot; Ort. {result.engineData.avgFuelConsumption} L/100km</>
               )}
             </p>
             <div className="result-summary-meta">
-              <span>{formatKm(formData.km)}</span>
-              <span>{formatPrice(formData.price)}</span>
+              {formData.km !== '' && <span>{formatKm(formData.km)}</span>}
+              {formData.price !== '' && <span>{formatPrice(formData.price)}</span>}
             </div>
             <FavoriteButton active={alreadyFavorite} onToggle={handleToggleFavorite} />
           </div>
         </section>
+
+        {/* Eksik veri veya veritabanında olmayan araç, skorun ne kadar
+            güvenilir olduğunu doğrudan belirler; karardan ÖNCE gösterilir. */}
+        {quality?.warning && (
+          <section className={'data-quality tone-' + (quality.completeness < 70 ? 'warning' : 'normal')}>
+            <div className="data-quality-head">
+              <span className="data-quality-title">
+                {quality.knownVehicle ? 'Veri tamlığı' : 'Bu araç veritabanımızda yok'}
+              </span>
+              <span className="data-quality-value">%{quality.completeness}</span>
+            </div>
+            <div className="progress-track">
+              <span style={{ width: quality.completeness + '%' }} />
+            </div>
+            <p>{quality.warning}</p>
+          </section>
+        )}
 
         <section className={'decision-card verdict-' + decision.verdict}>
           <div className="decision-icon" aria-hidden="true">
@@ -170,6 +206,81 @@ export default function AnalysisResultPage() {
               piyasasına göredir; ilan fiyatlarıyla arada fark olabilir.
             </p>
           </section>
+        )}
+
+        {/* Veritabanında olmayan araçta kronik sorun listesi boş kalır;
+            boşluğu araştırma paneli doldurur. */}
+        {!quality?.knownVehicle && isAiConfigured() && (
+          <AiPanel
+            title="Bu Aracı Araştır"
+            buttonLabel="Bu Araç Hakkında Bilgi Getir"
+            hint="Bu araç kendi veritabanımızda kayıtlı değil. Bilinen sorunlarını, güvenilirliğini ve kontrol noktalarını araştırıp getirelim."
+            status={lookup.status}
+            message={lookup.message}
+            onRequest={handleLookup}
+          >
+            {lookup.data && (
+              <>
+                <p className="ai-summary">{lookup.data.overview}</p>
+
+                {lookup.data.reliability && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Güvenilirlik</p>
+                    <p className="ai-text">{lookup.data.reliability}</p>
+                  </div>
+                )}
+
+                {lookup.data.commonProblems.length > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Bilinen sorunlar</p>
+                    <div className="problem-list">
+                      {lookup.data.commonProblems.map((p) => (
+                        <div className="problem-item" key={p.title}>
+                          <div className="problem-item-head">
+                            <span className="problem-item-title">{p.title}</span>
+                            <RiskBadge risk={p.risk} />
+                          </div>
+                          {p.description && <p>{p.description}</p>}
+                          {p.solution && (
+                            <div className="problem-solution">
+                              <span className="problem-solution-label">Çözüm</span>
+                              <p>{p.solution}</p>
+                            </div>
+                          )}
+                          <div className="problem-item-meta">
+                            {p.checkKm && <span className="problem-item-km">Kontrol: {p.checkKm}</span>}
+                            {p.estimatedCost && (
+                              <span className="problem-item-cost">{p.estimatedCost}</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {lookup.data.inspectionChecklist.length > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Almadan önce kontrol et</p>
+                    <div className="check-tags">
+                      {lookup.data.inspectionChecklist.map((c) => (
+                        <span className="check-tag" key={c}>
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {lookup.data.buyAdvice && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Alım tavsiyesi</p>
+                    <p className="ai-text">{lookup.data.buyAdvice}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </AiPanel>
         )}
 
         {isAiConfigured() && (

@@ -26,11 +26,12 @@ export function buildNegotiationAdvice(result, marketEstimate) {
   }
 
   if (suggestedDiscount === 0) {
-    return {
-      hasSuggestion: false,
-      suggestedDiscount: 0,
-      reasons: ['Fiyat piyasa seviyesinde ve belirgin bir kronik risk yok; güçlü bir pazarlık gerekçesi bulunmuyor.']
-    }
+    // Fiyat karşılaştırması hiç yapılamadıysa "fiyat uygun" demek yanlış olur;
+    // elde bir dayanak olmadığı açıkça söylenir.
+    const reason = marketEstimate
+      ? 'Fiyat piyasa seviyesinde ve belirgin bir kronik risk yok; güçlü bir pazarlık gerekçesi bulunmuyor.'
+      : 'Bu araç için piyasa fiyat karşılaştırması yapılamadı (ilan fiyatı girilmedi ya da araç veritabanımızda yok). Pazarlık payı hesaplanamıyor.'
+    return { hasSuggestion: false, suggestedDiscount: 0, reasons: [reason] }
   }
 
   return {

@@ -41,6 +41,15 @@ export default function AnalysisFormPage() {
   const [listingText, setListingText] = useState('')
   const [autoFillCount, setAutoFillCount] = useState(null)
   const [exactKm, setExactKm] = useState(false)
+  /**
+   * Serbest giriş.
+   *
+   * Veritabanı Türkiye pazarının tamamını kapsamıyor; listede olmayan bir araç
+   * (örneğin Volvo XC90) girmek isteyen kullanıcı listeye mahkûm edilmemeli.
+   * Bu modda marka/model/motor elle yazılır, analiz yaş ve kilometre üzerinden
+   * yapılır ve eksik olan motor bilgisi sonuç ekranında açıkça belirtilir.
+   */
+  const [manualEntry, setManualEntry] = useState(false)
 
   const brands = useMemo(() => getBrands(), [])
   const models = useMemo(() => (form.brand ? getModelsByBrand(form.brand) : []), [form.brand])
@@ -105,19 +114,34 @@ export default function AnalysisFormPage() {
     setAutoFillCount(foundKeys.length)
   }
 
+  /**
+   * Yalnızca aracı tanımlayan iki alan zorunludur.
+   *
+   * Diğer her alan boş bırakılabilir: kullanıcı ilanda yazmayan bir bilgiyi
+   * uydurmak zorunda kalmamalı. Eksik alanların karara etkisi sonuç ekranında
+   * ayrıca uyarı olarak gösterilir.
+   */
   function validate() {
     const nextErrors = {}
-    if (!form.brand) nextErrors.brand = 'Marka seçiniz.'
-    if (!form.model) nextErrors.model = 'Model seçiniz.'
-    if (!form.year || form.year < 1990 || form.year > CURRENT_YEAR + 1) {
-      nextErrors.year = `Geçerli bir model yılı giriniz (1990-${CURRENT_YEAR + 1}).`
+    if (!form.brand.trim()) nextErrors.brand = manualEntry ? 'Marka yazınız.' : 'Marka seçiniz.'
+    if (!form.model.trim()) nextErrors.model = manualEntry ? 'Model yazınız.' : 'Model seçiniz.'
+    if (form.year && (form.year < 1990 || form.year > CURRENT_YEAR + 1)) {
+      nextErrors.year = `Model yılı 1990-${CURRENT_YEAR + 1} arasında olmalı.`
     }
-    if (!form.fuelType) nextErrors.fuelType = 'Yakıt tipi seçiniz.'
-    if (!form.transmission.trim()) nextErrors.transmission = 'Şanzıman bilgisi giriniz.'
-    if (form.km === '' || Number(form.km) < 0) nextErrors.km = 'Geçerli bir kilometre giriniz.'
-    if (form.price === '' || Number(form.price) < 0) nextErrors.price = 'Geçerli bir fiyat giriniz.'
+    if (form.km !== '' && Number(form.km) < 0) nextErrors.km = 'Kilometre negatif olamaz.'
+    if (form.price !== '' && Number(form.price) < 0) nextErrors.price = 'Fiyat negatif olamaz.'
     setErrors(nextErrors)
     return nextErrors
+  }
+
+  function toggleManual() {
+    setManualEntry((prev) => {
+      // Mod değişince marka/model/motor sıfırlanır: liste değeriyle elle
+      // yazılan değer birbirine karışmasın.
+      setForm((f) => ({ ...f, brand: '', model: '', engine: '' }))
+      setErrors({})
+      return !prev
+    })
   }
 
   function handleSubmit(event) {
@@ -140,7 +164,11 @@ export default function AnalysisFormPage() {
 
   return (
     <>
-      <Header title="Araç Analiz Formu" subtitle="Bilgileri eksiksiz doldur, en doğru sonucu al." showBack />
+      <Header
+        title="Araç Analiz Formu"
+        subtitle="Marka ve model yeterli. Ne kadar çok bilgi girersen sonuç o kadar isabetli olur."
+        showBack
+      />
       <PageContainer>
         <section className="result-card">
           <h3>İlan Metninden Otomatik Doldur</h3>
@@ -168,48 +196,81 @@ export default function AnalysisFormPage() {
         </section>
 
         <form className="analysis-form" onSubmit={handleSubmit} noValidate>
+          <div className="mode-switch">
+            <span className="field-hint" style={{ flex: 1 }}>
+              {manualEntry
+                ? 'Elle giriş açık: aracını listeye bakmadan yazabilirsin.'
+                : 'Aracın listede yok mu? Elle yazabilirsin.'}
+            </span>
+            <button type="button" className="link-button" onClick={toggleManual}>
+              {manualEntry ? 'Listeden seç' : 'Elle yaz'}
+            </button>
+          </div>
+
           <div className="form-row">
             <label>
               Marka
-              <select
-                name="brand"
-                className={errors.brand ? 'invalid' : ''}
-                value={form.brand}
-                onChange={(e) => updateField('brand', e.target.value)}
-              >
-                <option value="">Seçiniz</option>
-                {brands.map((brand) => (
-                  <option key={brand} value={brand}>
-                    {brand}
-                  </option>
-                ))}
-              </select>
+              {manualEntry ? (
+                <input
+                  name="brand"
+                  className={errors.brand ? 'invalid' : ''}
+                  type="text"
+                  placeholder="Örn. Volvo"
+                  value={form.brand}
+                  onChange={(e) => updateField('brand', e.target.value)}
+                />
+              ) : (
+                <select
+                  name="brand"
+                  className={errors.brand ? 'invalid' : ''}
+                  value={form.brand}
+                  onChange={(e) => updateField('brand', e.target.value)}
+                >
+                  <option value="">Seçiniz</option>
+                  {brands.map((brand) => (
+                    <option key={brand} value={brand}>
+                      {brand}
+                    </option>
+                  ))}
+                </select>
+              )}
               {errors.brand && <span className="field-error">{errors.brand}</span>}
             </label>
 
             <label>
               Model
-              <select
-                name="model"
-                className={errors.model ? 'invalid' : ''}
-                value={form.model}
-                onChange={(e) => updateField('model', e.target.value)}
-                disabled={!form.brand}
-              >
-                <option value="">Seçiniz</option>
-                {models.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
-              </select>
+              {manualEntry ? (
+                <input
+                  name="model"
+                  className={errors.model ? 'invalid' : ''}
+                  type="text"
+                  placeholder="Örn. XC90"
+                  value={form.model}
+                  onChange={(e) => updateField('model', e.target.value)}
+                />
+              ) : (
+                <select
+                  name="model"
+                  className={errors.model ? 'invalid' : ''}
+                  value={form.model}
+                  onChange={(e) => updateField('model', e.target.value)}
+                  disabled={!form.brand}
+                >
+                  <option value="">Seçiniz</option>
+                  {models.map((model) => (
+                    <option key={model} value={model}>
+                      {model}
+                    </option>
+                  ))}
+                </select>
+              )}
               {errors.model && <span className="field-error">{errors.model}</span>}
             </label>
           </div>
 
           <div className="form-row">
             <label>
-              Model Yılı
+              Model Yılı <span className="field-optional">opsiyonel</span>
               <select
                 name="year"
                 className={errors.year ? 'invalid' : ''}
@@ -232,25 +293,34 @@ export default function AnalysisFormPage() {
             </label>
 
             <label>
-              Motor
-              <select
-                value={form.engine}
-                onChange={(e) => updateField('engine', e.target.value)}
-                disabled={!engines.length}
-              >
-                <option value="">{engines.length ? 'Seçiniz' : 'Önce marka/model seçin'}</option>
-                {engines.map((engine) => (
-                  <option key={engine} value={engine}>
-                    {engine}
-                  </option>
-                ))}
-              </select>
+              Motor <span className="field-optional">opsiyonel</span>
+              {manualEntry || (form.brand && form.model && engines.length === 0) ? (
+                <input
+                  type="text"
+                  placeholder="Örn. 2.0 D5"
+                  value={form.engine}
+                  onChange={(e) => updateField('engine', e.target.value)}
+                />
+              ) : (
+                <select
+                  value={form.engine}
+                  onChange={(e) => updateField('engine', e.target.value)}
+                  disabled={!engines.length}
+                >
+                  <option value="">{engines.length ? 'Seçiniz' : 'Önce marka/model seçin'}</option>
+                  {engines.map((engine) => (
+                    <option key={engine} value={engine}>
+                      {engine}
+                    </option>
+                  ))}
+                </select>
+              )}
             </label>
           </div>
 
           <div className="form-row">
             <label>
-              Yakıt Tipi
+              Yakıt Tipi <span className="field-optional">opsiyonel</span>
               <select
                 name="fuelType"
                 className={errors.fuelType ? 'invalid' : ''}
@@ -268,7 +338,7 @@ export default function AnalysisFormPage() {
             </label>
 
             <label>
-              Şanzıman
+              Şanzıman <span className="field-optional">opsiyonel</span>
               <input
                 name="transmission"
                 className={errors.transmission ? 'invalid' : ''}
@@ -283,7 +353,7 @@ export default function AnalysisFormPage() {
 
           <div className="field-block">
             <div className="field-block-head">
-              <span className="field-block-title">Kilometre</span>
+              <span className="field-block-title">Kilometre <span className="field-optional">opsiyonel</span></span>
               <button
                 type="button"
                 className="link-button"
@@ -332,7 +402,7 @@ export default function AnalysisFormPage() {
 
           <div className="form-row form-row-single">
             <label>
-              İlan Fiyatı (TL)
+              İlan Fiyatı (TL) <span className="field-optional">opsiyonel</span>
               <input
                 name="price"
                 className={errors.price ? 'invalid' : ''}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import ChipSelect from './ChipSelect'
 import {
   getBrands,
@@ -13,6 +13,8 @@ import { KM_BANDS, bandForKm, yearOptions } from '../utils/vehicleOptions'
  * Birden fazla ekran aynı seçimi istediği için tekrar yazılmaz.
  */
 export default function VehiclePicker({ value, onChange, showKm = true, showYear = true }) {
+  // Listede olmayan araçlar için serbest giriş; analiz formundaki mantığın aynısı.
+  const [manual, setManual] = useState(false)
   const brands = useMemo(() => getBrands(), [])
   const models = useMemo(() => (value.brand ? getModelsByBrand(value.brand) : []), [value.brand])
   const engines = useMemo(
@@ -32,54 +34,97 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
 
   return (
     <div className="vehicle-picker">
+      <div className="mode-switch">
+        <span className="field-hint" style={{ flex: 1 }}>
+          {manual ? 'Elle giriş açık.' : 'Aracın listede yok mu?'}
+        </span>
+        <button
+          type="button"
+          className="link-button"
+          onClick={() => {
+            setManual((prev) => !prev)
+            onChange({ ...value, brand: '', model: '', engine: '' })
+          }}
+        >
+          {manual ? 'Listeden seç' : 'Elle yaz'}
+        </button>
+      </div>
+
       <div className="form-row">
         <label>
           Marka
-          <select
-            value={value.brand || ''}
-            onChange={(e) => update({ brand: e.target.value, model: '', engine: '' })}
-          >
-            <option value="">Seçiniz</option>
-            {brands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
-              </option>
-            ))}
-          </select>
+          {manual ? (
+            <input
+              type="text"
+              placeholder="Örn. Volvo"
+              value={value.brand || ''}
+              onChange={(e) => update({ brand: e.target.value })}
+            />
+          ) : (
+            <select
+              value={value.brand || ''}
+              onChange={(e) => update({ brand: e.target.value, model: '', engine: '' })}
+            >
+              <option value="">Seçiniz</option>
+              {brands.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
 
         <label>
           Model
-          <select
-            value={value.model || ''}
-            onChange={(e) => update({ model: e.target.value, engine: '' })}
-            disabled={!value.brand}
-          >
-            <option value="">Seçiniz</option>
-            {models.map((model) => (
-              <option key={model} value={model}>
-                {model}
-              </option>
-            ))}
-          </select>
+          {manual ? (
+            <input
+              type="text"
+              placeholder="Örn. XC90"
+              value={value.model || ''}
+              onChange={(e) => update({ model: e.target.value })}
+            />
+          ) : (
+            <select
+              value={value.model || ''}
+              onChange={(e) => update({ model: e.target.value, engine: '' })}
+              disabled={!value.brand}
+            >
+              <option value="">Seçiniz</option>
+              {models.map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
       </div>
 
       <div className="form-row">
         <label>
-          Motor
-          <select
-            value={value.engine || ''}
-            onChange={(e) => update({ engine: e.target.value })}
-            disabled={!engines.length}
-          >
-            <option value="">{engines.length ? 'Seçiniz' : 'Önce model seçin'}</option>
-            {engines.map((engine) => (
-              <option key={engine} value={engine}>
-                {engine}
-              </option>
-            ))}
-          </select>
+          Motor <span className="field-optional">opsiyonel</span>
+          {manual || (value.brand && value.model && engines.length === 0) ? (
+            <input
+              type="text"
+              placeholder="Örn. 2.0 D5"
+              value={value.engine || ''}
+              onChange={(e) => update({ engine: e.target.value })}
+            />
+          ) : (
+            <select
+              value={value.engine || ''}
+              onChange={(e) => update({ engine: e.target.value })}
+              disabled={!engines.length}
+            >
+              <option value="">{engines.length ? 'Seçiniz' : 'Önce model seçin'}</option>
+              {engines.map((engine) => (
+                <option key={engine} value={engine}>
+                  {engine}
+                </option>
+              ))}
+            </select>
+          )}
         </label>
 
         {showYear && (

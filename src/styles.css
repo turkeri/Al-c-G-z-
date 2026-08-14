@@ -357,7 +357,15 @@ button {
   gap: 12px;
 }
 
-.analysis-form label {
+/*
+ * Form alanları yalnızca .analysis-form içinde değil, alan barındıran her
+ * kartta aynı biçimi alır. Aksi halde sonradan eklenen ekranlarda etiket ile
+ * kutu yan yana sıkışıp okunmaz hale geliyordu.
+ */
+.analysis-form label,
+.result-card label,
+.form-row label,
+.vehicle-picker label {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -368,7 +376,10 @@ button {
 
 .analysis-form select,
 .analysis-form input,
-.analysis-form textarea {
+.analysis-form textarea,
+.result-card select,
+.result-card textarea,
+.result-card input:not([type='checkbox']):not([type='file']) {
   background: var(--color-surface-sunken);
   border: 1px solid var(--color-border);
   color: var(--color-text);
@@ -376,11 +387,19 @@ button {
   padding: 10px 12px;
   font-size: 0.95rem;
   font-family: inherit;
+  width: 100%;
   resize: vertical;
 }
 
+/* Onay kutusu ve dosya seçici bu biçimin dışındadır. */
+.result-card input[type='checkbox'] {
+  width: auto;
+}
+
 .analysis-form select:disabled,
-.analysis-form input:disabled {
+.analysis-form input:disabled,
+.result-card select:disabled,
+.result-card input:disabled {
   opacity: 0.5;
 }
 
@@ -416,7 +435,12 @@ button {
   font-weight: 500;
 }
 
+/* Hem <button> hem <a> olarak kullanılır. */
 .primary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background: var(--color-accent);
   color: #ffffff;
   border: none;
@@ -499,7 +523,12 @@ button {
   margin-bottom: 14px;
 }
 
+/* Hem <button> hem <a> olarak kullanılır; ikisi de aynı görünür. */
 .favorite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background: transparent;
   border: 1.5px solid var(--color-accent);
   color: var(--color-accent);
@@ -909,6 +938,12 @@ button {
   border-color: rgba(185, 28, 28, 0.25);
 }
 
+/* Veri yetersizken kart nötr kalır: renk bir hüküm ima etmemeli. */
+.decision-card.verdict-belirsiz {
+  background: var(--color-surface-sunken);
+  border-color: var(--color-border-strong);
+}
+
 .decision-icon {
   width: 44px;
   height: 44px;
@@ -932,6 +967,10 @@ button {
 
 .verdict-alma .decision-icon {
   background: var(--color-danger);
+}
+
+.verdict-belirsiz .decision-icon {
+  background: var(--color-text-faint);
 }
 
 .decision-text h3 {
@@ -2181,12 +2220,6 @@ button {
 }
 
 /* Responsive */
-@media (min-width: 420px) {
-  .card-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (min-width: 640px) {
   .app-shell {
     box-shadow: var(--shadow-pop);
@@ -3371,4 +3404,72 @@ button {
 .metric-grid strong {
   color: var(--color-text);
   font-weight: 700;
+}
+
+/* ============================================================
+   SERBEST GİRİŞ VE VERİ TAMLIĞI
+   ============================================================ */
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  border: 1px dashed var(--color-border-strong);
+}
+
+/* Zorunlu olmayan alanlar açıkça işaretlenir; kullanıcı bilmediği bir
+   bilgiyi uydurmak zorunda olmadığını görmeli. */
+.field-optional {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-faint);
+  text-transform: none;
+  margin-left: 4px;
+}
+
+.data-quality {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  padding: 14px 16px;
+}
+
+.data-quality p {
+  margin: 10px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.data-quality-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.data-quality-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.data-quality-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+
+.data-quality.tone-warning {
+  border-color: rgba(180, 83, 9, 0.32);
+  background: var(--color-warning-soft);
+}
+
+.data-quality.tone-warning .data-quality-value {
+  color: var(--color-warning);
 }

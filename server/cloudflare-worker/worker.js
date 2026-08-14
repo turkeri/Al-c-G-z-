@@ -32,7 +32,7 @@ const MODEL_CANDIDATES = [
 
 // Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
 // Tarayıcıdan worker adresini açınca bu numara görünür.
-const VERSION = 4
+const VERSION = 5
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
@@ -382,13 +382,175 @@ async function listModels(env) {
   return { ok: true, models: usable }
 }
 
+/* ============================================================
+   ARAÇ VERİTABANI (D1)
+   ============================================================
+   Veri, uygulamanın içine gömülü olmaktan çıkıp buraya taşınır. İstemcide
+   çekirdek bir kopya kalmaya devam eder (internetsiz çalışabilsin diye);
+   buradan yalnızca DEĞİŞENLER indirilir.
+
+   D1 bağlı değilse uçlar 503 döner ve uygulama gömülü veriyle çalışmaya
+   devam eder — yani veritabanı kurulmadan da hiçbir şey bozulmaz.
+   ============================================================ */
+
+const DATA_PAGE_LIMIT = 60
+const IMPORT_BATCH = 40
+
+async function handleDataVersion(env, cors) {
+  const meta = await env.DB.prepare("SELECT value FROM meta WHERE key = 'data_revision'").first()
+  const count = await env.DB.prepare('SELECT COUNT(*) AS n FROM vehicles WHERE deleted = 0').first()
+  return json(
+    {
+      revision: Number(meta?.value || 0),
+      count: Number(count?.n || 0)
+    },
+    200,
+    cors
+  )
+}
+
+async function handleDataVehicles(env, url, cors) {
+  const since = Math.max(0, Number(url.searchParams.get('since') || 0))
+  const limit = Math.min(DATA_PAGE_LIMIT, Math.max(1, Number(url.searchParams.get('limit') || DATA_PAGE_LIMIT)))
+
+  const result = await env.DB.prepare(
+    'SELECT id, revision, deleted, payload FROM vehicles WHERE revision > ?1 ORDER BY revision, id LIMIT ?2'
+  )
+    .bind(since, limit + 1)
+    .all()
+
+  const rows = result.results || []
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
+
+  return json(
+    {
+      rows: page.map((row) => ({
+        id: row.id,
+        revision: Number(row.revision),
+        deleted: Number(row.deleted) === 1,
+        // payload zaten JSON metni; burada tekrar ayrıştırıp birleştirmeye gerek yok
+        vehicle: Number(row.deleted) === 1 ? null : JSON.parse(row.payload)
+      })),
+      hasMore,
+      nextSince: page.length ? Number(page[page.length - 1].revision) : since
+    },
+    200,
+    cors
+  )
+}
+
+/** "Volkswagen|Golf (Mk7)" — istemcideki kuralla birebir aynı olmalı. */
+function vehicleKey(brand, model) {
+  return (String(brand) + '|' + String(model)).toLowerCase().replace(/\s+/g, ' ').trim()
+}
+
+/**
+ * Veri yükleme ucu.
+ *
+ * Komut satırı (wrangler) her ortamda kullanılamıyor — tablet gibi cihazlarda
+ * hiç yok. Bu yüzden veri, tarayıcıdan çalışan küçük bir sayfayla parça parça
+ * gönderilebiliyor (server/d1/import.html). Uç, ADMIN_TOKEN gizli anahtarıyla
+ * korunur; anahtar tanımlı değilse uç tamamen kapalıdır.
+ */
+async function handleDataImport(env, body, cors) {
+  if (!env.ADMIN_TOKEN) {
+    return json({ error: 'Yukleme kapali: ADMIN_TOKEN tanimlanmamis' }, 503, cors)
+  }
+  if (!body?.token || body.token !== env.ADMIN_TOKEN) {
+    return json({ error: 'Yetkisiz' }, 401, cors)
+  }
+
+  const vehicles = Array.isArray(body.vehicles) ? body.vehicles : []
+  if (vehicles.length === 0) {
+    return json({ error: 'Gonderilen kayit yok' }, 400, cors)
+  }
+  if (vehicles.length > IMPORT_BATCH) {
+    return json({ error: 'Tek seferde en fazla ' + IMPORT_BATCH + ' kayit' }, 400, cors)
+  }
+
+  const revision = Math.max(1, Number(body.revision) || 1)
+  const now = Date.now()
+
+  if (body.reset) {
+    await env.DB.prepare('DELETE FROM vehicles').run()
+  }
+
+  const statement = env.DB.prepare(
+    `INSERT INTO vehicles (id, brand, model, year_range, revision, deleted, updated_at, payload)
+     VALUES (?1, ?2, ?3, ?4, ?5, 0, ?6, ?7)
+     ON CONFLICT(id) DO UPDATE SET
+       brand = excluded.brand,
+       model = excluded.model,
+       year_range = excluded.year_range,
+       revision = excluded.revision,
+       deleted = 0,
+       updated_at = excluded.updated_at,
+       payload = excluded.payload`
+  )
+
+  const batch = vehicles
+    .filter((v) => v && v.brand && v.model)
+    .map((v) =>
+      statement.bind(
+        vehicleKey(v.brand, v.model),
+        String(v.brand),
+        String(v.model),
+        String(v.yearRange || ''),
+        revision,
+        now,
+        JSON.stringify(v)
+      )
+    )
+
+  await env.DB.batch(batch)
+
+  if (body.final) {
+    await env.DB.prepare(
+      "INSERT INTO meta (key, value) VALUES ('data_revision', ?1) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+    )
+      .bind(String(revision))
+      .run()
+  }
+
+  const count = await env.DB.prepare('SELECT COUNT(*) AS n FROM vehicles WHERE deleted = 0').first()
+  return json({ written: batch.length, total: Number(count?.n || 0), revision }, 200, cors)
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || ''
     const cors = corsHeaders(origin, env.ALLOWED_ORIGINS)
+    const url = new URL(request.url)
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors })
+    }
+
+    // Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalıyken de
+    // veritabanı güncellemesi çalışmalıdır.
+    if (request.method === 'GET' && url.pathname.startsWith('/data/')) {
+      if (!env.DB) {
+        return json({ error: 'Veritabani baglanmamis' }, 503, cors)
+      }
+      try {
+        if (url.pathname === '/data/version') return await handleDataVersion(env, cors)
+        if (url.pathname === '/data/vehicles') return await handleDataVehicles(env, url, cors)
+        return json({ error: 'Bilinmeyen uc' }, 404, cors)
+      } catch (err) {
+        return json({ error: 'Veritabani hatasi', detail: String(err).slice(0, 200) }, 500, cors)
+      }
+    }
+
+    // Veri yükleme de anahtardan bağımsızdır.
+    if (request.method === 'POST' && url.pathname === '/data/import') {
+      if (!env.DB) return json({ error: 'Veritabani baglanmamis' }, 503, cors)
+      try {
+        const body = await request.json()
+        return await handleDataImport(env, body, cors)
+      } catch (err) {
+        return json({ error: 'Yukleme hatasi', detail: String(err).slice(0, 200) }, 500, cors)
+      }
     }
 
     if (!env.GEMINI_API_KEY) {
@@ -397,7 +559,6 @@ export default {
 
     // Tanılama: tarayıcıdan .../?debug=models açılırsa kullanılabilir modelleri listeler
     if (request.method === 'GET') {
-      const url = new URL(request.url)
       if (url.searchParams.get('debug') === 'models') {
         const outcome = await listModels(env)
         return json(outcome, outcome.ok ? 200 : 502, cors)
@@ -407,7 +568,8 @@ export default {
           status: 'calisiyor',
           version: VERSION,
           activeModel: cachedWorkingModel || '(henuz belirlenmedi)',
-          tasks: Object.keys(TASKS)
+          tasks: Object.keys(TASKS),
+          database: env.DB ? 'bagli' : 'bagli degil'
         },
         200,
         cors

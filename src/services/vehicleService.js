@@ -1,8 +1,13 @@
-import vehicles from '../data/vehicles.json'
 import { archetypeFor } from '../data/problemArchetypes'
+import { getDataset } from './vehicleDataStore'
 
+/**
+ * Veri artık doğrudan JSON dosyasından değil, veri deposundan okunur.
+ * Depo gömülü çekirdeği sunucudan gelen güncellemelerle birleştirir; bu
+ * dosyadaki fonksiyonların imzası değişmediği için ekranlar etkilenmez.
+ */
 export function getAllVehicles() {
-  return vehicles
+  return getDataset()
 }
 
 /**
@@ -37,18 +42,18 @@ export function getEnrichedProblems(brand, model, engineName) {
 }
 
 export function getBrands() {
-  return [...new Set(vehicles.map((v) => v.brand))].sort((a, b) => a.localeCompare(b, 'tr'))
+  return [...new Set(getDataset().map((v) => v.brand))].sort((a, b) => a.localeCompare(b, 'tr'))
 }
 
 export function getModelsByBrand(brand) {
-  return vehicles
+  return getDataset()
     .filter((v) => v.brand === brand)
     .map((v) => v.model)
     .sort((a, b) => a.localeCompare(b, 'tr'))
 }
 
 export function getVehicleEntry(brand, model) {
-  return vehicles.find((v) => v.brand === brand && v.model === model) || null
+  return getDataset().find((v) => v.brand === brand && v.model === model) || null
 }
 
 export function getEngineNames(brand, model) {
@@ -78,9 +83,9 @@ export function findMatchingEngine(brand, model, fuelType, transmission) {
 export function getDatabaseStats() {
   return {
     brandCount: getBrands().length,
-    modelCount: vehicles.length,
-    engineCount: vehicles.reduce((sum, v) => sum + v.engines.length, 0),
-    problemCount: vehicles.reduce(
+    modelCount: getDataset().length,
+    engineCount: getDataset().reduce((sum, v) => sum + v.engines.length, 0),
+    problemCount: getDataset().reduce(
       (sum, v) => sum + v.engines.reduce((s, e) => s + e.knownProblems.length, 0),
       0
     )
