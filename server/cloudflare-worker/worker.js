@@ -33,28 +33,190 @@ const REQUEST_TIMEOUT_MS = 30000
 // Basit hız limiti: aynı IP için dakikada kaç istek
 const RATE_LIMIT_PER_MINUTE = 12
 
-const RESPONSE_SCHEMA = {
-  type: 'object',
-  properties: {
-    summary: { type: 'string' },
-    causes: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          cause: { type: 'string' },
-          likelihood: { type: 'string' },
-          solution: { type: 'string' },
-          estimatedCost: { type: 'string' },
-          urgency: { type: 'string' }
+const STR = { type: 'string' }
+const STR_LIST = { type: 'array', items: STR }
+
+const ORTAK_KURALLAR = `
+KURALLAR:
+- Emin olmadığın şeyi kesinmiş gibi söyleme; "olası", "kontrol edilmeli" gibi ifadeler kullan.
+- Güvenlik riski varsa (fren, direksiyon, yangın, hararet, şasi) açıkça uyar.
+- Maliyet aralıklarını Türkiye 2026 fiyatlarıyla ve gerçekçi ver, abartma.
+- Kısa, sade ve anlaşılır Türkçe yaz; teknik terimi kullanırsan parantezle açıkla.
+- Yanıtın sadece istenen JSON şemasında olsun.`
+
+function vehicleLine(v) {
+  if (!v?.brand) return 'Araç bilgisi verilmedi'
+  return `${v.brand} ${v.model || ''} ${v.year || ''} ${v.engine || ''} ${v.fuelType || ''} ${v.transmission || ''} ${v.km ? v.km + ' km' : ''}`
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/**
+ * Her görev kendi şeması ve kendi istemiyle tanımlanır.
+ * Uygulama isteğinde "task" alanıyla hangisinin çalışacağını belirtir.
+ */
+const TASKS = {
+  /* Şikayetten arıza teşhisi */
+  diagnosis: {
+    schema: {
+      type: 'object',
+      properties: {
+        summary: STR,
+        causes: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              cause: STR, likelihood: STR, solution: STR, estimatedCost: STR, urgency: STR
+            },
+            required: ['cause', 'likelihood', 'solution', 'urgency']
+          }
         },
-        required: ['cause', 'likelihood', 'solution', 'urgency']
-      }
+        checks: STR_LIST,
+        askMechanic: STR_LIST
+      },
+      required: ['summary', 'causes']
     },
-    checks: { type: 'array', items: { type: 'string' } },
-    askMechanic: { type: 'array', items: { type: 'string' } }
+    prompt: (b) => {
+      const known = (b.localFindings?.knownProblems || [])
+        .map((p) => `- ${p.title} (${p.risk} risk, ${p.checkKm} km)`).join('\n')
+      const matched = (b.localFindings?.matchedSymptoms || []).map((s) => `- ${s}`).join('\n')
+      return `Sen Türkiye'de çalışan, deneyimli bir oto ustasısın. Kullanıcı aracındaki şikayeti anlatıyor.
+
+ARAÇ: ${vehicleLine(b.vehicle)}
+
+ŞİKAYET: "${b.complaint}"
+${known ? `\nBU MOTORDA BİLİNEN KRONİK SORUNLAR:\n${known}` : ''}
+${matched ? `\nÖN ANALİZDE EŞLEŞEN BELİRTİLER:\n${matched}` : ''}
+
+GÖREVİN:
+1. En olası nedenleri sırala (en fazla 5, en olasıdan başla). Her biri için olasılık ("Yüksek"/"Orta"/"Düşük"), çözüm, tahmini maliyet ve aciliyet ("Yüksek"/"Orta"/"Düşük") ver.
+2. Ustada baktırılacak kontrol maddelerini listele.
+3. Kullanıcının ustaya sorması gereken soruları listele.
+${ORTAK_KURALLAR}`
+    }
   },
-  required: ['summary', 'causes']
+
+  /* Veritabanımızda olmayan araç hakkında bilgi */
+  'vehicle-info': {
+    schema: {
+      type: 'object',
+      properties: {
+        overview: STR,
+        reliability: STR,
+        commonProblems: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: STR, risk: STR, description: STR, solution: STR, estimatedCost: STR, checkKm: STR
+            },
+            required: ['title', 'risk', 'description']
+          }
+        },
+        inspectionChecklist: STR_LIST,
+        avgFuelConsumption: STR,
+        buyAdvice: STR,
+        verdict: STR
+      },
+      required: ['overview', 'commonProblems', 'buyAdvice', 'verdict']
+    },
+    prompt: (b) => `Sen Türkiye ikinci el piyasasını iyi bilen bir oto uzmanısın.
+
+SORULAN ARAÇ: ${vehicleLine(b.vehicle)}
+
+GÖREVİN:
+1. Bu araç hakkında kısa bir genel değerlendirme yaz (overview).
+2. Güvenilirliğini yorumla (reliability) — Türkiye şartlarında, yedek parça bulunabilirliği ve servis maliyeti dahil.
+3. Bu model ve motorun BİLİNEN KRONİK SORUNLARINI listele (commonProblems). Her biri için: başlık, risk seviyesi ("Yüksek"/"Orta"/"Düşük"), açıklama, çözüm önerisi, tahmini maliyet ve hangi kilometrede kontrol edilmeli.
+4. Satın almadan önce mutlaka kontrol edilecekleri listele (inspectionChecklist).
+5. Ortalama yakıt tüketimini yaz (avgFuelConsumption, örn. "5.2 L/100km").
+6. Alınır mı, kime tavsiye edilir, neye dikkat edilmeli (buyAdvice).
+7. verdict alanına sadece şunlardan biri: "al" / "dikkatli" / "alma"
+
+Bu araç hakkında gerçekten bilgin yoksa bunu overview içinde açıkça belirt, uydurma bilgi verme.
+${ORTAK_KURALLAR}`
+  },
+
+  /* Analiz sonucu üzerine yorum ve alım tavsiyesi */
+  verdict: {
+    schema: {
+      type: 'object',
+      properties: {
+        opinion: STR,
+        problemAssessment: STR,
+        buyAdvice: STR,
+        negotiationTips: STR_LIST,
+        redFlags: STR_LIST
+      },
+      required: ['opinion', 'buyAdvice']
+    },
+    prompt: (b) => {
+      const a = b.analysis || {}
+      const problems = (a.knownProblems || [])
+        .map((p) => `- ${p.title} (${p.risk} risk, ${p.checkKm} km, tahmini ${p.estimatedCost || '?'})`).join('\n')
+      return `Sen ikinci el araç alımında danışmanlık yapan bir uzmansın. Kullanıcı bir aracı incelemiş, elindeki verilere göre ona yorum yapacaksın.
+
+ARAÇ: ${vehicleLine(b.vehicle)}
+İLAN FİYATI: ${b.vehicle?.price || 'belirtilmedi'} TL
+RİSK SKORU: ${a.score ?? '?'}/100 (${a.bandLabel || ''})
+PİYASA DURUMU: ${a.marketLabel || 'hesaplanamadı'}${a.marketDiffPercent != null ? ` (piyasaya göre %${a.marketDiffPercent})` : ''}
+ORTALAMA YAKIT: ${a.avgFuelConsumption ? a.avgFuelConsumption + ' L/100km' : 'bilinmiyor'}
+${problems ? `\nBU MOTORUN BİLİNEN KRONİK SORUNLARI:\n${problems}` : ''}
+
+GÖREVİN:
+1. opinion: Bu araç bu fiyata, bu kilometrede, bu yaşta mantıklı mı? Genel yorumun.
+2. problemAssessment: Yukarıdaki kronik sorunlar ne kadar ciddi? Hangileri gerçekten korkutucu, hangileri normal bakım kalemi? Kullanıcı bunlardan hangisine öncelik vermeli?
+3. buyAdvice: Net tavsiyen — alsın mı, neye bakıp alsın, hangi durumda vazgeçsin.
+4. negotiationTips: Pazarlıkta kullanabileceği somut argümanlar (madde madde).
+5. redFlags: Bu aracı görmeye gittiğinde görürse HEMEN vazgeçmesi gereken durumlar (madde madde).
+${ORTAK_KURALLAR}`
+    }
+  },
+
+  /* İki araç arasında tercih */
+  compare: {
+    schema: {
+      type: 'object',
+      properties: {
+        winner: STR,
+        recommendation: STR,
+        reasoning: STR_LIST,
+        firstSuitableFor: STR,
+        secondSuitableFor: STR,
+        watchOut: STR_LIST
+      },
+      required: ['winner', 'recommendation', 'reasoning']
+    },
+    prompt: (b) => {
+      const side = (s, label) => {
+        const problems = (s.knownProblems || []).map((p) => `  - ${p.title} (${p.risk})`).join('\n')
+        return `${label}: ${vehicleLine(s)}
+  İlan fiyatı: ${s.price || '?'} TL
+  Risk skoru: ${s.score ?? '?'}/100
+  Piyasa durumu: ${s.marketLabel || '?'}
+  Ortalama yakıt: ${s.avgFuelConsumption ? s.avgFuelConsumption + ' L/100km' : '?'}
+  Kasa/segment: ${s.bodyType || '?'} / ${s.segment || '?'}
+${problems ? `  Kronik sorunlar:\n${problems}` : '  Kronik sorun kaydı yok'}`
+      }
+      return `Sen ikinci el araç alımında danışmanlık yapan bir uzmansın. Kullanıcı iki araç arasında kalmış.
+
+${side(b.first || {}, 'BİRİNCİ ARAÇ')}
+
+${side(b.second || {}, 'İKİNCİ ARAÇ')}
+
+GÖREVİN:
+1. winner: Genel olarak hangisi daha mantıklı? Sadece aracın adını yaz (örn. "${b.first?.brand || ''} ${b.first?.model || ''}").
+2. recommendation: Tercihini bir paragrafta gerekçelendir.
+3. reasoning: Kararının somut nedenlerini madde madde yaz (fiyat, güvenilirlik, masraf, yakıt, kullanım amacı).
+4. firstSuitableFor: Birinci araç kime/hangi kullanıma daha uygun?
+5. secondSuitableFor: İkinci araç kime/hangi kullanıma daha uygun?
+6. watchOut: Hangisini alırsa alsın dikkat etmesi gereken ortak noktalar.
+
+Not: Fiyat ve skor bilgileri uygulamanın kendi hesabıdır, onları değiştirme; yorumunu bunlar üzerine kur.
+${ORTAK_KURALLAR}`
+    }
+  }
 }
 
 function corsHeaders(origin, allowedOrigins) {
@@ -86,49 +248,14 @@ async function checkRateLimit(env, ip) {
   return true
 }
 
-function buildPrompt({ vehicle, complaint, localFindings }) {
-  const vehicleLine = vehicle?.brand
-    ? `${vehicle.brand} ${vehicle.model || ''} ${vehicle.year || ''} ${vehicle.engine || ''} ${vehicle.fuelType || ''} ${vehicle.transmission || ''} ${vehicle.km ? vehicle.km + ' km' : ''}`.replace(/\s+/g, ' ').trim()
-    : 'Araç bilgisi verilmedi'
-
-  const known = (localFindings?.knownProblems || [])
-    .map((p) => `- ${p.title} (${p.risk} risk, ${p.checkKm} km aralığı)`)
-    .join('\n')
-
-  const matched = (localFindings?.matchedSymptoms || []).map((s) => `- ${s}`).join('\n')
-
-  return `Sen Türkiye'de çalışan, ikinci el araç ve arıza teşhisi konusunda uzman bir oto ustasısın.
-Kullanıcı aracındaki şikayeti anlatıyor. Türkçe, sade ve net cevap ver.
-
-ARAÇ: ${vehicleLine}
-
-KULLANICININ ŞİKAYETİ:
-"${complaint}"
-
-${known ? `BU MOTORDA BİLİNEN KRONİK SORUNLAR (uygulama veritabanından):\n${known}\n` : ''}
-${matched ? `UYGULAMANIN ÖN ANALİZİNDE EŞLEŞEN BELİRTİLER:\n${matched}\n` : ''}
-GÖREVİN:
-1. Şikayeti değerlendirip en olası nedenleri sırala (en olasıdan başlayarak, en fazla 5 tane).
-2. Her neden için: olasılık ("Yüksek"/"Orta"/"Düşük"), somut çözüm önerisi, tahmini onarım maliyeti (Türkiye 2026 fiyatlarıyla TL aralığı, örn. "5.000 - 15.000 TL"), aciliyet ("Yüksek"/"Orta"/"Düşük").
-3. Ustaya götürüldüğünde baktırılması gereken kontrol maddelerini listele.
-4. Kullanıcının ustaya sorması gereken soruları listele.
-
-KURALLAR:
-- Emin olmadığın şeyi kesinmiş gibi söyleme; "olası", "kontrol edilmeli" gibi ifadeler kullan.
-- Güvenlik riski varsa (fren, direksiyon, yangın, hararet) aciliyeti "Yüksek" yap ve özet kısmında açıkça uyar.
-- Maliyet aralıklarını gerçekçi tut, abartma.
-- Kısa ve anlaşılır yaz, teknik jargonu açıkla.
-- Yanıtın sadece istenen JSON şemasında olsun.`
-}
-
-async function tryModel(env, model, prompt, { disableThinking = true } = {}) {
+async function tryModel(env, model, prompt, schema, { disableThinking = true } = {}) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`
 
   const generationConfig = {
     temperature: 0.3,
     maxOutputTokens: 1600,
     responseMimeType: 'application/json',
-    responseSchema: RESPONSE_SCHEMA
+    responseSchema: schema
   }
   // Yeni nesil modellerde "düşünme" varsayılan açık; kapatmak yanıtı çok hızlandırır.
   if (disableThinking) {
@@ -155,7 +282,7 @@ async function tryModel(env, model, prompt, { disableThinking = true } = {}) {
       // Model "thinkingConfig" desteklemiyorsa, aynı modeli o ayar olmadan bir kez daha dene
       if (res.status === 400 && disableThinking && /thinking/i.test(detail)) {
         clearTimeout(timer)
-        return tryModel(env, model, prompt, { disableThinking: false })
+        return tryModel(env, model, prompt, schema, { disableThinking: false })
       }
 
       // 404 / 400 -> model yok veya desteklenmiyor, sıradakini dene
@@ -184,7 +311,7 @@ async function tryModel(env, model, prompt, { disableThinking = true } = {}) {
   }
 }
 
-async function callGemini(env, prompt) {
+async function callGemini(env, prompt, schema) {
   // Elde çalıştığı bilinen model varsa önce onu dene
   const candidates = []
   if (cachedWorkingModel) candidates.push(cachedWorkingModel)
@@ -198,7 +325,7 @@ async function callGemini(env, prompt) {
     if (tried.has(model)) continue
     tried.add(model)
 
-    const outcome = await tryModel(env, model, prompt)
+    const outcome = await tryModel(env, model, prompt, schema)
     if (outcome.ok) {
       cachedWorkingModel = model
       return { ...outcome, model }
@@ -269,18 +396,30 @@ export default {
       return json({ error: 'Geçersiz istek' }, 400, cors)
     }
 
-    const complaint = String(body?.complaint || '').trim().slice(0, MAX_COMPLAINT_LENGTH)
-    if (complaint.length < 3) {
-      return json({ error: 'Şikayet metni çok kısa' }, 400, cors)
+    // Geriye dönük uyumluluk: "task" yoksa eski davranış (teşhis) uygulanır
+    const taskName = String(body?.task || 'diagnosis')
+    const task = TASKS[taskName]
+    if (!task) {
+      return json({ error: 'Bilinmeyen görev: ' + taskName }, 400, cors)
     }
 
-    const prompt = buildPrompt({
-      vehicle: body?.vehicle,
-      complaint,
-      localFindings: body?.localFindings
-    })
+    if (taskName === 'diagnosis') {
+      const complaint = String(body?.complaint || '').trim().slice(0, MAX_COMPLAINT_LENGTH)
+      if (complaint.length < 3) {
+        return json({ error: 'Şikayet metni çok kısa' }, 400, cors)
+      }
+      body.complaint = complaint
+    }
 
-    const outcome = await callGemini(env, prompt)
+    if (taskName === 'vehicle-info' && !body?.vehicle?.brand) {
+      return json({ error: 'Araç bilgisi gerekli' }, 400, cors)
+    }
+    if (taskName === 'compare' && (!body?.first?.brand || !body?.second?.brand)) {
+      return json({ error: 'İki araç bilgisi de gerekli' }, 400, cors)
+    }
+
+    const prompt = task.prompt(body)
+    const outcome = await callGemini(env, prompt, task.schema)
     if (!outcome.ok) {
       return json(
         { error: 'Analiz alınamadı', model: outcome.model, detail: outcome.detail },

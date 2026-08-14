@@ -1,5 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
+import AiPanel from '../components/AiPanel'
+import { fetchVerdict, isAiConfigured } from '../services/aiService'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ScoreGauge from '../components/ScoreGauge'
@@ -35,12 +37,42 @@ export default function AnalysisResultPage() {
     [state, marketEstimate]
   )
 
+  const [ai, setAi] = useState({ status: 'idle', data: null, message: '' })
+
   if (!state) {
     return <Navigate to="/analiz" replace />
   }
 
   const { formData, result } = state
   const vehicleLabel = `${formData.brand} ${formData.model} ${formData.year}`
+
+  async function handleRequestVerdict() {
+    setAi({ status: 'loading', data: null, message: '' })
+    const response = await fetchVerdict({
+      vehicle: {
+        brand: formData.brand,
+        model: formData.model,
+        year: formData.year,
+        engine: formData.engine,
+        fuelType: formData.fuelType,
+        transmission: formData.transmission,
+        km: formData.km,
+        price: formData.price
+      },
+      analysis: {
+        score: result.score,
+        bandLabel: result.band.label,
+        marketLabel: marketEstimate?.label,
+        marketDiffPercent: marketEstimate?.diffPercent,
+        avgFuelConsumption: result.engineData?.avgFuelConsumption,
+        knownProblems: result.knownProblems
+      }
+    })
+
+    if (!response) setAi({ status: 'idle', data: null, message: '' })
+    else if (response.error) setAi({ status: 'error', data: null, message: response.error })
+    else setAi({ status: 'ready', data: response.result, message: '' })
+  }
 
   function handleToggleFavorite() {
     if (!favoriteId) return
@@ -137,6 +169,55 @@ export default function AnalysisResultPage() {
               verisi değildir, yalnızca fikir vermek içindir.
             </p>
           </section>
+        )}
+
+        {isAiConfigured() && (
+          <AiPanel
+            title="Uzman Yorumu"
+            buttonLabel="Bu Araç İçin Yorum Al"
+            hint="Skor, fiyat ve kronik sorunlar birlikte değerlendirilip alım tavsiyesi, pazarlık argümanları ve vazgeçme sinyalleri çıkarılır."
+            status={ai.status}
+            message={ai.message}
+            onRequest={handleRequestVerdict}
+          >
+            {ai.data && (
+              <>
+                <p className="ai-summary">{ai.data.opinion}</p>
+
+                {ai.data.problemAssessment && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Sorunlar ne kadar ciddi?</p>
+                    <p className="ai-text">{ai.data.problemAssessment}</p>
+                  </div>
+                )}
+
+                {ai.data.buyAdvice && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Alım tavsiyesi</p>
+                    <p className="ai-text">{ai.data.buyAdvice}</p>
+                  </div>
+                )}
+
+                {ai.data.negotiationTips.length > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Pazarlıkta kullan</p>
+                    <ul className="result-list neutral" style={{ fontSize: '0.84rem' }}>
+                      {ai.data.negotiationTips.map((t) => <li key={t}>{t}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                {ai.data.redFlags.length > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Görürsen vazgeç</p>
+                    <ul className="result-list negative" style={{ fontSize: '0.84rem' }}>
+                      {ai.data.redFlags.map((t) => <li key={t}>{t}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </>
+            )}
+          </AiPanel>
         )}
 
         <section className="result-card">

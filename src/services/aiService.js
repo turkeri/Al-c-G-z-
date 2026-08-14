@@ -34,9 +34,16 @@ export function isAiAvailable() {
   return isAiConfigured() && isOnline()
 }
 
-function cacheKeyFor(vehicle, complaint) {
-  const v = vehicle ? `${vehicle.brand}|${vehicle.model}|${vehicle.engine}` : 'genel'
-  return `${v}::${complaint.trim().toLowerCase()}`
+function cacheKeyFor(task, payload) {
+  const v = payload?.vehicle
+    ? `${payload.vehicle.brand}|${payload.vehicle.model}|${payload.vehicle.engine}|${payload.vehicle.year}|${payload.vehicle.km}`
+    : ''
+  const pair = payload?.first
+    ? `${payload.first.brand}|${payload.first.model}|${payload.first.engine}` +
+      `::${payload.second?.brand}|${payload.second?.model}|${payload.second?.engine}`
+    : ''
+  const text = payload?.complaint ? payload.complaint.trim().toLowerCase() : ''
+  return `${task}::${v}${pair}::${text}`
 }
 
 function readCache() {
@@ -69,45 +76,98 @@ function setCached(key, value) {
   writeCache(store)
 }
 
-function normalizeResult(raw) {
-  if (!raw || typeof raw !== 'object') return null
-  const causes = Array.isArray(raw.causes) ? raw.causes : []
-  if (!raw.summary && causes.length === 0) return null
+const RISK_LEVELS = ['Yüksek', 'Orta', 'Düşük']
+const str = (v) => (typeof v === 'string' ? v : '')
+const strList = (v) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()) : [])
+const level = (v, fallback = 'Orta') => (RISK_LEVELS.includes(v) ? v : fallback)
 
-  return {
-    summary: typeof raw.summary === 'string' ? raw.summary : '',
-    causes: causes
-      .filter((c) => c && typeof c.cause === 'string')
-      .map((c) => ({
-        cause: c.cause,
-        likelihood: ['Yüksek', 'Orta', 'Düşük'].includes(c.likelihood) ? c.likelihood : 'Orta',
-        solution: typeof c.solution === 'string' ? c.solution : '',
-        estimatedCost: typeof c.estimatedCost === 'string' ? c.estimatedCost : '',
-        urgency: ['Yüksek', 'Orta', 'Düşük'].includes(c.urgency) ? c.urgency : 'Orta'
-      })),
-    checks: Array.isArray(raw.checks) ? raw.checks.filter((c) => typeof c === 'string') : [],
-    askMechanic: Array.isArray(raw.askMechanic)
-      ? raw.askMechanic.filter((c) => typeof c === 'string')
-      : []
+const NORMALIZERS = {
+  diagnosis(raw) {
+    const causes = Array.isArray(raw.causes) ? raw.causes : []
+    if (!raw.summary && causes.length === 0) return null
+    return {
+      summary: str(raw.summary),
+      causes: causes
+        .filter((c) => c && typeof c.cause === 'string')
+        .map((c) => ({
+          cause: c.cause,
+          likelihood: level(c.likelihood),
+          solution: str(c.solution),
+          estimatedCost: str(c.estimatedCost),
+          urgency: level(c.urgency)
+        })),
+      checks: strList(raw.checks),
+      askMechanic: strList(raw.askMechanic)
+    }
+  },
+
+  'vehicle-info'(raw) {
+    const problems = Array.isArray(raw.commonProblems) ? raw.commonProblems : []
+    if (!raw.overview && problems.length === 0) return null
+    return {
+      overview: str(raw.overview),
+      reliability: str(raw.reliability),
+      commonProblems: problems
+        .filter((p) => p && typeof p.title === 'string')
+        .map((p) => ({
+          title: p.title,
+          risk: level(p.risk),
+          description: str(p.description),
+          solution: str(p.solution),
+          estimatedCost: str(p.estimatedCost),
+          checkKm: str(p.checkKm)
+        })),
+      inspectionChecklist: strList(raw.inspectionChecklist),
+      avgFuelConsumption: str(raw.avgFuelConsumption),
+      buyAdvice: str(raw.buyAdvice),
+      verdict: ['al', 'dikkatli', 'alma'].includes(raw.verdict) ? raw.verdict : 'dikkatli'
+    }
+  },
+
+  verdict(raw) {
+    if (!raw.opinion && !raw.buyAdvice) return null
+    return {
+      opinion: str(raw.opinion),
+      problemAssessment: str(raw.problemAssessment),
+      buyAdvice: str(raw.buyAdvice),
+      negotiationTips: strList(raw.negotiationTips),
+      redFlags: strList(raw.redFlags)
+    }
+  },
+
+  compare(raw) {
+    if (!raw.recommendation && !raw.winner) return null
+    return {
+      winner: str(raw.winner),
+      recommendation: str(raw.recommendation),
+      reasoning: strList(raw.reasoning),
+      firstSuitableFor: str(raw.firstSuitableFor),
+      secondSuitableFor: str(raw.secondSuitableFor),
+      watchOut: strList(raw.watchOut)
+    }
   }
 }
 
 /**
+ * Tüm AI görevleri için ortak çağrı.
+ *
  * @returns {Promise<{result: object}|{error: string}|null>}
- *   result -> başarılı analiz
+ *   result -> başarılı sonuç
  *   error  -> kullanıcıya gösterilebilecek kısa hata nedeni
  *   null   -> özellik kapalı, sessizce atlanmalı
  */
-export async function fetchAiAnalysis({ vehicle, complaint, localFindings }) {
+async function callTask(task, payload) {
   if (!isAiConfigured()) return null
-  if (!complaint || complaint.trim().length < 3) return null
 
-  const key = cacheKeyFor(vehicle, complaint)
+  const normalizer = NORMALIZERS[task]
+  if (!normalizer) return null
+
+  const key = cacheKeyFor(task, payload)
   const cached = getCached(key)
   if (cached) return { result: cached, cached: true }
 
   if (!isOnline()) {
-    return { error: 'İnternet bağlantısı yok, yalnızca cihaz içi analiz gösteriliyor.' }
+    return { error: 'İnternet bağlantısı yok, yalnızca cihaz içi bilgiler gösteriliyor.' }
   }
 
   const controller = new AbortController()
@@ -118,30 +178,54 @@ export async function fetchAiAnalysis({ vehicle, complaint, localFindings }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
-      body: JSON.stringify({ vehicle, complaint, localFindings })
+      body: JSON.stringify({ task, ...payload })
     })
 
     if (response.status === 429) {
       return { error: 'Çok fazla istek gönderildi, birkaç dakika sonra tekrar deneyin.' }
     }
     if (!response.ok) {
-      return { error: 'Gelişmiş analiz şu an alınamadı, cihaz içi analiz gösteriliyor.' }
+      return { error: 'Detaylı değerlendirme şu an alınamadı.' }
     }
 
     const data = await response.json()
-    const normalized = normalizeResult(data?.result)
+    const normalized = normalizer(data?.result || {})
     if (!normalized) {
-      return { error: 'Gelişmiş analiz okunamadı, cihaz içi analiz gösteriliyor.' }
+      return { error: 'Detaylı değerlendirme okunamadı.' }
     }
 
     setCached(key, normalized)
     return { result: normalized }
   } catch (err) {
     if (err?.name === 'AbortError') {
-      return { error: 'Gelişmiş analiz zaman aşımına uğradı, cihaz içi analiz gösteriliyor.' }
+      return { error: 'Detaylı değerlendirme zaman aşımına uğradı.' }
     }
-    return { error: 'Gelişmiş analize ulaşılamadı, cihaz içi analiz gösteriliyor.' }
+    return { error: 'Detaylı değerlendirmeye ulaşılamadı.' }
   } finally {
     clearTimeout(timer)
   }
+}
+
+/** Şikayet metninden arıza teşhisi */
+export async function fetchAiAnalysis({ vehicle, complaint, localFindings }) {
+  if (!complaint || complaint.trim().length < 3) return null
+  return callTask('diagnosis', { vehicle, complaint, localFindings })
+}
+
+/** Veritabanımızda olmayan araç hakkında bilgi */
+export async function fetchVehicleInfo(vehicle) {
+  if (!vehicle?.brand) return null
+  return callTask('vehicle-info', { vehicle })
+}
+
+/** Analiz sonucu üzerine yorum ve alım tavsiyesi */
+export async function fetchVerdict({ vehicle, analysis }) {
+  if (!vehicle?.brand) return null
+  return callTask('verdict', { vehicle, analysis })
+}
+
+/** İki araç arasında tercih önerisi */
+export async function fetchComparison({ first, second }) {
+  if (!first?.brand || !second?.brand) return null
+  return callTask('compare', { first, second })
 }

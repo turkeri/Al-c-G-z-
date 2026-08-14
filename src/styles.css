@@ -1650,6 +1650,45 @@ button {
   border-radius: var(--radius-md);
 }
 
+.ai-block {
+  margin-bottom: 14px;
+}
+
+.ai-block:last-of-type {
+  margin-bottom: 0;
+}
+
+.ai-text {
+  margin: 0 0 6px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.ai-winner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(8, 145, 178, 0.1);
+  border: 1px solid rgba(8, 145, 178, 0.25);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  margin-bottom: 12px;
+}
+
+.ai-winner-label {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #0e7490;
+}
+
+.ai-winner strong {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
 .ai-loading {
   display: flex;
   align-items: center;

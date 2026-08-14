@@ -12,6 +12,8 @@ import {
 } from '../services/vehicleService'
 import { compareTwoVehicles } from '../services/vehicleCompareService'
 import { formatKm, formatPrice } from '../utils/formatters'
+import AiPanel from '../components/AiPanel'
+import { fetchComparison, isAiConfigured } from '../services/aiService'
 
 const EMPTY_SIDE = {
   brand: '',
@@ -181,6 +183,7 @@ export default function VehicleComparePage() {
   const [sideA, setSideA] = useState(EMPTY_SIDE)
   const [sideB, setSideB] = useState(EMPTY_SIDE)
   const [comparison, setComparison] = useState(null)
+  const [ai, setAi] = useState({ status: 'idle', data: null, message: '' })
 
   const canCompare =
     sideA.brand && sideA.model && sideA.engine && sideB.brand && sideB.model && sideB.engine
@@ -197,6 +200,38 @@ export default function VehicleComparePage() {
   function handleCompare() {
     if (!canCompare) return
     setComparison(compareTwoVehicles(sideA, sideB))
+    setAi({ status: 'idle', data: null, message: '' })
+  }
+
+  function sideForAi(side, entry, result) {
+    return {
+      brand: side.brand,
+      model: side.model,
+      year: side.year,
+      engine: side.engine,
+      fuelType: side.fuelType,
+      transmission: side.transmission,
+      km: side.km,
+      price: side.price,
+      score: result.score,
+      marketLabel: result === comparison?.resultA ? comparison?.marketA?.label : comparison?.marketB?.label,
+      avgFuelConsumption: result.engineData?.avgFuelConsumption,
+      bodyType: entry?.features?.bodyType,
+      segment: entry?.features?.segment,
+      knownProblems: result.knownProblems
+    }
+  }
+
+  async function handleAskAi() {
+    if (!comparison) return
+    setAi({ status: 'loading', data: null, message: '' })
+    const response = await fetchComparison({
+      first: sideForAi(sideA, entryA, comparison.resultA),
+      second: sideForAi(sideB, entryB, comparison.resultB)
+    })
+    if (!response) setAi({ status: 'idle', data: null, message: '' })
+    else if (response.error) setAi({ status: 'error', data: null, message: response.error })
+    else setAi({ status: 'ready', data: response.result, message: '' })
   }
 
   const labelA = `${sideA.brand} ${sideA.model}`
@@ -240,6 +275,60 @@ export default function VehicleComparePage() {
                 ))}
               </ul>
             </section>
+
+            {isAiConfigured() && (
+              <AiPanel
+                title="Hangisini Almalıyım?"
+                buttonLabel="Tercih Önerisi Al"
+                hint="İki aracın fiyatı, güvenilirliği, masrafı ve kronik sorunları birlikte değerlendirilip hangisinin kime uygun olduğu yorumlanır."
+                status={ai.status}
+                message={ai.message}
+                onRequest={handleAskAi}
+              >
+                {ai.data && (
+                  <>
+                    {ai.data.winner && (
+                      <div className="ai-winner">
+                        <span className="ai-winner-label">Öne çıkan</span>
+                        <strong>{ai.data.winner}</strong>
+                      </div>
+                    )}
+
+                    <p className="ai-summary">{ai.data.recommendation}</p>
+
+                    {ai.data.reasoning.length > 0 && (
+                      <div className="ai-block">
+                        <p className="expertise-category-title">Gerekçeler</p>
+                        <ul className="result-list neutral" style={{ fontSize: '0.84rem' }}>
+                          {ai.data.reasoning.map((r) => <li key={r}>{r}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {(ai.data.firstSuitableFor || ai.data.secondSuitableFor) && (
+                      <div className="ai-block">
+                        <p className="expertise-category-title">Kime hangisi uygun?</p>
+                        {ai.data.firstSuitableFor && (
+                          <p className="ai-text"><strong>{labelA}:</strong> {ai.data.firstSuitableFor}</p>
+                        )}
+                        {ai.data.secondSuitableFor && (
+                          <p className="ai-text"><strong>{labelB}:</strong> {ai.data.secondSuitableFor}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {ai.data.watchOut.length > 0 && (
+                      <div className="ai-block">
+                        <p className="expertise-category-title">Hangisini alırsan al, dikkat et</p>
+                        <ul className="result-list negative" style={{ fontSize: '0.84rem' }}>
+                          {ai.data.watchOut.map((w) => <li key={w}>{w}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                )}
+              </AiPanel>
+            )}
 
             <section className="result-card">
               <div className="spec-header">
