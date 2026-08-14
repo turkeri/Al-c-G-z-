@@ -11,42 +11,48 @@ const CARDS = [
     title: 'Kronik Sorunlar',
     description: 'Marka, model ve motora göre bilinen arıza kayıtları.',
     icon: 'wrench',
-    accent: '#e0724d'
+    accent: '#e0724d',
+    art: 'gear'
   },
   {
     to: '/aracimin-nesi-var',
     title: 'Aracımın Nesi Var?',
     description: 'Şikayetini yaz, olası arızaları ve çözümlerini sırala.',
     icon: 'stethoscope',
-    accent: '#b91c1c'
+    accent: '#b91c1c',
+    art: 'pulse'
   },
   {
     to: '/arac-karsilastir',
     title: 'Araç Karşılaştır',
     description: 'İki modeli fiyat, donanım ve artı/eksi yönleriyle kıyasla.',
     icon: 'gauge',
-    accent: '#0891b2'
+    accent: '#0891b2',
+    art: 'compare'
   },
   {
     to: '/obd',
     title: 'Arıza Kodu Sözlüğü',
     description: 'Cihazdan okuduğun kodun anlamı, çözümü ve maliyeti.',
     icon: 'plug',
-    accent: '#7c5cf0'
+    accent: '#7c5cf0',
+    art: 'plug'
   },
   {
     to: '/maliyet',
     title: 'Sahip Olma Maliyeti',
     description: 'Yakıt, vergi, sigorta, bakım ve arıza riski dahil yıllık gider.',
     icon: 'wallet',
-    accent: '#15803d'
+    accent: '#15803d',
+    art: 'bars'
   },
   {
     to: '/guvenli-alim',
     title: 'Güvenli Alım',
     description: 'Evrak, kapora, kilometre ve dolandırıcılık kontrol listesi.',
     icon: 'shield',
-    accent: '#b45309'
+    accent: '#b45309',
+    art: 'shield'
   }
 ]
 

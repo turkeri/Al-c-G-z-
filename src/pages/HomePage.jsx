@@ -17,56 +17,64 @@ const CARDS = [
     description: 'Bilgileri gir, risk skorunu ve raporu gör.',
     badge: 'BAŞLA',
     icon: 'car',
-    accent: '#3454d1'
+    accent: '#3454d1',
+    art: 'gauge'
   },
   {
     to: '/yerinde-kontrol',
     title: 'Yerinde Kontrol',
     description: 'Aracın başındayken adım adım ilerle.',
     icon: 'clipboard',
-    accent: '#1fa971'
+    accent: '#1fa971',
+    art: 'checklist'
   },
   {
     to: '/aracimin-nesi-var',
     title: 'Aracımın Nesi Var?',
     description: 'Şikayetini yaz, olası arızaları gör.',
     icon: 'stethoscope',
-    accent: '#b91c1c'
+    accent: '#b91c1c',
+    art: 'pulse'
   },
   {
     to: '/tramer',
     title: 'Hasar ve Değer Kaybı',
     description: 'Tramer tutarını gir, pazarlık payını hesapla.',
     icon: 'crash',
-    accent: '#c2410c'
+    accent: '#c2410c',
+    art: 'impact'
   },
   {
     to: '/maliyet',
     title: 'Sahip Olma Maliyeti',
     description: 'Bu araç bana yılda ne yakar?',
     icon: 'wallet',
-    accent: '#15803d'
+    accent: '#15803d',
+    art: 'bars'
   },
   {
     to: '/arac-karsilastir',
     title: 'Araç Karşılaştır',
     description: 'İki modeli yan yana kıyasla.',
     icon: 'gauge',
-    accent: '#0891b2'
+    accent: '#0891b2',
+    art: 'compare'
   },
   {
     to: '/kronik-sorunlar',
     title: 'Kronik Sorunlar',
     description: 'Modele göre bilinen arıza kayıtları.',
     icon: 'wrench',
-    accent: '#e0724d'
+    accent: '#e0724d',
+    art: 'gear'
   },
   {
     to: '/guvenli-alim',
     title: 'Güvenli Alım',
     description: 'Evrak, kapora ve dolandırıcılık kontrolü.',
     icon: 'shield',
-    accent: '#b45309'
+    accent: '#b45309',
+    art: 'shield'
   }
 ]
 

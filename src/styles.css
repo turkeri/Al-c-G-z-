@@ -2227,10 +2227,16 @@ button {
 }
 
 /* ============================================================
-   FAR GÖRSEL KİMLİĞİ
-   Açılış selektörü ve yükleniyor göstergesi aynı SVG'yi kullanır.
-   Parlaklık, ışıklı parçalara (mercek, DRL, hüzme) aynı anda uygulanan
-   opacity/filter animasyonlarıyla sürülür.
+   GECE FAR SAHNESİ (AÇILIŞ) VE FAR YÜKLEME GÖSTERGESİ
+   ------------------------------------------------------------
+   Bir farı gerçek yapan şey farın kendisi değil, çevresidir: karanlık,
+   havada saçılan hüzme, yola vuran ışık havuzu ve mercek çevresindeki
+   parlama. Selektör anında bunların hepsi birlikte yanar; yalnızca farın
+   opaklığını değiştirmek yapay durur.
+
+   Parlaklık iki değişkenle sürülür:
+     --lit  : ışığın açıklığı (0-1)
+     --bloom: parlama yarıçapı
    ============================================================ */
 
 .headlight {
@@ -2251,107 +2257,40 @@ button {
   overflow: visible;
 }
 
+/* --- Sönük durum: gövde karanlıkta neredeyse kaybolur --- */
+
 .headlight-drl {
-  stroke: #bfdbfe;
-  opacity: 0.16;
+  stroke: #dcecff;
 }
 
-.headlight-core {
-  opacity: 0.14;
+.headlight-matrix {
+  fill: #cfe4ff;
+}
+
+/* Parlama artik tum SVG'ye degil, yalnizca isikli gruba uygulanir. */
+.headlight-lit {
+  opacity: 0.1;
 }
 
 .headlight-core-ring {
-  stroke: rgba(191, 219, 254, 0.5);
+  stroke: rgba(190, 220, 255, 0.35);
 }
 
-.headlight-beam {
-  position: absolute;
-  left: 46%;
-  top: 50%;
-  width: 210%;
-  height: 260%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(
-    ellipse at 8% 50%,
-    rgba(219, 234, 254, 0.55) 0%,
-    rgba(147, 197, 253, 0.22) 26%,
-    rgba(96, 165, 250, 0) 68%
-  );
-  filter: blur(2px);
+.headlight-reflector {
+  opacity: 0.5;
 }
 
-/* --- Açılış selektörü --- */
-
-@keyframes hl-selector-lit {
-  0%, 6% { opacity: 0.12; }
-  7%, 9% { opacity: 1; }
-  10%, 15% { opacity: 0.12; }
-  16.5%, 18.5% { opacity: 1; }
-  20%, 33% { opacity: 0.12; }
-  34.5%, 36.5% { opacity: 1; }
-  38%, 46% { opacity: 0.12; }
-  49%, 100% { opacity: 1; }
-}
-
-@keyframes hl-selector-beam {
-  0%, 6% { opacity: 0; transform: translateY(-50%) scaleX(0.6); }
-  7%, 9% { opacity: 0.85; transform: translateY(-50%) scaleX(1); }
-  10%, 15% { opacity: 0; transform: translateY(-50%) scaleX(0.6); }
-  16.5%, 18.5% { opacity: 0.85; transform: translateY(-50%) scaleX(1); }
-  20%, 33% { opacity: 0; transform: translateY(-50%) scaleX(0.6); }
-  34.5%, 36.5% { opacity: 0.9; transform: translateY(-50%) scaleX(1); }
-  38%, 46% { opacity: 0; transform: translateY(-50%) scaleX(0.6); }
-  49%, 100% { opacity: 1; transform: translateY(-50%) scaleX(1.08); }
-}
-
-@keyframes hl-selector-glow {
-  0%, 6% { filter: none; }
-  7%, 9% { filter: drop-shadow(0 0 16px rgba(191, 219, 254, 0.95)); }
-  10%, 15% { filter: none; }
-  16.5%, 18.5% { filter: drop-shadow(0 0 16px rgba(191, 219, 254, 0.95)); }
-  20%, 33% { filter: none; }
-  34.5%, 36.5% { filter: drop-shadow(0 0 18px rgba(191, 219, 254, 0.95)); }
-  38%, 46% { filter: none; }
-  49%, 100% { filter: drop-shadow(0 0 22px rgba(191, 219, 254, 0.9)); }
-}
-
-.splash-headlight .headlight-core,
-.splash-headlight .headlight-drl {
-  animation: hl-selector-lit 3.6s steps(1, end) both;
-}
-
-.splash-headlight .headlight-beam {
-  animation: hl-selector-beam 3.6s steps(1, end) both;
-}
-
-.splash-headlight .headlight-svg {
-  animation: hl-selector-glow 3.6s steps(1, end) both;
-}
-
-.splash-headlight-right .headlight-core,
-.splash-headlight-right .headlight-drl,
-.splash-headlight-right .headlight-beam,
-.splash-headlight-right .headlight-svg {
-  animation-delay: 0.26s;
-}
-
-/* --- Açılış ekranı --- */
+/* ============================================================
+   AÇILIŞ SAHNESİ
+   ============================================================ */
 
 .splash {
   position: fixed;
   inset: 0;
   z-index: 999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 42px;
-  background:
-    radial-gradient(ellipse at 50% 62%, #16203a 0%, #080c16 55%, #04060b 100%);
   overflow: hidden;
-  transition: opacity 0.5s ease;
+  background: #02040a;
+  transition: opacity 0.55s ease;
 }
 
 .splash-leaving {
@@ -2359,80 +2298,366 @@ button {
   pointer-events: none;
 }
 
+.splash-scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* --- Zemin: perspektifle uzaklaşan ıslak asfalt --- */
+
 .splash-road {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 220%;
-  height: 42%;
+  width: 300%;
+  height: 46%;
   transform: translateX(-50%);
-  background: linear-gradient(to top, rgba(96, 165, 250, 0.12), transparent 70%);
+  overflow: hidden;
 }
 
+.splash-road-surface {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(125, 155, 195, 0.11), transparent 66%);
+  opacity: 0.9;
+}
+
+/* --- Havadaki pus: hüzmenin görünmesini sağlayan katman --- */
+
+.splash-haze {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  width: 150%;
+  height: 60%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at 50% 20%,
+    rgba(150, 190, 245, 0.1) 0%,
+    rgba(120, 165, 230, 0.04) 38%,
+    transparent 70%
+  );
+  filter: blur(18px);
+  opacity: 0;
+}
+
+/* --- Volumetrik hüzme konileri --- */
+
+.splash-beam {
+  position: absolute;
+  top: 48%;
+  width: 78%;
+  height: 54%;
+  opacity: 0;
+  transform-origin: 50% 0%;
+  background: linear-gradient(
+    to bottom,
+    rgba(232, 244, 255, 0.85) 0%,
+    rgba(198, 226, 255, 0.42) 22%,
+    rgba(158, 200, 250, 0.18) 48%,
+    rgba(130, 180, 240, 0.06) 72%,
+    transparent 92%
+  );
+  /* Kaynakta dar, yolda geniş: gerçek hüzme kesiti */
+  clip-path: polygon(45% 0%, 55% 0%, 96% 100%, 4% 100%);
+  /* Koninin yan kenarlari silinir: gercek huzmenin keskin kenari yoktur. */
+  mask-image: linear-gradient(to right, transparent 0%, #000 26%, #000 74%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 26%, #000 74%, transparent 100%);
+  filter: blur(24px);
+  mix-blend-mode: screen;
+}
+
+.splash-beam-left {
+  left: 0%;
+  transform: rotate(7deg);
+}
+
+.splash-beam-right {
+  right: 0%;
+  transform: rotate(-7deg);
+}
+
+/* --- Işığın yola vurduğu havuz --- */
+
+/*
+ * Yola vuran ışık havuzu.
+ * Avrupa kısa hüzmesi asimetriktir: dış tarafa doğru daha uzağa gider.
+ * Havuz bu yüzden merkeze göre dışa kaydırılmış ve yatayda uzatılmıştır.
+ */
+.splash-pool {
+  position: absolute;
+  top: 72%;
+  width: 92%;
+  height: 34%;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at 50% 38%,
+    rgba(240, 248, 255, 0.6) 0%,
+    rgba(206, 230, 255, 0.34) 26%,
+    rgba(160, 200, 248, 0.15) 50%,
+    rgba(130, 175, 235, 0.07) 72%,
+    transparent 86%
+  );
+  filter: blur(16px);
+  mix-blend-mode: screen;
+}
+
+.splash-pool-left {
+  left: -16%;
+}
+
+.splash-pool-right {
+  right: -16%;
+}
+
+/* Islak asfaltta farın dikey yansıması */
+.splash-reflection {
+  position: absolute;
+  top: 56%;
+  width: 26%;
+  height: 40%;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(200, 226, 255, 0.34) 0%,
+    rgba(160, 200, 245, 0.12) 40%,
+    transparent 82%
+  );
+  filter: blur(10px);
+  mix-blend-mode: screen;
+}
+
+.splash-reflection-left {
+  left: 12%;
+}
+
+.splash-reflection-right {
+  right: 12%;
+}
+
+/* --- Aracın ön siluetı: yalnızca ima --- */
+
+.splash-body {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 132%;
+  height: 30%;
+  transform: translateX(-50%);
+  border-radius: 40% 40% 8% 8% / 46% 46% 8% 8%;
+  background: linear-gradient(to bottom, rgba(16, 24, 38, 0.92), rgba(4, 7, 13, 0.98));
+  box-shadow: inset 0 1px 0 rgba(150, 185, 235, 0.07);
+  opacity: 0;
+}
+
+/* --- Far üniteleri --- */
+
 .splash-lights {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 46px;
+  gap: clamp(28px, 9vw, 70px);
   width: 100%;
-  max-width: 420px;
-  padding: 0 18px;
+  max-width: 460px;
+  padding: 0 14px;
+}
+
+.splash-unit {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+/* Mercek çevresindeki parlama: yatay anamorfik çizgi + yıldız */
+.splash-glare {
+  position: absolute;
+  top: 50%;
+  width: 260%;
+  height: 3px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(210, 232, 255, 0.75) 30%,
+    #ffffff 50%,
+    rgba(210, 232, 255, 0.75) 70%,
+    transparent 100%
+  );
+  filter: blur(1.5px);
+  mix-blend-mode: screen;
+}
+
+.splash-glare-left {
+  right: 8%;
+  transform: translateY(-50%);
+}
+
+.splash-glare-right {
+  left: 8%;
+  transform: translateY(-50%);
+}
+
+.splash-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 48%, transparent 34%, rgba(0, 0, 0, 0.72) 100%);
 }
 
 .splash-brand {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Yazi ekranin en karanlik bolgesinde durur; isik havuzunun uzerinde
+     okunmuyordu. */
+  top: 15%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  animation: splash-brand-in 1s ease 2.1s both;
+  animation: splash-brand-in 0.9s ease 1.9s both;
 }
 
 .splash-brand-name {
   font-size: 1.24rem;
   font-weight: 800;
-  letter-spacing: 0.24em;
-  color: #eaf2ff;
+  letter-spacing: 0.26em;
+  color: #eef5ff;
+  text-shadow: 0 0 18px rgba(150, 195, 255, 0.55);
 }
 
 .splash-brand-tagline {
   font-size: 0.86rem;
-  letter-spacing: 0.08em;
-  color: rgba(191, 219, 254, 0.72);
+  letter-spacing: 0.09em;
+  color: rgba(184, 212, 250, 0.72);
 }
 
 @keyframes splash-brand-in {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Yükleniyor göstergesi --- */
+/* ============================================================
+   SELEKTÖR ZAMAN ÇİZELGESİ
+   ------------------------------------------------------------
+   3,9 sn üzerinden: iki kısa selektör çakması, kısa bir karanlık,
+   üçüncü çakma, sonra uzun far sabit yanar.
+   Sönüş her çakmada ani değil, ampul gibi hafif gecikmelidir.
+   ============================================================ */
 
-@keyframes hl-pulse-lit {
-  0%, 100% { opacity: 0.16; }
-  50% { opacity: 0.92; }
+@keyframes hl-lit {
+  0%, 7% { opacity: 0.1; }
+  8%, 10% { opacity: 1; }
+  13% { opacity: 0.1; }
+  17% { opacity: 0.1; }
+  18%, 20% { opacity: 1; }
+  23% { opacity: 0.1; }
+  38% { opacity: 0.1; }
+  39%, 42% { opacity: 1; }
+  45% { opacity: 0.1; }
+  52% { opacity: 0.1; }
+  56%, 100% { opacity: 1; }
 }
 
-@keyframes hl-pulse-beam {
-  0%, 100% { opacity: 0.05; transform: translateY(-50%) scaleX(0.72); }
-  50% { opacity: 0.6; transform: translateY(-50%) scaleX(1); }
+@keyframes hl-glow {
+  0%, 7% { filter: none; }
+  8%, 10% { filter: drop-shadow(0 0 14px rgba(200, 228, 255, 0.95)) drop-shadow(0 0 34px rgba(140, 190, 255, 0.6)); }
+  13% { filter: none; }
+  17% { filter: none; }
+  18%, 20% { filter: drop-shadow(0 0 14px rgba(200, 228, 255, 0.95)) drop-shadow(0 0 34px rgba(140, 190, 255, 0.6)); }
+  23% { filter: none; }
+  38% { filter: none; }
+  39%, 42% { filter: drop-shadow(0 0 16px rgba(200, 228, 255, 1)) drop-shadow(0 0 40px rgba(140, 190, 255, 0.7)); }
+  45% { filter: none; }
+  52% { filter: none; }
+  56%, 100% { filter: drop-shadow(0 0 20px rgba(205, 230, 255, 0.95)) drop-shadow(0 0 52px rgba(130, 180, 255, 0.65)); }
+}
+
+/* Çevre elemanları (hüzme, havuz, pus, parlama, siluet) farla aynı ritimde
+   yanar; ışığın ortama yayılması böyle görünür. */
+@keyframes hl-env {
+  0%, 7% { opacity: 0; }
+  8%, 10% { opacity: 0.9; }
+  13% { opacity: 0; }
+  17% { opacity: 0; }
+  18%, 20% { opacity: 0.9; }
+  23% { opacity: 0; }
+  38% { opacity: 0; }
+  39%, 42% { opacity: 1; }
+  45% { opacity: 0; }
+  52% { opacity: 0; }
+  56%, 100% { opacity: 1; }
+}
+
+/* Siluet, ışık yandığında hafifçe görünür hale gelir. */
+@keyframes hl-body {
+  0%, 7% { opacity: 0; }
+  8%, 10% { opacity: 0.55; }
+  13% { opacity: 0; }
+  17% { opacity: 0; }
+  18%, 20% { opacity: 0.55; }
+  23% { opacity: 0; }
+  38% { opacity: 0; }
+  39%, 42% { opacity: 0.6; }
+  45% { opacity: 0; }
+  52% { opacity: 0; }
+  56%, 100% { opacity: 0.75; }
+}
+
+.splash-headlight .headlight-lit {
+  animation:
+    hl-lit 3.9s cubic-bezier(0.2, 0, 0.1, 1) both,
+    hl-glow 3.9s cubic-bezier(0.2, 0, 0.1, 1) both;
+}
+
+.splash-beam,
+.splash-pool,
+.splash-reflection,
+.splash-haze,
+.splash-glare {
+  animation: hl-env 3.9s cubic-bezier(0.2, 0, 0.1, 1) both;
+}
+
+.splash-body {
+  animation: hl-body 3.9s cubic-bezier(0.2, 0, 0.1, 1) both;
+}
+
+/* Sağ taraf bir tık geç yanar: iki far tam eşzamanlı olunca mekanik durur. */
+.splash-headlight-right .headlight-lit,
+.splash-beam-right,
+.splash-pool-right,
+.splash-glare-right {
+  animation-delay: 0.09s;
+}
+
+/* ============================================================
+   FAR YÜKLEME GÖSTERGESİ (uygulama içi)
+   ============================================================ */
+
+@keyframes hl-pulse-lit {
+  0%, 100% { opacity: 0.14; }
+  50% { opacity: 0.95; }
 }
 
 @keyframes hl-pulse-glow {
   0%, 100% { filter: none; }
-  50% { filter: drop-shadow(0 0 14px rgba(147, 197, 253, 0.75)); }
+  50% { filter: drop-shadow(0 0 12px rgba(147, 197, 253, 0.8)); }
 }
 
 @keyframes hl-done-lit {
-  0% { opacity: 0.16; }
+  0% { opacity: 0.14; }
   35%, 100% { opacity: 1; }
 }
 
 @keyframes hl-done-glow {
   0% { filter: none; }
   35% { filter: drop-shadow(0 0 26px rgba(191, 219, 254, 1)); }
-  100% { filter: drop-shadow(0 0 18px rgba(191, 219, 254, 0.85)); }
+  100% { filter: drop-shadow(0 0 16px rgba(191, 219, 254, 0.85)); }
 }
 
 .headlight-loader {
@@ -2443,31 +2668,24 @@ button {
   padding: 22px 10px 6px;
 }
 
-.headlight-loader .headlight-pulse .headlight-core,
-.headlight-loader .headlight-pulse .headlight-drl {
-  animation: hl-pulse-lit 1.9s ease-in-out infinite;
+/* Açık temada far gövdesi görünsün diye arkasına koyu bir yastık konur. */
+.headlight-loader .headlight-pulse {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at 50% 50%, #101827 0%, #060a12 70%);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.6);
 }
 
-.headlight-loader .headlight-pulse .headlight-beam {
-  animation: hl-pulse-beam 1.9s ease-in-out infinite;
+.headlight-loader .headlight-pulse .headlight-lit {
+  animation:
+    hl-pulse-lit 1.9s ease-in-out infinite,
+    hl-pulse-glow 1.9s ease-in-out infinite;
 }
 
-.headlight-loader .headlight-pulse .headlight-svg {
-  animation: hl-pulse-glow 1.9s ease-in-out infinite;
-}
-
-.headlight-loader.is-done .headlight-pulse .headlight-core,
-.headlight-loader.is-done .headlight-pulse .headlight-drl {
-  animation: hl-done-lit 0.5s ease-out both;
-}
-
-.headlight-loader.is-done .headlight-pulse .headlight-beam {
-  animation: none;
-  opacity: 0.9;
-}
-
-.headlight-loader.is-done .headlight-pulse .headlight-svg {
-  animation: hl-done-glow 0.5s ease-out both;
+.headlight-loader.is-done .headlight-pulse .headlight-lit {
+  animation:
+    hl-done-lit 0.5s ease-out both,
+    hl-done-glow 0.5s ease-out both;
 }
 
 .headlight-loader-label {
@@ -2478,23 +2696,24 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .splash-headlight .headlight-core,
-  .splash-headlight .headlight-drl,
-  .splash-headlight .headlight-beam,
-  .splash-headlight .headlight-svg,
-  .headlight-loader .headlight-pulse .headlight-core,
-  .headlight-loader .headlight-pulse .headlight-drl,
-  .headlight-loader .headlight-pulse .headlight-beam,
-  .headlight-loader .headlight-pulse .headlight-svg {
+  .splash-headlight .headlight-lit,
+  .splash-beam,
+  .splash-pool,
+  .splash-reflection,
+  .splash-haze,
+  .splash-glare,
+  .splash-body,
+  .headlight-loader .headlight-pulse .headlight-lit {
     animation: none;
   }
 
-  .splash-headlight .headlight-core,
-  .splash-headlight .headlight-drl,
-  .headlight-loader .headlight-pulse .headlight-core,
-  .headlight-loader .headlight-pulse .headlight-drl {
+  .splash-headlight .headlight-lit,
+  .headlight-loader .headlight-pulse .headlight-lit {
     opacity: 1;
   }
+
+  .splash-beam, .splash-pool, .splash-reflection, .splash-haze, .splash-glare { opacity: 1; }
+  .splash-body { opacity: 0.75; }
 }
 
 /* ============================================================
@@ -2513,37 +2732,106 @@ button {
   padding: 16px 14px;
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  isolation: isolate;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease,
+    border-color 0.18s ease;
 }
 
-/* Köşedeki renk vurgusu, kartları bakışta birbirinden ayırır. */
-.tile-card::after {
-  content: '';
+/*
+ * Katman 1 — vurgu rengiyle yumuşak zemin.
+ * Kartlar bembeyaz olduğunda hepsi aynı görünüyordu; bu ince renk yıkaması
+ * kartları birbirinden ayırır ama metnin okunurluğunu bozmaz.
+ */
+.tile-card-wash {
   position: absolute;
-  right: -34px;
-  top: -34px;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  background: var(--card-accent, var(--color-accent));
-  opacity: 0.09;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in srgb, var(--card-accent, #3454d1) 18%, transparent) 0%,
+      transparent 58%
+    ),
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--card-accent, #3454d1) 5%, transparent) 0%,
+      transparent 55%
+    );
+  transition: opacity 0.2s ease;
+}
+
+/* Katman 2 — kartın işini anlatan çizim, sağ altta. */
+.tile-card-art {
+  position: absolute;
+  right: -14px;
+  bottom: -12px;
+  width: 56%;
+  max-width: 132px;
+  z-index: -1;
+  color: var(--card-accent, var(--color-accent));
+  opacity: 0.18;
+  /* Cizim sag-alt kosede yogunlasir, metne dogru silinir: basligin ve
+     aciklamanin okunurlugu bozulmasin. */
+  mask-image: radial-gradient(circle at 78% 78%, #000 30%, rgba(0, 0, 0, 0.35) 62%, transparent 88%);
+  -webkit-mask-image: radial-gradient(circle at 78% 78%, #000 30%, rgba(0, 0, 0, 0.35) 62%, transparent 88%);
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.card-art {
+  width: 100%;
+  height: auto;
+  display: block;
+  fill: none;
+  stroke-width: 4;
+}
+
+/* Katman 3 — çapraz cam parlaması; dokunulunca kartın üzerinden geçer. */
+.tile-card-sheen {
+  position: absolute;
+  inset: -40% -60%;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 62%
+  );
+  opacity: 0;
+  transform: translateX(-40%);
+  transition: opacity 0.25s ease, transform 0.5s ease;
+  pointer-events: none;
 }
 
 .tile-card:active {
-  transform: scale(0.97);
+  transform: scale(0.968);
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.08);
+}
+
+.tile-card:active .tile-card-art {
+  opacity: 0.26;
+  transform: scale(1.06) rotate(-2deg);
+}
+
+.tile-card:active .tile-card-sheen {
+  opacity: 1;
+  transform: translateX(40%);
 }
 
 @media (hover: hover) {
   .tile-card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-card-hover);
-    border-color: var(--card-accent, var(--color-accent));
+    border-color: color-mix(in srgb, var(--card-accent, #3454d1) 45%, transparent);
   }
 
-  .tile-card:hover::after {
-    opacity: 0.16;
-    transform: scale(1.12);
+  .tile-card:hover .tile-card-art {
+    opacity: 0.24;
+    transform: scale(1.05);
+  }
+
+  .tile-card:hover .tile-card-wash {
+    opacity: 1.25;
   }
 }
 
@@ -2552,7 +2840,14 @@ button {
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  background: color-mix(in srgb, var(--card-accent, #3454d1) 12%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card-accent, #3454d1) 20%, #ffffff) 0%,
+    color-mix(in srgb, var(--card-accent, #3454d1) 9%, #ffffff) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 2px 6px color-mix(in srgb, var(--card-accent, #3454d1) 18%, transparent);
   color: var(--card-accent, var(--color-accent));
   display: flex;
   align-items: center;
@@ -2593,6 +2888,15 @@ button {
   background: var(--card-accent, var(--color-accent));
   padding: 3px 8px;
   border-radius: 999px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--card-accent, #3454d1) 42%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile-card,
+  .tile-card-art,
+  .tile-card-sheen {
+    transition: none;
+  }
 }
 
 /* Dar ekranlarda kare oran metni sıkıştırmasın diye biraz esnetilir. */
