@@ -16,17 +16,23 @@
  */
 // Hızlı ("lite") modeller başta: yeni nesil modellerde varsayılan "düşünme"
 // modu yanıtı çok yavaşlatıyor, bu kullanımda gerekmiyor.
+// Not: Bu liste, hesapta gerçekten kullanılabilir olduğu doğrulanan modellerden
+// oluşur (GET ?debug=models ile listelenebilir). Hızlı "lite" modeller başta;
+// biri yoğunsa (503) sıradaki denenir, böylece tek bir modelin yoğunluğu
+// servisi durdurmaz.
 const MODEL_CANDIDATES = [
   'gemini-2.5-flash-lite',
   'gemini-flash-lite-latest',
+  'gemini-3.1-flash-lite',
   'gemini-2.5-flash',
+  'gemini-3.5-flash-lite',
   'gemini-flash-latest',
-  'gemini-2.0-flash'
+  'gemini-3.5-flash'
 ]
 
 // Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
 // Tarayıcıdan worker adresini açınca bu numara görünür.
-const VERSION = 3
+const VERSION = 4
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
