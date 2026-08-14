@@ -24,6 +24,10 @@ const MODEL_CANDIDATES = [
   'gemini-2.0-flash'
 ]
 
+// Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
+// Tarayıcıdan worker adresini açınca bu numara görünür.
+const VERSION = 3
+
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
 
@@ -392,7 +396,16 @@ export default {
         const outcome = await listModels(env)
         return json(outcome, outcome.ok ? 200 : 502, cors)
       }
-      return json({ status: 'calisiyor', activeModel: cachedWorkingModel || '(henuz belirlenmedi)' }, 200, cors)
+      return json(
+        {
+          status: 'calisiyor',
+          version: VERSION,
+          activeModel: cachedWorkingModel || '(henuz belirlenmedi)',
+          tasks: Object.keys(TASKS)
+        },
+        200,
+        cors
+      )
     }
 
     if (request.method !== 'POST') {
