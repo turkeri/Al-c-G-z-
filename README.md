@@ -92,6 +92,22 @@ Uygulama, sunucu taraflı yönlendirme (URL rewrite) gerektirmeyen `HashRouter` 
 | 50-69 | Dikkatli incele |
 | 0-49 | Yüksek risk |
 
+## Veri Bakımı
+
+Veritabanındaki iki tür veri farklı hızlarda eskir; bakımı da ayrıdır:
+
+- **Mekanik veri** (kronik arızalar, çözümler, kontrol noktaları, motor/şanzıman riskleri) pratikte eskimez. 2012 model bir aracın bilinen zincir/mekatronik sorunu yıllar geçince değişmez. Bu veri elle doğrulanmıştır ve internetsiz de çalışır; dokunulması gereken tek durum yeni nesil/model eklemektir.
+- **Fiyat verisi** eskir. `vehicles.json` içindeki `referencePrice` alanları `src/services/marketService.js` dosyasındaki `PRICE_BASELINE_LABEL` tarihindeki TL piyasasına göre girilmiştir.
+
+Piyasa geneli kaydığında **213 kaydı tek tek güncellemeye gerek yoktur**; `marketService.js` içindeki iki satır yeterlidir:
+
+```js
+export const PRICE_BASELINE_LABEL = 'Ağustos 2026'
+const PRICE_INDEX = 1
+```
+
+Piyasa çıpa tarihinden bu yana ortalama %30 yükseldiyse `PRICE_INDEX` değeri `1.3` yapılır ve etiket yeni tarihle değiştirilir; tüm tahminler orantılı olarak güncellenir. Bu etiket sonuç ekranındaki fiyat kartında kullanıcıya da gösterilir, böylece tahminin hangi tarihe dayandığı gizlenmez.
+
 ## İleriye Hazırlık
 
 Kod yapısı, ileride aşağıdaki eklemeleri destekleyecek şekilde katmanlıdır (`services/` altında soyutlanmış veri erişimi sayesinde):

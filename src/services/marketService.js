@@ -1,5 +1,20 @@
 import { getVehicleEntry } from './vehicleService'
 
+/**
+ * Fiyat çıpası.
+ *
+ * Veritabanındaki referencePrice değerleri aşağıdaki tarihteki TL piyasasına
+ * göre girilmiştir. Enflasyon ve piyasa hareketi nedeniyle bu tutarlar zamanla
+ * kayar. 213 kaydı tek tek güncellemek yerine yalnızca bu iki satırı
+ * güncellemek yeterlidir: piyasa genel olarak %30 yükseldiyse PRICE_INDEX 1.3
+ * yapılır ve etiket yeni tarihle değiştirilir.
+ *
+ * Mekanik veri (kronik arızalar, kontrol noktaları) bu çıpadan etkilenmez;
+ * o veri yıllara göre eskimediği için sabit kalır.
+ */
+export const PRICE_BASELINE_LABEL = 'Ağustos 2026'
+const PRICE_INDEX = 1
+
 const ANNUAL_DEPRECIATION = 0.12
 const DEPRECIATION_FACTOR_MIN = 0.25
 const DEPRECIATION_FACTOR_MAX = 3
@@ -32,7 +47,8 @@ export function estimateMarketPrice(formData) {
     KM_ADJUSTMENT_MAX
   )
 
-  const estimatedPrice = Math.round((entry.referencePrice * depreciationFactor * kmAdjustment) / 1000) * 1000
+  const estimatedPrice =
+    Math.round((entry.referencePrice * PRICE_INDEX * depreciationFactor * kmAdjustment) / 1000) * 1000
   const diffAmount = listedPrice - estimatedPrice
   const diffPercent = estimatedPrice > 0 ? Math.round((diffAmount / estimatedPrice) * 100) : 0
 
@@ -52,6 +68,7 @@ export function estimateMarketPrice(formData) {
     diffAmount,
     diffPercent,
     verdict,
-    label
+    label,
+    baseline: PRICE_BASELINE_LABEL
   }
 }

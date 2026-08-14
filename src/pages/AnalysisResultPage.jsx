@@ -166,7 +166,8 @@ export default function AnalysisResultPage() {
             </div>
             <p className="market-disclaimer">
               Bu tutar, marka/model/yaş/kilometreye dayalı kaba bir amortisman hesabıdır; gerçek zamanlı piyasa
-              verisi değildir, yalnızca fikir vermek içindir.
+              verisi değildir, yalnızca fikir vermek içindir. Fiyat referansları {marketEstimate.baseline}{' '}
+              piyasasına göredir; ilan fiyatlarıyla arada fark olabilir.
             </p>
           </section>
         )}
