@@ -3777,3 +3777,163 @@ button {
 .data-quality.tone-warning .data-quality-value {
   color: var(--color-warning);
 }
+
+/* ==========================================================================
+   YAZDIRILABİLİR EKSPERTİZ RAPORU
+   ==========================================================================
+   Ekranda kart görünümünde, kâğıtta sade bir belge olarak çıkar. PDF
+   kütüphanesi kullanılmaz: tarayıcının kendi yazdırma penceresi zaten
+   "PDF olarak kaydet" sunar ve Türkçe karakterler için font gömmek gerekmez.
+   ========================================================================== */
+
+.print-report {
+  background: var(--surface, #fff);
+  border-radius: 16px;
+  padding: 20px 18px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.report-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+.report-head h1 {
+  font-size: 1.15rem;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.report-vehicle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.report-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 0.68rem;
+  color: #64748b;
+  text-align: right;
+}
+
+.report-section {
+  margin-top: 18px;
+}
+
+.report-section h2 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.report-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 0.84rem;
+  border-bottom: 1px dotted #e2e8f0;
+}
+
+.report-row span {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.report-row strong {
+  text-align: right;
+  font-weight: 600;
+}
+
+.report-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.report-list li {
+  margin-bottom: 4px;
+}
+
+.report-note {
+  margin: 8px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.report-disclaimer {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.report-disclaimer p {
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: #475569;
+  margin: 0 0 8px;
+}
+
+.report-disclaimer p:last-child {
+  margin-bottom: 0;
+}
+
+@media print {
+  /* Kâğıtta yalnızca belge kalır: kabuk, gezinme ve butonlar gizlenir. */
+  .app-shell > .bottom-nav,
+  .bottom-nav,
+  .app-header,
+  .no-print,
+  .splash-screen,
+  .headlight-loader {
+    display: none !important;
+  }
+
+  html,
+  body,
+  .app-shell,
+  .app-content,
+  .route-transition,
+  .page-container {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-report {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    color: #000;
+  }
+
+  /* Bölümler sayfa ortasından bölünmesin. */
+  .report-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @page {
+    margin: 16mm 14mm;
+  }
+}

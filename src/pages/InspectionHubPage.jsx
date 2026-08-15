@@ -59,7 +59,7 @@ export default function InspectionHubPage() {
             </p>
           ) : (
             <p className="market-disclaimer" style={{ color: 'var(--color-success)', fontWeight: 600 }}>
-              Tüm adımlar tamamlandı. Bulguları Garajım bölümünden görebilirsin.
+              Tüm adımlar tamamlandı. Raporu yazdırabilirsin.
             </p>
           )}
         </section>
@@ -94,6 +94,14 @@ export default function InspectionHubPage() {
           >
             {progress.doneCount === 0 ? 'Kontrole Başla' : 'Sıradaki Adıma Geç'}
           </button>
+        )}
+
+        {/* Rapor her aşamada alınabilir; eksik adımlar raporda "yapılmadı"
+            olarak görünür, gizlenmez. */}
+        {progress.doneCount > 0 && (
+          <Link className="action-link" to="/rapor" style={{ textAlign: 'center' }}>
+            Ekspertiz Raporunu Oluştur
+          </Link>
         )}
 
         <button type="button" className="favorite-button" onClick={handleReset}>

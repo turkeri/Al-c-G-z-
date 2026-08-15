@@ -6,6 +6,7 @@ import { hydrateVehicleData, subscribeDataset } from './services/vehicleDataStor
 import HomePage from './pages/HomePage'
 import AnalysisFormPage from './pages/AnalysisFormPage'
 import ListingAnalysisPage from './pages/ListingAnalysisPage'
+import ExpertiseReportPage from './pages/ExpertiseReportPage'
 import AnalysisResultPage from './pages/AnalysisResultPage'
 import ChronicIssuesPage from './pages/ChronicIssuesPage'
 import InspectionChecklistPage from './pages/InspectionChecklistPage'
@@ -65,6 +66,7 @@ export default function App() {
             <Route path="/tramer" element={<DamageRecordPage />} />
             <Route path="/satici-sorulari" element={<SellerQuestionsPage />} />
             <Route path="/ekspertiz-notlari" element={<ExpertiseNotesPage />} />
+            <Route path="/rapor" element={<ExpertiseReportPage />} />
 
             {/* Araç rehberi */}
             <Route path="/rehber" element={<GuidePage />} />
