@@ -9,6 +9,28 @@ import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photo
 import { PANELS, MIN_PANELS_FOR_ANALYSIS, analyzePanelPhoto, comparePanels } from '../services/paintDetectionService'
 import { getPaintChecks, savePaintCheck, removePaintCheck } from '../services/paintCheckStorageService'
 import { updateSession } from '../services/inspectionSessionService'
+import AiPanel from '../components/AiPanel'
+import { fetchPhotoInspection, isAiConfigured } from '../services/aiService'
+
+/*
+ * Şüphe seviyesi etiketleri.
+ *
+ * Sözlükte bilerek "kesin/boyalı" gibi bir değer YOKTUR. Model beklenmedik bir
+ * değer döndürürse etiket "Değerlendirilemedi"ye düşer; ekranda hiçbir koşulda
+ * kesin hüküm görünmez.
+ */
+const SUSPICION_LABEL = {
+  'düşük': 'Düşük şüphe',
+  orta: 'Orta şüphe',
+  'yüksek': 'Yüksek şüphe',
+  'değerlendirilemedi': 'Değerlendirilemedi'
+}
+const SUSPICION_TONE = {
+  'düşük': 'excellent',
+  orta: 'warning',
+  'yüksek': 'danger',
+  'değerlendirilemedi': 'normal'
+}
 
 const VERDICT_LABEL = {
   orijinal: { label: 'Uyumlu', tone: 'excellent' },
@@ -47,6 +69,7 @@ export default function PaintCheckPage() {
   const [saveMessage, setSaveMessage] = useState('')
   const [showDetails, setShowDetails] = useState(false)
   const [savedReports, setSavedReports] = useState(() => getPaintChecks())
+  const [vision, setVision] = useState({ status: 'idle', data: null, message: '' })
 
   const capturedCount = Object.keys(panelPhotos).length
   const usableCount = Object.values(panelPhotos).filter((p) => p.signature.quality.usable).length
@@ -89,7 +112,41 @@ export default function PaintCheckPage() {
       setReport(comparePanels(panels))
       setAnalyzing(false)
       setSaveMessage('')
+      // Yeni ölçüm yapıldı; önceki görsel inceleme artık bu panellere ait değil.
+      setVision({ status: 'idle', data: null, message: '' })
     }, 60)
+  }
+
+  /**
+   * Fotoğrafları görsel incelemeye gönderir.
+   *
+   * Cihazdaki ölçüm motoru renk ve dokuyu SAYIYLA karşılaştırır; görsel
+   * inceleme ise sayıya dökülemeyen şeylere bakar: fitil kenarındaki boya
+   * taşması, panel arası boşluk farkı, yansıma çizgisinin kırılması.
+   * İkisi birbirinin yerine geçmez, birbirini tamamlar.
+   */
+  async function handleVisionInspect() {
+    setVision({ status: 'loading', data: null, message: '' })
+
+    const photos = Object.entries(panelPhotos).map(([id, data]) => ({
+      panel: PANELS.find((p) => p.id === id)?.name || id,
+      dataUrl: data.dataUrl
+    }))
+
+    // Cihazdaki ölçümün bulgusu varsa modele bağlam olarak verilir.
+    const localFindings = (report?.panels || [])
+      .filter((p) => p.verdict === 'supheli' || p.verdict === 'guclu-suphe')
+      .map((p) => ({ panel: p.name, note: VERDICT_LABEL[p.verdict].label + ' (cihaz ölçümü)' }))
+
+    const response = await fetchPhotoInspection({
+      vehicle: formData || { brand: vehicleLabel },
+      photos,
+      localFindings
+    })
+
+    if (!response) setVision({ status: 'idle', data: null, message: '' })
+    else if (response.error) setVision({ status: 'error', data: null, message: response.error })
+    else setVision({ status: 'ready', data: response.result, message: '' })
   }
 
   function handleSaveReport() {
@@ -360,6 +417,70 @@ export default function PaintCheckPage() {
               </a>
             </div>
             {saveMessage && <p className="market-disclaimer">{saveMessage}</p>}
+
+            {/* ================================================================
+                GÖRSEL İNCELEME
+                Cihazdaki ölçüm renk/doku farkını SAYIYLA bulur. Görsel inceleme
+                ise sayıya dökülemeyen izlere bakar. Kritik kural: burada asla
+                "bu panel boyalı" denmez — fotoğraf kalınlık ölçemez.
+               ================================================================ */}
+            {isAiConfigured() && (
+              <AiPanel
+                title="Fotoğrafları Görsel Olarak İncele"
+                buttonLabel="Fotoğrafları İncelet"
+                hint="Cihazdaki ölçüm renk ve dokuyu sayıyla karşılaştırır. Görsel inceleme, sayıya dökülemeyen izlere bakar: fitil kenarında boya taşması, panel arası boşluk farkı, yansıma çizgisinin kırılması. Sonuç bir hüküm değil, nereye bakman gerektiğidir."
+                status={vision.status}
+                message={vision.message}
+                onRequest={handleVisionInspect}
+              >
+                {vision.data && (
+                  <>
+                    <p className="ai-summary">{vision.data.summary}</p>
+
+                    {vision.data.panels.length > 0 && (
+                      <div className="problem-list">
+                        {vision.data.panels.map((p) => (
+                          <div className="problem-item" key={p.panel}>
+                            <div className="problem-item-head">
+                              <span className="problem-item-title">{p.panel}</span>
+                              <span className={'market-label tone-' + (SUSPICION_TONE[p.suspicion] || 'normal')}>
+                                {SUSPICION_LABEL[p.suspicion] || 'Değerlendirilemedi'}
+                              </span>
+                            </div>
+                            {p.observations.length > 0 && (
+                              <ul className="result-list neutral" style={{ fontSize: '0.84rem' }}>
+                                {p.observations.map((o) => <li key={o}>{o}</li>)}
+                              </ul>
+                            )}
+                            {p.photoQuality && (
+                              <div className="problem-item-meta">
+                                <span className="problem-item-km">{p.photoQuality}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {vision.data.recommendations.length > 0 && (
+                      <div className="ai-block">
+                        <p className="expertise-category-title">Araç başında yap</p>
+                        <ul className="result-list neutral" style={{ fontSize: '0.84rem' }}>
+                          {vision.data.recommendations.map((r) => <li key={r}>{r}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {vision.data.limitations && (
+                      <div className="ai-block">
+                        <p className="expertise-category-title">Bu inceleme neden kesin değil</p>
+                        <p className="ai-text">{vision.data.limitations}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </AiPanel>
+            )}
           </>
         )}
 

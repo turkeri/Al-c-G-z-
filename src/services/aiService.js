@@ -50,7 +50,18 @@ function cacheKeyFor(task, payload) {
       `::${payload.second?.brand}|${payload.second?.model}|${payload.second?.engine}`
     : ''
   const text = payload?.complaint ? payload.complaint.trim().toLowerCase() : ''
-  return `${task}::${v}${pair}::${text}`
+
+  /*
+   * Fotoğraflı istekte anahtar fotoğrafları da içermeli. Aksi halde aynı araç
+   * için ikinci kez farklı fotoğraflarla yapılan inceleme, ilkinin önbellekten
+   * gelen sonucunu gösterirdi — kullanıcı yeni fotoğraflarının değerlendirildiğini
+   * sanırken eski sonucu okurdu.
+   */
+  const photos = Array.isArray(payload?.photos)
+    ? payload.photos.map((p) => `${p.panel}:${p.data.length}:${p.data.slice(0, 24)}`).join('|')
+    : ''
+
+  return `${task}::${v}${pair}::${text}::${photos}`
 }
 
 function readCache() {
@@ -139,6 +150,36 @@ const NORMALIZERS = {
       buyAdvice: str(raw.buyAdvice),
       negotiationTips: strList(raw.negotiationTips),
       redFlags: strList(raw.redFlags)
+    }
+  },
+
+  /*
+   * Görsel inceleme.
+   *
+   * `suspicion` yalnızca bilinen dört değerden biri olabilir. Model buna
+   * uymayan bir şey döndürürse (örneğin "kesinlikle boyalı") değer
+   * "değerlendirilemedi"ye çekilir. Bu, ekranda asla "kesin boyalı" gibi bir
+   * ifadenin çıkmamasını garanti eden ikinci settir; birincisi sunucudaki
+   * istemdir.
+   */
+  'photo-inspect'(raw) {
+    const panels = Array.isArray(raw.panels) ? raw.panels : []
+    if (!raw.summary && panels.length === 0) return null
+    const levels = ['düşük', 'orta', 'yüksek', 'değerlendirilemedi']
+    return {
+      summary: str(raw.summary),
+      panels: panels
+        .filter((p) => p && typeof p.panel === 'string')
+        .map((p) => ({
+          panel: p.panel,
+          suspicion: levels.includes(String(p.suspicion).toLocaleLowerCase('tr'))
+            ? String(p.suspicion).toLocaleLowerCase('tr')
+            : 'değerlendirilemedi',
+          observations: strList(p.observations),
+          photoQuality: str(p.photoQuality)
+        })),
+      recommendations: strList(raw.recommendations),
+      limitations: str(raw.limitations)
     }
   },
 
@@ -253,6 +294,22 @@ export async function fetchVehicleInfo(vehicle) {
 export async function fetchVerdict({ vehicle, analysis }) {
   if (!vehicle?.brand) return null
   return callTask('verdict', { vehicle, analysis })
+}
+
+/**
+ * Panel fotoğraflarından görsel inceleme.
+ *
+ * Fotoğraflar cihazda zaten 800 piksele küçültülüp JPEG'e çevrilmiş durumda;
+ * burada yalnızca `data:` ön eki ayrılır çünkü Gemini saf base64 bekler.
+ */
+export async function fetchPhotoInspection({ vehicle, photos, localFindings }) {
+  const list = (photos || [])
+    .filter((p) => p && typeof p.dataUrl === 'string')
+    .slice(0, 6)
+    .map((p) => ({ panel: p.panel, data: p.dataUrl.replace(/^data:image\/[a-z]+;base64,/, '') }))
+
+  if (!list.length) return null
+  return callTask('photo-inspect', { vehicle, photos: list, localFindings })
 }
 
 /** İki araç arasında tercih önerisi */

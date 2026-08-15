@@ -32,7 +32,7 @@ const MODEL_CANDIDATES = [
 
 // Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
 // Tarayıcıdan worker adresini açınca bu numara görünür.
-const VERSION = 6
+const VERSION = 7
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
@@ -42,6 +42,11 @@ const REQUEST_TIMEOUT_MS = 30000
 
 // Basit hız limiti: aynı IP için dakikada kaç istek
 const RATE_LIMIT_PER_MINUTE = 12
+
+// Görsel inceleme sınırları. İstemci fotoğrafı 800 piksele küçültüp
+// JPEG'e çevirir; bu boyutta bir fotoğraf base64 olarak ~150-250 KB tutar.
+const MAX_PHOTOS = 6
+const MAX_PHOTO_BYTES = 900000
 
 const STR = { type: 'string' }
 const STR_LIST = { type: 'array', items: STR }
@@ -181,6 +186,85 @@ GÖREVİN:
 4. negotiationTips: Pazarlıkta kullanabileceği somut argümanlar (madde madde).
 5. redFlags: Bu aracı görmeye gittiğinde görürse HEMEN vazgeçmesi gereken durumlar (madde madde).
 ${ORTAK_KURALLAR}`
+    }
+  },
+
+  /* Fotoğraflardan görsel inceleme (Gemini Vision) */
+  'photo-inspect': {
+    /*
+     * ============================================================
+     * BU GÖREVİN EN ÖNEMLİ KURALI
+     * ============================================================
+     * Fotoğraftan "bu panel boyalıdır" DENEMEZ. Boya tespiti mikron
+     * (kalınlık) ölçümüyle yapılır; fotoğraf bunu ölçemez. Model
+     * yalnızca GÖRDÜĞÜNÜ anlatır, bir ŞÜPHE SEVİYESİ verir ve
+     * doğrulanması gerekenleri söyler.
+     *
+     * Bu sınır hem istemde, hem şemada (suspicion alanı "kesin"
+     * değerini kabul etmez), hem de ekranda tekrarlanır.
+     */
+    schema: {
+      type: 'object',
+      properties: {
+        summary: STR,
+        panels: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              panel: STR,
+              suspicion: STR,        // "düşük" | "orta" | "yüksek" | "değerlendirilemedi"
+              observations: STR_LIST,
+              photoQuality: STR
+            },
+            required: ['panel', 'suspicion', 'observations']
+          }
+        },
+        recommendations: STR_LIST,
+        limitations: STR
+      },
+      required: ['summary', 'panels', 'recommendations', 'limitations']
+    },
+    parts: (b) => {
+      const panels = (b.photos || []).map((p) => p.panel).join(', ')
+      const local = (b.localFindings || []).map((f) => `- ${f.panel}: ${f.note}`).join('\n')
+
+      const text = `Sen boya ve kaporta işlerinden anlayan, dikkatli bir oto ekspertiz teknisyenisin.
+Kullanıcı bir aracın panellerinin fotoğraflarını gönderdi.
+
+ARAÇ: ${vehicleLine(b.vehicle)}
+GÖNDERİLEN PANELLER: ${panels || 'belirtilmedi'}
+${local ? `\nCİHAZDAKİ ÖLÇÜM MOTORUNUN BULGULARI:\n${local}` : ''}
+
+MUTLAK KURAL — BUNU ÇİĞNEME:
+Fotoğrafa bakarak "bu panel boyalıdır", "bu parça değişmiştir" DEME. Boya tespiti
+mikron (kalınlık) ölçüm cihazıyla yapılır; fotoğraf kalınlık ölçemez. Işık, gölge,
+kamera beyaz dengesi ve yansıma, boya farkından daha büyük görsel fark yaratır.
+Senin işin hüküm vermek değil, NEYE BAKILMASI GEREKTİĞİNİ söylemek.
+
+GÖREVİN:
+1. summary: Fotoğrafların genel olarak ne gösterdiğini 2-3 cümleyle anlat.
+2. panels: Her panel için:
+   - panel: panelin adı
+   - suspicion: sadece şunlardan biri -> "düşük" / "orta" / "yüksek" / "değerlendirilemedi"
+     (fotoğraf bulanık, karanlık, aşırı yansımalı veya panel çerçeveye sığmamışsa
+      "değerlendirilemedi" yaz; tahmin yürütme)
+   - observations: SADECE GÖRDÜĞÜN somut şeyler. Örnekler: renk tonu komşu panelden
+     farklı görünüyor, yüzeyde portakal kabuğu dokusu var, fitil/conta kenarında
+     boya taşması izlenimi var, panel arası boşluk eşit değil, yansıma çizgisi
+     panelde kırılıyor, yüzeyde toz/çapak izi var. Gördüğün bir şey yoksa bunu yaz.
+   - photoQuality: fotoğrafın değerlendirmeye uygun olup olmadığı ve neden.
+3. recommendations: Kullanıcının araç başında YAPMASI gerekenler (mikron ölçümü nereden
+   alınmalı, hangi panelin hangi noktasına bakılmalı, satıcıya ne sorulmalı).
+4. limitations: Bu incelemenin neden kesin sonuç OLMADIĞINI kullanıcıya açıkla.
+${ORTAK_KURALLAR}`
+
+      const parts = [{ text }]
+      ;(b.photos || []).forEach((photo) => {
+        parts.push({ text: `PANEL: ${photo.panel}` })
+        parts.push({ inlineData: { mimeType: 'image/jpeg', data: photo.data } })
+      })
+      return parts
     }
   },
 
@@ -373,7 +457,12 @@ async function consumeQuota(env, deviceId, ip) {
   }
 }
 
+/**
+ * `parts` bir metin dizesi ya da Gemini'nin beklediği parça listesi olabilir.
+ * Görsel inceleme için parça listesi gerekir: [{text}, {inlineData:{...}}].
+ */
 async function tryModel(env, model, prompt, schema, { disableThinking = true } = {}) {
+  const parts = typeof prompt === 'string' ? [{ text: prompt }] : prompt
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`
 
   const generationConfig = {
@@ -396,7 +485,7 @@ async function tryModel(env, model, prompt, schema, { disableThinking = true } =
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts }],
         generationConfig
       })
     })
@@ -747,6 +836,26 @@ export default {
     }
 
     /*
+     * Görsel inceleme, metin görevlerinden çok daha pahalıdır (her görsel
+     * ciddi miktarda jeton harcar). Bu yüzden adet ve boyut burada,
+     * sunucuda sınırlanır; istemciye güvenilmez.
+     */
+    if (taskName === 'photo-inspect') {
+      const photos = Array.isArray(body?.photos) ? body.photos : []
+      if (photos.length === 0) {
+        return json({ error: 'En az bir fotoğraf gerekli' }, 400, cors)
+      }
+      if (photos.length > MAX_PHOTOS) {
+        return json({ error: `Tek seferde en fazla ${MAX_PHOTOS} fotoğraf` }, 400, cors)
+      }
+      for (const photo of photos) {
+        if (typeof photo?.data !== 'string' || photo.data.length > MAX_PHOTO_BYTES) {
+          return json({ error: 'Fotoğraf çok büyük veya okunamadı' }, 400, cors)
+        }
+      }
+    }
+
+    /*
      * KOTA — istek Gemini'ye gitmeden ÖNCE düşülür.
      *
      * Sonradan düşmek, hata durumunda hakkın iade edilip edilmeyeceği gibi
@@ -777,8 +886,9 @@ export default {
       }
     }
 
-    const prompt = task.prompt(body)
-    const outcome = await callGemini(env, prompt, task.schema)
+    // Görsel içeren görevler `parts`, metin görevleri `prompt` tanımlar.
+    const payload = task.parts ? task.parts(body) : task.prompt(body)
+    const outcome = await callGemini(env, payload, task.schema)
     if (!outcome.ok) {
       return json(
         {
