@@ -5,6 +5,7 @@ import PageContainer from '../components/Layout/PageContainer'
 import EmptyState from '../components/EmptyState'
 import RiskBadge from '../components/RiskBadge'
 import HeadlightLoader from '../components/HeadlightLoader'
+import QuotaNote, { useAccount } from '../components/QuotaNote'
 import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/vehicleService'
 import { diagnose } from '../services/diagnosisService'
 import { fetchAiAnalysis, isAiConfigured } from '../services/aiService'
@@ -23,6 +24,10 @@ const URGENCY_TONE = { Yüksek: 'danger', Orta: 'warning', Düşük: 'good' }
 export default function DiagnosisPage() {
   const location = useLocation()
   const incoming = location.state?.formData
+
+  // Aylık analiz hakkı sunucuda sayılır; burada yalnızca gösterilir.
+  const account = useAccount()
+  const quotaExhausted = Boolean(account && account.remaining <= 0)
 
   const brands = useMemo(() => getBrands(), [])
   const [brand, setBrand] = useState(incoming?.brand || '')
@@ -156,14 +161,16 @@ export default function DiagnosisPage() {
               </button>
             ))}
           </div>
+          {/* Kalan hak, butona basmadan önce görünür olmalı. */}
+          <QuotaNote account={account} style={{ marginTop: 0 }} />
           <button
             type="button"
             className="primary-button"
             onClick={() => handleDiagnose()}
-            disabled={!complaint.trim()}
-            style={{ opacity: complaint.trim() ? 1 : 0.5, width: '100%' }}
+            disabled={!complaint.trim() || quotaExhausted}
+            style={{ opacity: complaint.trim() && !quotaExhausted ? 1 : 0.5, width: '100%' }}
           >
-            Analiz Et
+            {quotaExhausted ? 'Analiz hakkın doldu' : 'Analiz Et'}
           </button>
         </section>
 

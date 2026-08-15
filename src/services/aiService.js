@@ -7,7 +7,12 @@
  * devam eder, kullanıcı hiçbir zaman boş ekranla karşılaşmaz.
  *
  * API anahtarı bu dosyada YOKTUR ve olmamalıdır; anahtar yalnızca proxy'de durur.
+ *
+ * Aylık analiz hakkı da burada DEĞİL sunucuda sayılır (bkz. accountService).
+ * İstemcide tutulan bir sayaç kolayca sıfırlanacağı için koruma sağlamaz.
  */
+
+import { accountHeaders, setCachedAccount } from './accountService'
 
 // Analiz proxy'sinin adresi. Bu bir sır değildir (API anahtarı sunucuda durur),
 // bu yüzden varsayılan adres doğrudan burada tutulur — böylece uygulama ek
@@ -21,6 +26,8 @@ const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || DEFAULT_PROXY_URL
 const TIMEOUT_MS = 40000
 const CACHE_KEY = 'arac-dedektifi:ai-cache'
 const CACHE_LIMIT = 20
+
+export const PROXY_BASE_URL = PROXY_URL
 
 export function isAiConfigured() {
   return Boolean(PROXY_URL)
@@ -176,13 +183,29 @@ async function callTask(task, payload) {
   try {
     const response = await fetch(PROXY_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      // Cihaz kimliği: sunucu aylık analiz hakkını buna göre sayar.
+      headers: { 'Content-Type': 'application/json', ...accountHeaders() },
       signal: controller.signal,
       body: JSON.stringify({ task, ...payload })
     })
 
     if (response.status === 429) {
       return { error: 'Çok fazla istek gönderildi, birkaç dakika sonra tekrar deneyin.' }
+    }
+
+    /*
+     * 402: aylık analiz hakkı bitti. Bu bir hata değil, beklenen bir durum;
+     * kullanıcıya ayrı bir dille gösterilebilmesi için `quotaExceeded` ile
+     * işaretlenir ve güncel hesap durumu önbelleğe yazılır.
+     */
+    if (response.status === 402) {
+      const detail = await response.json().catch(() => null)
+      if (detail?.account) setCachedAccount(detail.account)
+      return {
+        error: detail?.error || 'Bu ayki analiz hakkın doldu.',
+        quotaExceeded: true,
+        account: detail?.account || null
+      }
     }
     if (!response.ok) {
       // Sunucu anlaşılır bir neden gönderdiyse onu göster
@@ -195,13 +218,15 @@ async function callTask(task, payload) {
     }
 
     const data = await response.json()
+    // Sunucu her yanıtta güncel hak durumunu döner; ekranlar bunu gösterir.
+    if (data?.account) setCachedAccount(data.account)
     const normalized = normalizer(data?.result || {})
     if (!normalized) {
       return { error: 'Detaylı değerlendirme okunamadı.' }
     }
 
     setCached(key, normalized)
-    return { result: normalized }
+    return { result: normalized, account: data?.account || null }
   } catch (err) {
     if (err?.name === 'AbortError') {
       return { error: 'Detaylı değerlendirme zaman aşımına uğradı.' }

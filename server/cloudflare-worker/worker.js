@@ -32,7 +32,7 @@ const MODEL_CANDIDATES = [
 
 // Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
 // Tarayıcıdan worker adresini açınca bu numara görünür.
-const VERSION = 5
+const VERSION = 6
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
@@ -256,6 +256,121 @@ async function checkRateLimit(env, ip) {
   if (current >= RATE_LIMIT_PER_MINUTE) return false
   await env.RATE_LIMIT_KV.put(key, String(current + 1), { expirationTtl: 120 })
   return true
+}
+
+// ============================================================================
+// KULLANIM KOTASI (sunucu tarafında zorunlu)
+// ============================================================================
+/*
+ * Her yapay zekâ çağrısı gerçek para maliyetidir. Kota istemcide TUTULMAZ:
+ * istemcideki bir sayaç, uygulama verisini silmek kadar kolay sıfırlanır ve
+ * hiçbir koruma sağlamaz. Sayaç burada, D1'de tutulur ve istek Gemini'ye
+ * gitmeden ÖNCE kontrol edilir.
+ *
+ * DÜRÜST SINIR — bu gerçek bir kimlik doğrulama değildir:
+ * Cihaz kimliğini istemci üretir. Kullanıcı uygulama verisini silerse yeni
+ * kimlik oluşur ve ücretsiz hakkı sıfırlanır. Amaç, kötü niyetli bir saldırıyı
+ * durdurmak değil, sıradan aşırı kullanımın maliyeti patlatmasını önlemektir.
+ * Bunu bir miktar dengelemek için IP başına aylık ikinci bir tavan uygulanır.
+ * Gerçek koruma için e-posta/telefon doğrulamalı hesap gerekir.
+ */
+const PLANS = {
+  ucretsiz: { label: 'Ücretsiz', aylikHak: 5 },
+  premium: { label: 'Premium', aylikHak: 100 }
+}
+
+// Tek bir IP'nin ayda üretebileceği toplam analiz. Ev/işyeri paylaşımlı
+// bağlantıları mağdur etmeyecek kadar geniş, kötüye kullanımı sınırlayacak
+// kadar dar tutulmuştur.
+const IP_MONTHLY_CAP = 40
+
+/** '2026-08' — ay değişince sayaçlar kendiliğinden sıfırlanır. */
+function periodKey(now = new Date()) {
+  return now.getUTCFullYear() + '-' + String(now.getUTCMonth() + 1).padStart(2, '0')
+}
+
+/** Ayın sonu (ISO) — istemci "hak ne zaman yenilenir" diye gösterebilsin. */
+function periodResetAt(now = new Date()) {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toISOString()
+}
+
+/** Cihaz kimliği yalnızca UUID biçiminde kabul edilir. */
+function readDeviceId(request) {
+  const raw = String(request.headers.get('X-Device-Id') || '').trim()
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw) ? raw.toLowerCase() : null
+}
+
+/** Hesabı okur, yoksa oluşturur; ay değiştiyse sayacı sıfırlar. */
+async function loadAccount(env, deviceId) {
+  const now = Date.now()
+  const period = periodKey()
+
+  let row = await env.DB.prepare('SELECT * FROM accounts WHERE id = ?1').bind(deviceId).first()
+
+  if (!row) {
+    await env.DB.prepare(
+      `INSERT INTO accounts (id, plan, created_at, last_seen_at, period_key, used_count, total_count)
+       VALUES (?1, 'ucretsiz', ?2, ?2, ?3, 0, 0)`
+    )
+      .bind(deviceId, now, period)
+      .run()
+    row = { id: deviceId, plan: 'ucretsiz', created_at: now, last_seen_at: now, period_key: period, used_count: 0, total_count: 0 }
+  } else if (row.period_key !== period) {
+    // Yeni ay: kullanım sayacı sıfırlanır, toplam korunur.
+    await env.DB.prepare('UPDATE accounts SET period_key = ?2, used_count = 0, last_seen_at = ?3 WHERE id = ?1')
+      .bind(deviceId, period, now)
+      .run()
+    row = { ...row, period_key: period, used_count: 0 }
+  }
+
+  const plan = PLANS[row.plan] || PLANS.ucretsiz
+  return {
+    id: row.id,
+    plan: row.plan,
+    planLabel: plan.label,
+    limit: plan.aylikHak,
+    used: Number(row.used_count) || 0,
+    remaining: Math.max(0, plan.aylikHak - (Number(row.used_count) || 0)),
+    total: Number(row.total_count) || 0,
+    resetAt: periodResetAt()
+  }
+}
+
+/**
+ * Bir analiz hakkı düşer.
+ * @returns {{ok: true, account}|{ok: false, reason: string, account}}
+ */
+async function consumeQuota(env, deviceId, ip) {
+  const account = await loadAccount(env, deviceId)
+
+  if (account.remaining <= 0) {
+    return { ok: false, reason: 'kota', account }
+  }
+
+  // IP tavanı ikinci savunma hattıdır; kişisel kotadan bağımsız işler.
+  const period = periodKey()
+  const ipRow = await env.DB.prepare('SELECT used_count FROM ip_quota WHERE ip = ?1 AND period_key = ?2')
+    .bind(ip, period)
+    .first()
+  if (Number(ipRow?.used_count || 0) >= IP_MONTHLY_CAP) {
+    return { ok: false, reason: 'ip', account }
+  }
+
+  const now = Date.now()
+  await env.DB.batch([
+    env.DB.prepare(
+      'UPDATE accounts SET used_count = used_count + 1, total_count = total_count + 1, last_seen_at = ?2 WHERE id = ?1'
+    ).bind(deviceId, now),
+    env.DB.prepare(
+      `INSERT INTO ip_quota (ip, period_key, used_count) VALUES (?1, ?2, 1)
+       ON CONFLICT(ip, period_key) DO UPDATE SET used_count = used_count + 1`
+    ).bind(ip, period)
+  ])
+
+  return {
+    ok: true,
+    account: { ...account, used: account.used + 1, remaining: account.remaining - 1 }
+  }
 }
 
 async function tryModel(env, model, prompt, schema, { disableThinking = true } = {}) {
@@ -553,6 +668,21 @@ export default {
       }
     }
 
+    // Hesap durumu: istemci kalan hakkını gösterebilsin diye ayrı bir uçtur.
+    // Hak DÜŞMEZ, sadece okur.
+    if (request.method === 'GET' && url.pathname === '/account') {
+      const deviceId = readDeviceId(request)
+      if (!deviceId) return json({ error: 'Cihaz kimligi gerekli' }, 400, cors)
+      if (!env.DB) {
+        return json({ error: 'Kota takibi kapali', enforced: false }, 200, cors)
+      }
+      try {
+        return json({ account: await loadAccount(env, deviceId), enforced: true }, 200, cors)
+      } catch (err) {
+        return json({ error: 'Hesap okunamadi', detail: String(err).slice(0, 200) }, 500, cors)
+      }
+    }
+
     if (!env.GEMINI_API_KEY) {
       return json({ error: 'Sunucu yapılandırılmamış' }, 503, cors)
     }
@@ -569,7 +699,9 @@ export default {
           version: VERSION,
           activeModel: cachedWorkingModel || '(henuz belirlenmedi)',
           tasks: Object.keys(TASKS),
-          database: env.DB ? 'bagli' : 'bagli degil'
+          database: env.DB ? 'bagli' : 'bagli degil',
+          // Kota yalnızca veritabanı bağlıyken zorunlu tutulabilir.
+          kota: env.DB ? `zorunlu (ucretsiz ${PLANS.ucretsiz.aylikHak}/ay)` : 'kapali'
         },
         200,
         cors
@@ -614,6 +746,37 @@ export default {
       return json({ error: 'İki araç bilgisi de gerekli' }, 400, cors)
     }
 
+    /*
+     * KOTA — istek Gemini'ye gitmeden ÖNCE düşülür.
+     *
+     * Sonradan düşmek, hata durumunda hakkın iade edilip edilmeyeceği gibi
+     * bir soru doğurur ve asıl amacı (maliyet kontrolü) zayıflatır. Yanıt
+     * alınamazsa kullanıcı bir hakkını kaybeder; bunun karşılığında sunucu
+     * kendini sınırsız çağrıya açmamış olur.
+     */
+    let quota = null
+    if (env.DB) {
+      const deviceId = readDeviceId(request)
+      if (!deviceId) {
+        return json({ error: 'Cihaz kimliği gerekli. Uygulamayı güncelleyin.' }, 400, cors)
+      }
+      try {
+        const outcome = await consumeQuota(env, deviceId, ip)
+        if (!outcome.ok) {
+          const message =
+            outcome.reason === 'ip'
+              ? 'Bu bağlantı için aylık analiz sınırına ulaşıldı.'
+              : `Bu ay için ${outcome.account.limit} analiz hakkının tamamını kullandın. Hakkın ayın başında yenilenir.`
+          return json({ error: message, account: outcome.account, reason: outcome.reason }, 402, cors)
+        }
+        quota = outcome.account
+      } catch (err) {
+        // Kota tablosu okunamıyorsa servis durdurulmaz; IP hız limiti
+        // devrede kalır ve durum yanıtta bildirilir.
+        quota = null
+      }
+    }
+
     const prompt = task.prompt(body)
     const outcome = await callGemini(env, prompt, task.schema)
     if (!outcome.ok) {
@@ -628,7 +791,7 @@ export default {
       )
     }
 
-    return json({ result: outcome.result, model: outcome.model }, 200, {
+    return json({ result: outcome.result, model: outcome.model, account: quota }, 200, {
       ...cors,
       'Cache-Control': 'no-store'
     })

@@ -44,3 +44,36 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_submissions_status ON submissions(status);
+
+-- ============================================================================
+-- KULLANIM KOTASI
+-- ============================================================================
+-- Yapay zekâ çağrılarının her biri gerçek para maliyetidir. Kota İSTEMCİDE
+-- DEĞİL burada tutulur; istemci tarafında tutulan bir sayaç, uygulamanın
+-- verisini silmek kadar kolay sıfırlanır ve hiçbir koruma sağlamaz.
+--
+-- DÜRÜST SINIR: `id` cihazın ürettiği bir kimliktir. Uygulama verisi silinir
+-- ya da uygulama yeniden kurulursa yeni kimlik oluşur ve kota sıfırlanır. Bu
+-- gerçek bir kimlik doğrulama değildir; amaç sıradan aşırı kullanımı ve
+-- maliyeti sınırlamaktır. Bunu kısmen dengelemek için IP başına aylık ikinci
+-- bir tavan (ip_quota) uygulanır.
+CREATE TABLE IF NOT EXISTS accounts (
+  id           TEXT PRIMARY KEY,   -- cihaz kimliği (UUID)
+  plan         TEXT NOT NULL DEFAULT 'ucretsiz',
+  created_at   INTEGER NOT NULL,
+  last_seen_at INTEGER NOT NULL,
+  period_key   TEXT NOT NULL,      -- '2026-08' — ay değişince sayaç sıfırlanır
+  used_count   INTEGER NOT NULL DEFAULT 0,
+  total_count  INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_accounts_period ON accounts(period_key);
+
+-- IP başına aylık tavan: tek kişinin sınırsız yeni cihaz kimliği üretip
+-- ücretsiz hakkı tekrar tekrar kullanmasını zorlaştırır.
+CREATE TABLE IF NOT EXISTS ip_quota (
+  ip          TEXT NOT NULL,
+  period_key  TEXT NOT NULL,
+  used_count  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (ip, period_key)
+);

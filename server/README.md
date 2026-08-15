@@ -199,6 +199,7 @@ Revizyon numarasını artırmayı unutursan istemciler güncellemeyi görmez.
 | `GET /data/version` | Sunucudaki güncel revizyon ve kayıt sayısı |
 | `GET /data/vehicles?since=N` | N'den yeni kayıtlar (sayfalı, 60'arlı) |
 | `POST /data/import` | Veri yükleme (ADMIN_TOKEN ister, 40'arlı parçalar) |
+| `GET /account` | Cihazın kalan analiz hakkı (hak DÜŞMEZ, sadece okur) |
 
 Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalı olsa da veritabanı çalışır.
 D1 bağlı değilse uçlar 503 döner ve uygulama sessizce gömülü veriye düşer.
@@ -209,3 +210,70 @@ D1 bağlı değilse uçlar 503 döner ve uygulama sessizce gömülü veriye dü�
 araştırmaları buraya düşer ve elle doğrulanmış `vehicles` tablosuyla **karıştırılmaz** —
 kullanıcıya ayrı etiketle gösterilmesi ve ancak sen onayladıktan sonra asıl veriye
 taşınması için. Bu akış henüz uygulamaya bağlanmadı, tablo ileriye hazırlık olarak duruyor.
+
+
+# Analiz Kotası (kullanım hakkı)
+
+Her yapay zekâ çağrısı gerçek para maliyetidir. Bu yüzden aylık bir analiz
+hakkı vardır ve **kota sunucuda zorunlu tutulur**.
+
+| Plan | Aylık analiz |
+| --- | --- |
+| Ücretsiz | 5 |
+| Premium | 100 |
+
+Ayrıca tek bir IP adresi için aylık 40 analiz tavanı vardır (ikinci savunma
+hattı).
+
+## Neden istemcide değil
+
+İstemcide tutulan bir sayaç, uygulama verisini silmek kadar kolay sıfırlanır ve
+hiçbir koruma sağlamaz. Sayaç D1'de tutulur ve kontrol, istek Gemini'ye
+gitmeden **önce** yapılır. Kota dolduğunda çağrı hiç yapılmaz, dolayısıyla
+maliyet de oluşmaz.
+
+## Dürüst sınır — bu gerçek bir kimlik doğrulama değildir
+
+Hesap, cihazda üretilen bir UUID'ye bağlıdır; e-posta/şifre istenmez. Bunun
+bedeli açıktır: **kullanıcı uygulama verisini silerse yeni kimlik oluşur ve
+ücretsiz hakkı sıfırlanır.**
+
+Bu bilinçli bir tercih: kayıt zorunluluğu, uygulamayı ilk kez deneyen
+kullanıcıların çoğunu kaybettirir. Amaç kararlı bir saldırganı durdurmak değil,
+sıradan aşırı kullanımın faturayı patlatmasını önlemektir. IP tavanı bu açığı
+kısmen kapatır.
+
+Gerçekten ödeme alınacaksa bu kimliğin üzerine e-posta/telefon doğrulaması
+eklenmelidir; `accounts` tablosundaki `plan` alanı zaten hesaba bağlı olduğu
+için o adımda şema değişikliği gerekmez.
+
+## Kurulum (mevcut kuruluma ekleme)
+
+Kota tabloları şemaya sonradan eklendi. Zaten kurulu bir D1 veritabanın varsa
+şemayı tekrar çalıştırman yeterli — tüm tablolar `IF NOT EXISTS` ile
+tanımlıdır, mevcut araç verisine dokunmaz:
+
+```bash
+npx wrangler d1 execute arac-dedektifi --remote --file=../d1/schema.sql
+npx wrangler deploy
+```
+
+Doğrulamak için worker adresini tarayıcıdan aç; `"kota": "zorunlu (ucretsiz 5/ay)"`
+yazmalı.
+
+## Bir kullanıcıyı premium yapmak
+
+Ödeme altyapısı yok; plan elle değiştirilir:
+
+```bash
+npx wrangler d1 execute arac-dedektifi --remote \
+  --command="UPDATE accounts SET plan='premium' WHERE id='CIHAZ-KIMLIGI'"
+```
+
+Cihaz kimliğini kullanıcı, tarayıcı konsolunda
+`localStorage.getItem('arac-dedektifi:device-id')` ile görebilir.
+
+## Veritabanı bağlı değilse
+
+Kota uygulanmaz ve servis çalışmaya devam eder (IP hız limiti devrede kalır).
+Bu, veritabanı bir sorun yaşadığında uygulamanın tamamen durmaması içindir.
