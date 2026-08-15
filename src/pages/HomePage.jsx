@@ -21,6 +21,15 @@ const CARDS = [
     art: 'gauge'
   },
   {
+    to: '/ilan-analizi',
+    title: 'İlan Analizi',
+    description: 'İlan metnini yapıştır, tuzakları gör.',
+    badge: 'YENİ',
+    icon: 'search',
+    accent: '#7c3aed',
+    art: 'panels'
+  },
+  {
     to: '/yerinde-kontrol',
     title: 'Yerinde Kontrol',
     description: 'Aracın başındayken adım adım ilerle.',
@@ -68,14 +77,6 @@ const CARDS = [
     accent: '#e0724d',
     art: 'gear'
   },
-  {
-    to: '/guvenli-alim',
-    title: 'Güvenli Alım',
-    description: 'Evrak, kapora ve dolandırıcılık kontrolü.',
-    icon: 'shield',
-    accent: '#b45309',
-    art: 'shield'
-  }
 ]
 
 export default function HomePage() {

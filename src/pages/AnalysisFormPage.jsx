@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ChipSelect from '../components/ChipSelect'
@@ -36,7 +36,14 @@ const EMPTY_FORM = {
 
 export default function AnalysisFormPage() {
   const navigate = useNavigate()
-  const [form, setForm] = useState(EMPTY_FORM)
+  const location = useLocation()
+  /*
+   * Başka bir ekrandan (örneğin İlan Analizi) araç bilgisiyle gelinebilir.
+   * Gelen veri formu doldurur; kullanıcı yeniden yazmak zorunda kalmaz.
+   */
+  const [form, setForm] = useState(() =>
+    location.state?.formData ? { ...EMPTY_FORM, ...location.state.formData } : EMPTY_FORM
+  )
   const [errors, setErrors] = useState({})
   const [listingText, setListingText] = useState('')
   const [autoFillCount, setAutoFillCount] = useState(null)

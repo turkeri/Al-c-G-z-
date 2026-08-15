@@ -5,6 +5,7 @@ import SplashScreen from './components/SplashScreen'
 import { hydrateVehicleData, subscribeDataset } from './services/vehicleDataStore'
 import HomePage from './pages/HomePage'
 import AnalysisFormPage from './pages/AnalysisFormPage'
+import ListingAnalysisPage from './pages/ListingAnalysisPage'
 import AnalysisResultPage from './pages/AnalysisResultPage'
 import ChronicIssuesPage from './pages/ChronicIssuesPage'
 import InspectionChecklistPage from './pages/InspectionChecklistPage'
@@ -51,6 +52,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
 
             {/* Analiz akışı */}
+            <Route path="/ilan-analizi" element={<ListingAnalysisPage />} />
             <Route path="/analiz" element={<AnalysisFormPage />} />
             <Route path="/sonuc" element={<AnalysisResultPage />} />
             <Route path="/kredi-hesapla" element={<LoanCalculatorPage />} />
