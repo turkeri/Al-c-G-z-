@@ -4040,3 +4040,61 @@ button {
   background: color-mix(in srgb, var(--color-warning, #b45309) 10%, transparent);
   border-left-color: var(--color-warning, #b45309);
 }
+
+/* ==========================================================================
+   DEĞERLEME FAKTÖR DÖKÜMÜ
+   ==========================================================================
+   Fiyatın nasıl hesaplandığını satır satır gösterir. Kullanıcı çıplak bir
+   sayıya inanmak zorunda kalmasın, mantığını görebilsin diye vardır.
+   ========================================================================== */
+
+.factor-list {
+  margin-top: 8px;
+}
+
+.factor-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-text, #0f172a) 10%, transparent);
+}
+
+.factor-row:last-child {
+  border-bottom: 0;
+}
+
+.factor-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.factor-text strong {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.factor-text span {
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--color-muted, #64748b);
+}
+
+.factor-effect {
+  flex-shrink: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted, #64748b);
+}
+
+.factor-effect.is-up {
+  color: var(--color-success, #15803d);
+}
+
+.factor-effect.is-down {
+  color: var(--color-danger, #b91c1c);
+}

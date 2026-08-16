@@ -1,0 +1,1 @@
+function n(t){const r=Number(t);return Number.isNaN(r)?"-":`${r.toLocaleString("tr-TR")} km`}function u(t){const r=Number(t);return Number.isNaN(r)?"-":`${r.toLocaleString("tr-TR")} TL`}function a(t,r=new Date().getFullYear()){const e=Number(t);return Number.isNaN(e)?0:Math.max(0,r-e)}export{u as a,n as f,a as v};
