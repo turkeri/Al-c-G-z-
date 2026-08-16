@@ -22,3 +22,8 @@
 1. Tek Worker config kaynağı için `wrangler.jsonc` kabul edilsin mi?
 2. Auth sağlayıcısı ve kullanıcı giriş yöntemi hangisi olsun?
 3. Android için Capacitor native paylaşım/in-app browser akışı onaylanıyor mu?
+
+## Phase 2 — Güvenlik sertleştirmesi: devam ediyor
+
+- Worker için erken gövde boyutu kontrolü, sabit süreli admin token karşılaştırması ve hata ayrıntılarının redaksiyonu eklendi.
+- CORS üretim allowlist'i, kalıcı rate-limit binding'i ve gerçek kullanıcı kimliği hâlâ karar/binding gerektiriyor.

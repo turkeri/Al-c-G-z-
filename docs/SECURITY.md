@@ -2,7 +2,7 @@
 
 ## Mevcut
 
-Gemini anahtarı Worker secret olarak tasarlanmış; frontend'e yazılmamalıdır. İlan URL resolver'ı HTTPS ve tanımlı host allowlist'i kullanır; fetcher yönlendirmeleri izlemeyerek SSRF yüzeyini azaltır ve yanıt boyutu/zaman aşımı sınırı koyar. Worker origin kontrolü, gövde sınırları ve KV bağlıysa hız limiti içerir.
+Gemini anahtarı Worker secret olarak tasarlanmış; frontend'e yazılmamalıdır. İlan URL resolver'ı HTTPS ve tanımlı host allowlist'i kullanır; fetcher yönlendirmeleri izlemeyerek SSRF yüzeyini azaltır ve yanıt boyutu/zaman aşımı sınırı koyar. Worker origin kontrolü, 10 MiB bildirilen gövde sınırı, görev bazlı fotoğraf sınırları ve KV bağlıysa hız limiti içerir. Yönetici token karşılaştırması sabit süreli yapılır; iç hata ayrıntıları istemciye dönülmez.
 
 Riskler: `wrangler.toml` yorumlarında boş origin izinli geliştirme varsayımı var; KV binding yoksa kalıcı rate limit yok. Cihaz UUID gerçek auth değildir. `POST /data/import` yönetici token'a dayanır; import sayfası token'ı tarayıcıda kullanır. AI girişleri ve katalog payload'ları tam şema doğrulamasından geçmiyor.
 

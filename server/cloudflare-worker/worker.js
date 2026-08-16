@@ -9,6 +9,7 @@
  */
 
 import { fetchListing, listPlatforms } from './listing/fetcher'
+import { constantTimeEqual, hasAcceptableBodySize } from './security'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -828,7 +829,7 @@ async function handleDataImport(env, body, cors) {
   if (!env.ADMIN_TOKEN) {
     return json({ error: 'Yukleme kapali: ADMIN_TOKEN tanimlanmamis' }, 503, cors)
   }
-  if (!body?.token || body.token !== env.ADMIN_TOKEN) {
+  if (!body?.token || !constantTimeEqual(body.token, env.ADMIN_TOKEN)) {
     return json({ error: 'Yetkisiz' }, 401, cors)
   }
 
@@ -902,6 +903,10 @@ export default {
       return new Response(null, { status: 204, headers: cors })
     }
 
+    if (request.method === 'POST' && !hasAcceptableBodySize(request)) {
+      return json({ error: 'İstek gövdesi işleme sınırını aşıyor' }, 413, cors)
+    }
+
     // Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalıyken de
     // veritabanı güncellemesi çalışmalıdır.
     if (request.method === 'GET' && url.pathname.startsWith('/data/')) {
@@ -912,8 +917,8 @@ export default {
         if (url.pathname === '/data/version') return await handleDataVersion(env, cors)
         if (url.pathname === '/data/vehicles') return await handleDataVehicles(env, url, cors)
         return json({ error: 'Bilinmeyen uc' }, 404, cors)
-      } catch (err) {
-        return json({ error: 'Veritabani hatasi', detail: String(err).slice(0, 200) }, 500, cors)
+      } catch {
+        return json({ error: 'Veritabani hatasi' }, 500, cors)
       }
     }
 
@@ -923,8 +928,8 @@ export default {
       try {
         const body = await request.json()
         return await handleDataImport(env, body, cors)
-      } catch (err) {
-        return json({ error: 'Yukleme hatasi', detail: String(err).slice(0, 200) }, 500, cors)
+      } catch {
+        return json({ error: 'Yukleme hatasi' }, 500, cors)
       }
     }
 
@@ -938,8 +943,8 @@ export default {
       }
       try {
         return json({ account: await loadAccount(env, deviceId), enforced: true }, 200, cors)
-      } catch (err) {
-        return json({ error: 'Hesap okunamadi', detail: String(err).slice(0, 200) }, 500, cors)
+      } catch {
+        return json({ error: 'Hesap okunamadi' }, 500, cors)
       }
     }
 
@@ -976,12 +981,8 @@ export default {
         // 'engelli' bir hata değil, beklenen bir durumdur: 200 ile döner ve
         // arayüz kullanıcıyı çalışan yola (ekran görüntüsü) yönlendirir.
         return json(outcome, 200, cors)
-      } catch (err) {
-        return json(
-          { status: 'hata', error: 'İlan alınamadı', detail: String(err).slice(0, 200) },
-          500,
-          cors
-        )
+      } catch {
+        return json({ status: 'hata', error: 'İlan alınamadı' }, 500, cors)
       }
     }
 
@@ -1001,8 +1002,8 @@ export default {
           return await handleHistorySave(env, deviceId, body, cors)
         }
         return json({ error: 'Desteklenmeyen yontem' }, 405, cors)
-      } catch (err) {
-        return json({ error: 'Gecmis islemi basarisiz', detail: String(err).slice(0, 200) }, 500, cors)
+      } catch {
+        return json({ error: 'Gecmis islemi basarisiz' }, 500, cors)
       }
     }
 
@@ -1127,8 +1128,7 @@ export default {
       return json(
         {
           error: outcome.userMessage || 'Analiz alınamadı',
-          model: outcome.model,
-          detail: outcome.detail
+          model: outcome.model
         },
         outcome.status || 502,
         cors
