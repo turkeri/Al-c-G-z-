@@ -1,8 +1,7 @@
-import { useMemo } from 'react'
 import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
-import { getDatabaseStats } from '../services/vehicleService'
 import ActiveAnnouncements from '../components/ActiveAnnouncements'
+import Icon from '../components/icons/Icon'
 
 /**
  * Ana ekran kareleri.
@@ -13,34 +12,26 @@ import ActiveAnnouncements from '../components/ActiveAnnouncements'
  */
 const CARDS = [
   {
-    to: '/analiz',
-    title: 'Araç Analizi',
-    description: 'Bilgileri gir, risk skorunu ve raporu gör.',
-    badge: 'BAŞLA',
-    icon: 'car',
-    accent: '#3454d1',
-    art: 'gauge'
-  },
-  {
     to: '/ilan-analizi',
-    title: 'İlan Analizi',
-    description: 'İlan metnini yapıştır, tuzakları gör.',
-    badge: 'YENİ',
+    title: 'İlanı İncele',
+    description: 'İlan bilgilerini değerlendir, riskleri gör.',
     icon: 'search',
-    accent: '#7c3aed',
+    accent: '#0f8b9d',
     art: 'panels'
   },
+  { to: '/boya-degisen', title: 'Araç İşlemli mi?', description: 'Fotoğraflardaki olası izleri görsel olarak incele.', icon: 'camera', accent: '#d97706', art: 'panels' },
+  { to: '/analiz', title: 'Araç Analizi', description: 'Araç bilgileriyle genel risk değerlendirmesi yap.', icon: 'car', accent: '#3454d1', art: 'gauge' },
   {
     to: '/yerinde-kontrol',
-    title: 'Yerinde Kontrol',
-    description: 'Aracın başındayken adım adım ilerle.',
+    title: 'Ekspertiz Kontrolü',
+    description: 'Araç başında kontrol adımlarını takip et.',
     icon: 'clipboard',
     accent: '#1fa971',
     art: 'checklist'
   },
   {
     to: '/aracimin-nesi-var',
-    title: 'Aracımın Nesi Var?',
+    title: 'Arıza Belirtisi',
     description: 'Şikayetini yaz, olası arızaları gör.',
     icon: 'stethoscope',
     accent: '#b91c1c',
@@ -81,17 +72,11 @@ const CARDS = [
 ]
 
 export default function HomePage() {
-  const stats = useMemo(() => getDatabaseStats(), [])
-
   return (
     <>
-      <header className="hero">
-        <div className="hero-badge">ARAÇ DEDEKTİFİ</div>
-        <h1 className="hero-title">Aracı almadan önce riskleri öğren.</h1>
-        <p className="hero-subtitle">
-          Marka, model, motor ve kilometre bilgilerine göre ikinci el aracın risk skorunu,
-          kronik sorunlarını ve ekspertiz kontrol noktalarını saniyeler içinde öğren.
-        </p>
+      <header className="home-titlebar">
+        <Icon name="search" size={18} aria-hidden="true" />
+        <h1>Araç Dedektifi</h1>
       </header>
 
       <PageContainer>
@@ -108,40 +93,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        <section className="info-strip">
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.brandCount}</span>
-            <span className="info-strip-label">Marka</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.modelCount}</span>
-            <span className="info-strip-label">Model</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.engineCount}</span>
-            <span className="info-strip-label">Motor kaydı</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.problemCount}</span>
-            <span className="info-strip-label">Arıza kaydı</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.generationCount}</span>
-            <span className="info-strip-label">Nesil tanımı</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.transmissionCount}</span>
-            <span className="info-strip-label">Şanzıman tanımı</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.packageCount}</span>
-            <span className="info-strip-label">Donanım paketi</span>
-          </div>
-          <div className="info-strip-item">
-            <span className="info-strip-value">{stats.equipmentCount}</span>
-            <span className="info-strip-label">Donanım kaydı</span>
-          </div>
-        </section>
       </PageContainer>
     </>
   )
