@@ -84,3 +84,18 @@
   damgasındaki kayıtları kaçırmamak için `updated_at + id` çiftini taşır.
 - Kayıtların gerçek cihazlar arasında UI'ya uygulanması ve operasyonların
   ileride IndexedDB'ye taşınması sonraki ürünselleştirme turunda ele alınmalıdır.
+
+## Aşama 5 — canonical katalog mimarisi: tamamlandı (migration uygulanmadı, publish yapılmadı)
+
+- Revision snapshot modeli, canonical şema (marka/model/nesil/motor/şanzıman/paket/donanım/varyant/sorun/bakım/değer), admin CRUD + review workflow, public read API — [CATALOG_ARCHITECTURE](CATALOG_ARCHITECTURE.md), [CATALOG_ADMIN](CATALOG_ADMIN.md), [CATALOG_REVIEW](CATALOG_REVIEW.md).
+- Migration zinciri 0001–0009 kaynakta durur; hiçbiri remote D1'e uygulanmadı, hiçbir revision publish edilmedi.
+
+## Aşama 6 — katalog admin ekranı: tamamlandı
+
+- `/admin/katalog/revizyonlar/...` altında revision listesi/özeti, 14 entity için CRUD form, review ekranında accept/reject/defer (hedef seçimi, optimistic concurrency, permission bazlı görünürlük), URL'ye bağlı debounce arama/filtre/cursor — tüm entity'lerde backend allowlist'iyle birebir.
+
+## Aşama 7A — runtime tüketicilerin async canonical-first akışa taşınması: kısmen tamamlandı
+
+- `catalogAdapter` + `useCatalogList`/`useVehiclePickerChain` kancaları: VehiclePicker, AnalysisForm, ChronicIssues, Diagnosis, Inspection, Compare'in marka/model/motor seçicileri artık önce yayınlanmış katalog, yoksa/hata olursa legacy veri kümesi kullanır. VehiclePicker ayrıca nesil-doğru yıl aralığı ve varyant kimliği (`variantId`) çözer.
+- `valuationService.valuateWithCatalog` ve `chronicProblemService.assessChronicRiskWithCatalog` hazır ve test edilmiş; canonical yolları `variantId`/`generationId` gerektirir.
+- **Hâlâ eksik**: bu iki fonksiyon hiçbir canlı ekrandan tetiklenmiyor — chronic-risk ve valuation gösteren sayfalar (AnalysisResult, ListingAnalysis) `variantId` üreten bir seçici kullanmıyor. PackageExplorer ve karşılaştırmanın donanım/kronik-sorun kısmı tamamen statik veride kalıyor. Bu, "Aşama 7A tamamlandı" denemeden önce kapatılması gereken gerçek bir boşluktur.
