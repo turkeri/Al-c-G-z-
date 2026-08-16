@@ -36,6 +36,7 @@ const AuthCallbackPage = lazy(() => import('./pages/AuthCallbackPage'))
 const AdminPage = lazy(() => import('./pages/AdminPage'))
 const AdminSettingsPage = lazy(() => import('./pages/AdminSettingsPage'))
 const AdminAuditPage = lazy(() => import('./pages/AdminAuditPage'))
+const AdminAnnouncementFormPage = lazy(() => import('./pages/AdminAnnouncementFormPage'))
 
 export default function App() {
   const location = useLocation()
@@ -101,6 +102,9 @@ export default function App() {
             <Route path="/admin" element={<AuthGuard><AdminPage /></AuthGuard>} />
             <Route path="/admin/ayarlar" element={<AuthGuard><AdminSettingsPage /></AuthGuard>} />
             <Route path="/admin/denetim-kaydi" element={<AuthGuard><AdminAuditPage /></AuthGuard>} />
+            <Route path="/admin/duyurular" element={<AuthGuard><AdminPage /></AuthGuard>} />
+            <Route path="/admin/duyurular/yeni" element={<AuthGuard><AdminAnnouncementFormPage /></AuthGuard>} />
+            <Route path="/admin/duyurular/:id" element={<AuthGuard><AdminAnnouncementFormPage /></AuthGuard>} />
             <Route path="/admin/*" element={<AuthGuard><AdminPage /></AuthGuard>} />
           </Routes>
           </Suspense>

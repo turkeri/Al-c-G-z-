@@ -1,0 +1,6 @@
+import { can } from './adminPermissions.js'
+export function localToEpoch(value) { if (!value) return null; const date = new Date(value); return Number.isNaN(date.valueOf()) ? null : date.valueOf() }
+export function epochToLocal(value) { if (!value) return ''; const date = new Date(Number(value)); return Number.isNaN(date.valueOf()) ? '' : new Date(date.valueOf() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16) }
+export function validAnnouncementForm({ title, message, starts_at, ends_at }) { const start=localToEpoch(starts_at), end=localToEpoch(ends_at); return title.trim().length>0&&title.length<=120&&message.trim().length>0&&message.length<=2000&&(!starts_at||start!==null)&&(!ends_at||end!==null)&&!(start!==null&&end!==null&&end<=start) }
+export function actionsForAnnouncement(item, permissions) { if (item.status==='archived') return []; const out=[]; if(can(permissions,'announcement:write'))out.push('save'); if(can(permissions,'announcement:publish')) out.push(item.status==='draft'?'publish':'unpublish','archive'); return out }
+export const announcementPayload=(form)=>({title:form.title.trim(),message:form.message.trim(),starts_at:localToEpoch(form.starts_at),ends_at:localToEpoch(form.ends_at)})
