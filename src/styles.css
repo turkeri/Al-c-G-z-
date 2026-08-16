@@ -4001,3 +4001,26 @@ button {
   color: var(--color-warning, #b45309);
   font-weight: 600;
 }
+
+/* Piyasa karşılaştırmasının tek cümlelik sonucu — rakamdan çok bu okunur. */
+.market-verdict {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-primary, #3454d1) 8%, transparent);
+  color: var(--color-text, #0f172a);
+  border-left: 3px solid var(--color-primary, #3454d1);
+}
+
+.market-verdict.tone-ucuz {
+  background: color-mix(in srgb, var(--color-success, #15803d) 10%, transparent);
+  border-left-color: var(--color-success, #15803d);
+}
+
+.market-verdict.tone-pahali {
+  background: color-mix(in srgb, var(--color-warning, #b45309) 10%, transparent);
+  border-left-color: var(--color-warning, #b45309);
+}

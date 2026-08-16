@@ -34,7 +34,7 @@ const MODEL_CANDIDATES = [
 
 // Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
 // Tarayıcıdan worker adresini açınca bu numara görünür.
-const VERSION = 8
+const VERSION = 9
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
@@ -528,6 +528,93 @@ async function consumeQuota(env, deviceId, ip) {
  * `parts` bir metin dizesi ya da Gemini'nin beklediği parça listesi olabilir.
  * Görsel inceleme için parça listesi gerekir: [{text}, {inlineData:{...}}].
  */
+// ============================================================================
+// ANALİZ GEÇMİŞİ
+// ============================================================================
+/*
+ * Kullanıcı baktığı araçları sonradan görebilsin diye özet kaydedilir.
+ *
+ * SAKLANMAYAN ŞEYLER: ilan metni, fotoğraflar, kullanıcının notları. Bunlar
+ * cihazda kalır. Sunucuda yalnızca listelenebilir bir künye (marka, model,
+ * yıl, km, fiyat, skor) durur — hem gizlilik hem depolama maliyeti için.
+ */
+const HISTORY_LIMIT = 50
+
+function historyRow(body) {
+  const num = (v) => {
+    const n = Number(String(v ?? '').replace(/[^\d]/g, ''))
+    return Number.isFinite(n) && n > 0 ? n : null
+  }
+  const text = (v, max = 60) => (typeof v === 'string' ? v.slice(0, max) : null)
+
+  return {
+    brand: text(body?.brand, 40),
+    model: text(body?.model, 60),
+    year: text(body?.year, 4),
+    km: num(body?.km),
+    price: num(body?.price),
+    score: num(body?.score),
+    trustScore: num(body?.trustScore),
+    verdict: ['al', 'dikkatli', 'alma', 'belirsiz'].includes(body?.verdict) ? body.verdict : null,
+    source: ['ilan-link', 'ekran-goruntusu', 'metin', 'form'].includes(body?.source)
+      ? body.source
+      : 'form'
+  }
+}
+
+async function handleHistorySave(env, deviceId, body, cors) {
+  const row = historyRow(body)
+  if (!row.brand) return json({ error: 'Marka gerekli' }, 400, cors)
+
+  // Hesap yoksa oluşturulur; geçmiş kaydı hesaba bağlıdır.
+  await loadAccount(env, deviceId)
+
+  const id = crypto.randomUUID()
+  await env.DB.prepare(
+    `INSERT INTO analysis_history
+       (id, account_id, created_at, brand, model, year, km, price, score, trust_score, verdict, source)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)`
+  )
+    .bind(
+      id, deviceId, Date.now(), row.brand, row.model, row.year, row.km,
+      row.price, row.score, row.trustScore, row.verdict, row.source
+    )
+    .run()
+
+  /*
+   * Sınırsız büyümesin: en yeni HISTORY_LIMIT kayıt tutulur, eskiler silinir.
+   * Kullanıcı zaten 50 kayıttan eskisine bakmaz ve depolama bedavaya gelmez.
+   */
+  await env.DB.prepare(
+    `DELETE FROM analysis_history
+      WHERE account_id = ?1
+        AND id NOT IN (
+          SELECT id FROM analysis_history
+           WHERE account_id = ?1
+           ORDER BY created_at DESC
+           LIMIT ?2
+        )`
+  )
+    .bind(deviceId, HISTORY_LIMIT)
+    .run()
+
+  return json({ ok: true, id }, 200, cors)
+}
+
+async function handleHistoryList(env, deviceId, cors) {
+  const result = await env.DB.prepare(
+    `SELECT id, created_at, brand, model, year, km, price, score, trust_score, verdict, source
+       FROM analysis_history
+      WHERE account_id = ?1
+      ORDER BY created_at DESC
+      LIMIT ?2`
+  )
+    .bind(deviceId, HISTORY_LIMIT)
+    .all()
+
+  return json({ items: result.results || [] }, 200, cors)
+}
+
 async function tryModel(env, model, prompt, schema, { disableThinking = true } = {}) {
   const parts = typeof prompt === 'string' ? [{ text: prompt }] : prompt
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`
@@ -872,6 +959,27 @@ export default {
           500,
           cors
         )
+      }
+    }
+
+    /*
+     * Analiz geçmişi uçları. Yapay zekâ anahtarından bağımsızdır — AI kapalıyken
+     * de kullanıcı geçmişini görebilmeli.
+     */
+    if (url.pathname === '/history') {
+      const deviceId = readDeviceId(request)
+      if (!deviceId) return json({ error: 'Cihaz kimligi gerekli' }, 400, cors)
+      if (!env.DB) return json({ items: [], enabled: false }, 200, cors)
+
+      try {
+        if (request.method === 'GET') return await handleHistoryList(env, deviceId, cors)
+        if (request.method === 'POST') {
+          const body = await request.json().catch(() => null)
+          return await handleHistorySave(env, deviceId, body, cors)
+        }
+        return json({ error: 'Desteklenmeyen yontem' }, 405, cors)
+      } catch (err) {
+        return json({ error: 'Gecmis islemi basarisiz', detail: String(err).slice(0, 200) }, 500, cors)
       }
     }
 

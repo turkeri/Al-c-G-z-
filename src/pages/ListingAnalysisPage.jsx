@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
@@ -18,6 +18,7 @@ import { assessChronicRisk } from '../services/chronicProblemService'
 import { fetchListingByInput, visionToFormData, toFormData } from '../services/listingFetchService'
 import { fetchListingFromScreenshot, isAiConfigured } from '../services/aiService'
 import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
+import { recordAnalysis } from '../services/historyService'
 import { formatKm, formatPrice } from '../utils/formatters'
 
 /**
@@ -55,6 +56,35 @@ const MODES = [
   { id: 'gorsel', label: 'Ekran Görüntüsü' },
   { id: 'metin', label: 'Metin Yapıştır' }
 ]
+
+/** "Volkswagen Golf 2015 Comfortline 1.6 TDI DSG" gibi tek satırlık başlık. */
+function vehicleTitle(report) {
+  const f = report.listing.formData
+  return (
+    [f.brand, f.model, f.year, f.packageName, f.engine, f.transmission]
+      .filter(Boolean)
+      .join(' ') || 'Araç'
+  )
+}
+
+/**
+ * Piyasa karşılaştırmasını tek cümleye indirger.
+ *
+ * Rakam okumak yorucudur; kullanıcının aradığı şey "ne yapmalıyım" cevabıdır.
+ * Cümleler kesin hüküm vermez, yönlendirir.
+ */
+function marketSentence(market) {
+  const diff = market.diffPercent
+  if (diff <= -20) {
+    return 'Fiyat piyasanın belirgin altında. Bu bir fırsat olabileceği gibi, bildirilmemiş bir sorunun işareti de olabilir — sebebini öğrenmeden ilerleme.'
+  }
+  if (diff <= -8) return 'Fiyat piyasanın altında; araç sağlam çıkarsa iyi bir alım olabilir.'
+  if (diff < 8) return 'Fiyat piyasa bandında. Bu araç pazarlık ile değerlendirilebilir.'
+  if (diff < 20) {
+    return 'Fiyat piyasanın üzerinde. Donanım ve bakım geçmişi bu farkı karşılamıyorsa pazarlık şart.'
+  }
+  return 'Fiyat piyasanın belirgin üzerinde. Satıcının gerekçesini sor; karşılığı yoksa bu ilana bu fiyattan girme.'
+}
 
 const ORNEK_ILAN = `Volkswagen Golf 1.6 TDI Comfortline
 2015 model, 142.000 km, Dizel, DSG
@@ -96,6 +126,17 @@ export default function ListingAnalysisPage() {
       if (!merged[k]) merged[k] = first.formData[k] || ''
     })
 
+    /*
+     * Görselden okunan ek alanlar (paket, kasa tipi, beygir, motor hacmi,
+     * renk, şehir, satıcı tipi) analize de girer: paket adı donanım listesini,
+     * kasa tipi bakım segmentini belirler. Bunları okuyup atmak, kullanıcının
+     * bir analiz hakkını boşa harcamak olurdu.
+     */
+    if (seed?.extra) {
+      if (seed.extra.packageName && !merged.packageName) merged.packageName = seed.extra.packageName
+      if (seed.extra.bodyType) merged.bodyType = seed.extra.bodyType
+    }
+
     const market = estimateMarketPrice(merged)
     const listing = analyzeListing(source || ' ', {
       marketDiffPercent: market ? market.diffPercent : undefined
@@ -110,6 +151,21 @@ export default function ListingAnalysisPage() {
 
     return { listing, market, analysis, damage, decision, catalog, chronic }
   }, [submitted, seed])
+
+  /*
+   * Tamamlanan her analiz geçmişe düşer. Kullanıcı birkaç araca baktıktan
+   * sonra hangisinin ne çıktığını hatırlamak zorunda kalmamalı.
+   */
+  useEffect(() => {
+    if (!report?.listing?.formData?.brand) return
+    recordAnalysis({
+      ...report.listing.formData,
+      score: report.analysis?.score ?? null,
+      trustScore: report.listing.trustScore,
+      verdict: report.decision?.verdict || null,
+      source: seed ? (seed.via === 'ekran görüntüsü' ? 'ekran-goruntusu' : 'ilan-link') : 'metin'
+    })
+  }, [report, seed])
 
   // ------------------------------------------------------------------ girdi
 
@@ -193,7 +249,12 @@ export default function ListingAnalysisPage() {
     }
 
     const parsed = visionToFormData(response.result)
-    setSeed({ formData: parsed.formData, via: 'ekran görüntüsü', missing: parsed.missingFields })
+    setSeed({
+      formData: parsed.formData,
+      extra: parsed.extra,
+      via: 'ekran görüntüsü',
+      missing: parsed.missingFields
+    })
     setSubmitted(parsed.text || ' ')
     setNotice({
       tone: 'ok',
@@ -361,6 +422,75 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
+
+            {/* ================================================================
+                ARAÇ GENEL DEĞERLENDİRMESİ
+                İlan güveninden AYRI bir şey: orası ilanın doğruluğunu, burası
+                aracın kendisini ölçer. İkisi karıştırılmamalı — dürüst bir
+                ilan kötü bir aracı, yanıltıcı bir ilan iyi bir aracı anlatıyor
+                olabilir.
+               ================================================================ */}
+            {report.analysis && (
+              <>
+                <section className="result-summary">
+                  <ScoreGauge
+                    score={report.analysis.score}
+                    label={report.analysis.band.label}
+                    tone={report.analysis.band.tone}
+                  />
+                  <div className="result-summary-details">
+                    <h2>{vehicleTitle(report)}</h2>
+                    <p className="result-summary-engine">Araç Genel Puanı</p>
+                    <div className="result-summary-meta">
+                      {report.listing.formData.km && <span>{formatKm(report.listing.formData.km)}</span>}
+                      {report.listing.formData.price && (
+                        <span>{formatPrice(report.listing.formData.price)}</span>
+                      )}
+                    </div>
+                  </div>
+                </section>
+
+                {(report.analysis.advantages.length > 0 || report.analysis.risks.length > 0) && (
+                  <section className="result-card">
+                    {report.analysis.advantages.length > 0 && (
+                      <>
+                        <h3>Avantajlar</h3>
+                        <ul className="result-list positive">
+                          {report.analysis.advantages.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+
+                    {report.analysis.risks.length > 0 && (
+                      <>
+                        <h3 style={{ marginTop: report.analysis.advantages.length ? 18 : 0 }}>
+                          Riskler
+                        </h3>
+                        <ul className="result-list negative">
+                          {report.analysis.risks.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+
+                    {report.analysis.checkpoints.length > 0 && (
+                      <>
+                        <h3 style={{ marginTop: 18 }}>Kontrol Edilmesi Gerekenler</h3>
+                        <ul className="result-list neutral">
+                          {report.analysis.checkpoints.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+                      </>
+                    )}
+                  </section>
+                )}
+              </>
+            )}
+
             {/* ---------------- 1. İLAN GÜVENİ ---------------- */}
             <section className="result-summary">
               <ScoreGauge
@@ -418,6 +548,65 @@ export default function ListingAnalysisPage() {
                   </strong>
                 </div>
               </div>
+
+              {/* Görselden okunan ek alanlar. Okunduysa gösterilir; okunamadıysa
+                  satır hiç çıkmaz — boş bir "—" göstermek yer kaplar, bilgi vermez. */}
+              {seed?.extra && Object.values(seed.extra).some(Boolean) && (
+                <div className="market-facts" style={{ marginTop: 10 }}>
+                  {seed.extra.packageName && (
+                    <div>
+                      <span>Paket</span>
+                      <strong>{seed.extra.packageName}</strong>
+                    </div>
+                  )}
+                  {seed.extra.bodyType && (
+                    <div>
+                      <span>Kasa tipi</span>
+                      <strong>{seed.extra.bodyType}</strong>
+                    </div>
+                  )}
+                  {seed.extra.displacement && (
+                    <div>
+                      <span>Motor hacmi</span>
+                      <strong>{seed.extra.displacement}</strong>
+                    </div>
+                  )}
+                  {seed.extra.power && (
+                    <div>
+                      <span>Beygir</span>
+                      <strong>{seed.extra.power}</strong>
+                    </div>
+                  )}
+                  {seed.extra.color && (
+                    <div>
+                      <span>Renk</span>
+                      <strong>{seed.extra.color}</strong>
+                    </div>
+                  )}
+                  {seed.extra.city && (
+                    <div>
+                      <span>Şehir</span>
+                      <strong>{seed.extra.city}</strong>
+                    </div>
+                  )}
+                  {seed.extra.sellerType && (
+                    <div>
+                      <span>Satıcı</span>
+                      <strong>{seed.extra.sellerType}</strong>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Okunamayan alanlar gizlenmez: kullanıcı analizin neye
+                  dayanmadığını bilmeli. */}
+              {seed?.missing?.length > 0 && (
+                <p className="market-disclaimer">
+                  Görselden okunamayan alanlar: {seed.missing.join(', ')}. Bu alanlar olmadan
+                  analiz eksik kalır; bilgi tablosunun göründüğü bir ekran görüntüsü yükleyebilir
+                  ya da metin sekmesinden elle tamamlayabilirsin.
+                </p>
+              )}
             </section>
 
             {/* ---------------- 3. UYARILAR ---------------- */}
@@ -522,8 +711,11 @@ export default function ListingAnalysisPage() {
                     <strong>{formatPrice(report.market.listedPrice)}</strong>
                   </div>
                   <div>
-                    <span>Tahmini piyasa değeri</span>
-                    <strong>{formatPrice(report.market.estimatedPrice)}</strong>
+                    <span>Tahmini gerçek piyasa</span>
+                    <strong>
+                      {formatPrice(report.market.estimatedRange.min)} –{' '}
+                      {formatPrice(report.market.estimatedRange.max)}
+                    </strong>
                   </div>
                   <div>
                     <span>Fark</span>
@@ -533,9 +725,14 @@ export default function ListingAnalysisPage() {
                     </strong>
                   </div>
                 </div>
+                {/* Kullanıcının aradığı tek cümlelik sonuç. */}
+                <p className={'market-verdict tone-' + report.market.verdict}>
+                  {marketSentence(report.market)}
+                </p>
                 <p className="market-disclaimer">
-                  Bu tutar marka/model/yaş/kilometreye dayalı kaba bir amortisman hesabıdır;
-                  gerçek zamanlı ilan verisi değildir. Referanslar {report.market.baseline}{' '}
+                  Bu aralık marka/model/yaş/kilometreye dayalı kaba bir amortisman hesabıdır;
+                  gerçek zamanlı ilan verisi değildir. Tek bir sayı yerine aralık verilir
+                  çünkü bu hesap o kadar hassas değildir. Referanslar {report.market.baseline}{' '}
                   piyasasına göredir.
                 </p>
               </section>

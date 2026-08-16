@@ -62,8 +62,21 @@ export function estimateMarketPrice(formData) {
     label = 'Piyasanın üzerinde'
   }
 
+  /*
+   * Tek bir sayı vermek ("piyasa değeri 1.375.000 TL") sahte bir kesinlik
+   * yaratır: bu hesap marka/model/yaş/kilometreye dayalı kaba bir amortisman,
+   * gerçek ilan verisi değil. Aralık vermek hem daha dürüst hem pazarlıkta
+   * daha kullanışlı — alıcı "şu bandın altına çekmeliyim" diye düşünebiliyor.
+   */
+  const RANGE_PERCENT = 0.04
+  const estimatedRange = {
+    min: Math.round((estimatedPrice * (1 - RANGE_PERCENT)) / 1000) * 1000,
+    max: Math.round((estimatedPrice * (1 + RANGE_PERCENT)) / 1000) * 1000
+  }
+
   return {
     estimatedPrice,
+    estimatedRange,
     listedPrice,
     diffAmount,
     diffPercent,

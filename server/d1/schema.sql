@@ -77,3 +77,29 @@ CREATE TABLE IF NOT EXISTS ip_quota (
   used_count  INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (ip, period_key)
 );
+
+-- ============================================================================
+-- ANALİZ GEÇMİŞİ
+-- ============================================================================
+-- Kullanıcı baktığı araçları sonradan görebilsin diye tutulur. Yalnızca ÖZET
+-- saklanır (marka, model, yıl, km, fiyat, skor) — ilan metni, fotoğraf ve
+-- kullanıcının yazdığı notlar SAKLANMAZ.
+--
+-- Bunun nedeni hem gizlilik hem maliyet: analiz metni ve görseller kullanıcının
+-- kendi cihazında kalır, sunucuda yalnızca listelenebilir bir künye durur.
+CREATE TABLE IF NOT EXISTS analysis_history (
+  id          TEXT PRIMARY KEY,          -- istemcinin ürettiği UUID
+  account_id  TEXT NOT NULL,             -- accounts.id
+  created_at  INTEGER NOT NULL,
+  brand       TEXT,
+  model       TEXT,
+  year        TEXT,
+  km          INTEGER,
+  price       INTEGER,
+  score       INTEGER,                   -- araç genel puanı
+  trust_score INTEGER,                   -- ilan güven puanı
+  verdict     TEXT,                      -- al | dikkatli | alma | belirsiz
+  source      TEXT                       -- ilan-link | ekran-goruntusu | metin | form
+);
+
+CREATE INDEX IF NOT EXISTS idx_history_account ON analysis_history(account_id, created_at);

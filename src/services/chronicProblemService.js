@@ -35,7 +35,7 @@
  * göre yakın olan kalemler tam, uzak olanlar azaltılmış ağırlıkla toplanır.
  */
 
-import { matchEngine } from '../data/catalog'
+import { matchEngine, matchArchetypes } from '../data/catalog'
 import { matchTransmissionInfo } from '../data/catalog/transmissions'
 import { getEnrichedProblems } from './vehicleService'
 
@@ -160,6 +160,35 @@ export function assessChronicRisk(formData, context = {}) {
       )
     })
   }
+
+  /*
+   * --- Sistem bazlı arketipler ---------------------------------------------
+   *
+   * Katalogda kaydı olmayan bir araçta (örneğin Volvo XC90) yukarıdaki üç
+   * kaynak da boş döner ve kullanıcı hiçbir şey göremezdi. Oysa aracın dizel,
+   * otomatik ve 200.000 km'de olduğunu biliyoruz — bu kadarı bile anlamlı bir
+   * kontrol listesi üretir.
+   *
+   * Bu kalemler UYDURMA DEĞİL, sisteme özgü genel geçer mühendislik bilgisidir
+   * ve kaynağı ekranda "Genel" diye ayrı gösterilir; markaya özgü kayıtla
+   * karıştırılmaz.
+   */
+  matchArchetypes(formData).forEach((archetype) => {
+    items.push(
+      toItem(
+        {
+          title: archetype.title,
+          risk: archetype.risk,
+          cost: archetype.cost,
+          note: archetype.checkHow,
+          checkKm: archetype.checkKm,
+          source: 'Genel'
+        },
+        km
+      )
+    )
+  })
+  if (matchArchetypes(formData).length) sources.push('Sistem bazlı genel kontroller')
 
   if (!items.length) return null
 

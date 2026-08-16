@@ -47,8 +47,10 @@ import { BRANDS, getBrandInfo, brandOwnershipScore } from './brands'
 import { MODELS, getModelInfo, getGeneration, faceliftStatus, getGenerationCount } from './models'
 import { EQUIPMENT, expandEquipment, groupEquipment, getEquipment } from './equipment'
 import { MAINTENANCE_ITEMS, upcomingMaintenance, guessSegment } from './maintenance'
+import { PROBLEM_ARCHETYPES, matchArchetypes, groupBySystem, transmissionTypeOf } from './problems'
 
 export { ENGINES, TRANSMISSIONS, PACKAGES, BRANDS, MODELS, EQUIPMENT, MAINTENANCE_ITEMS }
+export { PROBLEM_ARCHETYPES, matchArchetypes, groupBySystem, transmissionTypeOf }
 export { getEngineById, getTransmissionById, matchTransmission, getPackagesFor, matchPackage }
 export { getBrandInfo, brandOwnershipScore }
 export { getModelInfo, getGeneration, faceliftStatus }
@@ -412,6 +414,7 @@ export function getCatalogStats() {
     packageCount: PACKAGES.length,
     equipmentCount: EQUIPMENT.length,
     maintenanceItemCount: MAINTENANCE_ITEMS.length,
+    archetypeCount: PROBLEM_ARCHETYPES.length,
     engineProblemCount: ENGINES.reduce((sum, e) => sum + e.problems.length, 0),
     transmissionProblemCount: TRANSMISSIONS.reduce((sum, t) => sum + t.problems.length, 0)
   }
