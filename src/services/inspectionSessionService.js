@@ -57,10 +57,18 @@ export function getSession() {
   return read()
 }
 
+/** Uzak garaj değişikliği aktif inceleme oturumuna uygulanır. */
+export function applyGarageSync(item) {
+  if (item.deleted_at) return clearSession()
+  if (item.payload) { write(item.payload); return item.payload }
+  return read()
+}
+
 /** Oturumun bir bölümünü günceller ve güncel oturumu döner. */
 export function updateSession(patch) {
-  const next = { ...read(), ...patch, updatedAt: new Date().toISOString() }
+  const next = { ...read(), ...patch, syncId: read().syncId || crypto.randomUUID(), updatedAt: new Date().toISOString() }
   write(next)
+  void import('./syncService').then(({ enqueueSync }) => enqueueSync('garage', 'upsert', next))
   return next
 }
 

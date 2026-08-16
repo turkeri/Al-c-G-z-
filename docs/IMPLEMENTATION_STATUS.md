@@ -73,3 +73,14 @@
   ekspertiz notları bir kez, idempotent olarak sahipliğe bağlanır.
 - Başka kullanıcıya bağlı cihaz 409 ile reddedilir; istemci `user_id`si kabul
   edilmez. Remote migration, deploy ve push yapılmadı.
+
+## Aşama 4 — sürekli bulut senkronizasyonu: hazır (migration uygulanmadı)
+
+- JWT korumalı `GET /sync` ve `POST /sync`, yalnız token subject'inden çözülen
+  kullanıcı verisini işler. İstemci `user_id`si reddedilir.
+- Favori, garaj ve ekspertiz notu işlemleri kalıcı kullanıcı-bazlı localStorage
+  kuyruğuna eklenir; giriş sonrası, bağlantı geldiğinde ve elle yeniden dener.
+- Sunucu-zamanlı son yazan kazanır; silmeler tombstone'dur. Cursor, aynı zaman
+  damgasındaki kayıtları kaçırmamak için `updated_at + id` çiftini taşır.
+- Kayıtların gerçek cihazlar arasında UI'ya uygulanması ve operasyonların
+  ileride IndexedDB'ye taşınması sonraki ürünselleştirme turunda ele alınmalıdır.

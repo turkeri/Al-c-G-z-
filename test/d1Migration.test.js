@@ -34,3 +34,14 @@ test('ownership migration is additive and includes all transferred data types', 
   const executableSql = migration.replace(/^--.*$/gm, '')
   assert.doesNotMatch(executableSql, /\bDROP\b|\bDELETE\s+FROM\b/i)
 })
+
+test('continuous sync migration is additive and indexes the stable cursor', async () => {
+  const migration = await readFile(new URL('../server/d1/migrations/0004_continuous_user_sync.sql', import.meta.url), 'utf8')
+  for (const table of ['user_sync_records', 'user_sync_operations']) {
+    assert.match(migration, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`, 'i'))
+  }
+  assert.match(migration, /deleted_at\s+INTEGER/i)
+  assert.match(migration, /idx_user_sync_cursor/i)
+  const executableSql = migration.replace(/^--.*$/gm, '')
+  assert.doesNotMatch(executableSql, /\bDROP\b|\bDELETE\s+FROM\b/i)
+})

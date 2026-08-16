@@ -30,6 +30,7 @@ export function AuthProvider({ children }) {
       setSession(nextSession)
       setStatus(nextSession ? 'authenticated' : 'anonymous')
       setError(null)
+      if (nextSession) import('../services/syncService').then(({ startSync }) => startSync())
     })
     return () => {
       mounted = false

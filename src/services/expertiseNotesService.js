@@ -27,7 +27,8 @@ export function getExpertiseNotes() {
 export function addExpertiseNote({ vehicleLabel, flaggedItems, notes, photos = [] }) {
   const list = readStore()
   const record = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: crypto.randomUUID(),
+    syncId: crypto.randomUUID(),
     vehicleLabel,
     flaggedItems,
     notes,
@@ -35,13 +36,23 @@ export function addExpertiseNote({ vehicleLabel, flaggedItems, notes, photos = [
     createdAt: Date.now()
   }
   const saved = writeStore([...list, record])
+  if (saved) void import('./syncService').then(({ enqueueSync }) => enqueueSync('expertise_notes', 'upsert', record))
   return { record, saved }
 }
 
 export function removeExpertiseNote(id) {
+  const previous = readStore().find((item) => item.id === id)
   const next = readStore().filter((item) => item.id !== id)
   writeStore(next)
+  if (previous?.syncId) void import('./syncService').then(({ enqueueSync }) => enqueueSync('expertise_notes', 'delete', previous))
   return next
+}
+
+/** Worker'dan gelen kayıtları aynı sync kimliğiyle yerel görünüme uygular. */
+export function applyExpertiseNoteSync(item) {
+  const list = readStore(); const match = (entry) => (entry.syncId || entry.id) === item.id
+  const next = item.deleted_at ? list.filter((entry) => !match(entry)) : [...list.filter((entry) => !match(entry)), item.payload]
+  writeStore(next)
 }
 
 export function summarizeSeverity(flaggedItemCount) {

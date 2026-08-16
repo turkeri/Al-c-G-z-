@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "test": "node --test --test-concurrency=1 test/listingAdapters.test.js test/catalog.test.js test/listingParser.test.js test/workerSecurity.test.js test/workerHistory.test.js test/d1Migration.test.js test/auth.test.js test/ownership.test.js",
+    "test": "node --test --test-concurrency=1 test/listingAdapters.test.js test/catalog.test.js test/listingParser.test.js test/workerSecurity.test.js test/workerHistory.test.js test/d1Migration.test.js test/auth.test.js test/ownership.test.js test/sync.test.js",
     "verify": "npm run lint && npm test && npm run build"
   },
   "dependencies": {

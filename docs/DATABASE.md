@@ -81,3 +81,12 @@ unique index vardır; veri claim'i sonraki aşamadadır.
 mevcut anonim tabloları değiştirmeden `history_owners`, kullanıcıya bağlı
 favori/garaj/ekspertiz kayıtları ve idempotent `device_link_transfers` ekler.
 Dosya mevcut `migrations_dir` altında yer alır; **remote D1'e uygulanmadı**.
+
+## Aşama 4 — sürekli kullanıcı senkronizasyonu
+
+[`0004_continuous_user_sync.sql`](../server/d1/migrations/0004_continuous_user_sync.sql),
+mevcut kayıtları değiştirmeden `user_sync_records` ve idempotent
+`user_sync_operations` tablolarını ekler. Her kayıt, dahili `user_id`, cihaz
+UUID'si, tip, JSON payload, sunucu zamanlı sürüm ve `deleted_at` tombstone'u
+ile tutulur. Cursor için `(user_id, updated_at, id)` indeksi kullanılır.
+Migration henüz local veya remote D1'e uygulanmamıştır.

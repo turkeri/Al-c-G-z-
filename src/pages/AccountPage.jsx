@@ -4,12 +4,14 @@ import PageContainer from '../components/Layout/PageContainer'
 import { useAuth } from '../contexts/AuthContext'
 import { signOut } from '../services/authService'
 import { linkCurrentDevice } from '../services/deviceLinkService'
+import { getSyncStatus, startSync, subscribeSync, syncNow } from '../services/syncService'
 
 export default function AccountPage() {
   const { configured, user } = useAuth()
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [linkState, setLinkState] = useState({ status: 'idle', result: null })
+  const [syncState, setSyncState] = useState(null)
   const provider = user?.app_metadata?.provider || 'e-posta'
 
   async function handleSignOut() {
@@ -22,6 +24,7 @@ export default function AccountPage() {
     try {
       const result = await linkCurrentDevice()
       setLinkState({ status: 'done', result })
+      startSync()
     } catch (linkError) {
       setLinkState({ status: 'error', result: linkError.message })
     }
@@ -32,6 +35,12 @@ export default function AccountPage() {
   // İlk girişte otomatik denenir; kullanıcı başarısız olursa düğmeyle yeniden dener.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configured, user])
+
+  useEffect(() => {
+    if (!user) return undefined
+    void getSyncStatus().then(setSyncState)
+    return subscribeSync(setSyncState)
+  }, [user])
 
   return (
     <PageContainer>
@@ -50,6 +59,12 @@ export default function AccountPage() {
             {linkState.status === 'done' && <p className="auth-success">Eşleştirildi: {linkState.result.counts.history} geçmiş, {linkState.result.counts.favorites} favori, {linkState.result.counts.garage} garaj kaydı, {linkState.result.counts.expertiseNotes} ekspertiz notu.</p>}
             {linkState.status === 'error' && <p className="auth-error">{linkState.result}</p>}
             <button className="btn btn-secondary" type="button" onClick={handleLinkDevice} disabled={linkState.status === 'loading'}>Bu cihazdaki verileri hesabımla eşleştir</button>
+          </section>
+          <section className="account-link-status">
+            <h2>Bulut senkronizasyonu</h2>
+            <p>{syncState?.syncing ? 'Eşitleniyor…' : syncState?.error || (syncState?.lastSuccess ? `Son eşitleme: ${new Date(syncState.lastSuccess).toLocaleString('tr-TR')}` : 'Henüz eşitlenmedi.')}</p>
+            <p>Bekleyen işlem: {syncState?.pending || 0}{navigator.onLine ? '' : ' · Çevrimdışı'}</p>
+            <button className="btn btn-secondary" type="button" onClick={() => void syncNow()} disabled={syncState?.syncing}>Şimdi eşitle</button>
           </section>
           <p className="page-intro">Hesap silme henüz hazır değil.</p>
           <button className="btn btn-secondary" type="button" onClick={handleSignOut} disabled={busy}>Oturumu kapat</button>

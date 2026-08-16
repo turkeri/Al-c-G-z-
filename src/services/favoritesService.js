@@ -29,19 +29,29 @@ export function isFavorite(id) {
 export function addFavorite(record) {
   const list = readStore()
   if (list.some((item) => item.id === record.id)) return list
-  const next = [...list, { ...record, savedAt: Date.now() }]
+  const next = [...list, { ...record, syncId: record.syncId || crypto.randomUUID(), savedAt: Date.now() }]
   writeStore(next)
+  void import('./syncService').then(({ enqueueSync }) => enqueueSync('favorites', 'upsert', next.at(-1)))
   return next
 }
 
 export function removeFavorite(id) {
+  const previous = readStore().find((item) => item.id === id)
   const next = readStore().filter((item) => item.id !== id)
   writeStore(next)
+  if (previous?.syncId) void import('./syncService').then(({ enqueueSync }) => enqueueSync('favorites', 'delete', previous))
   return next
 }
 
 export function toggleFavorite(record) {
   return isFavorite(record.id) ? removeFavorite(record.id) : addFavorite(record)
+}
+
+/** Worker'dan gelen kayıtları aynı sync kimliğiyle yerel görünüme uygular. */
+export function applyFavoriteSync(item) {
+  const list = readStore(); const match = (entry) => (entry.syncId || entry.id) === item.id
+  const next = item.deleted_at ? list.filter((entry) => !match(entry)) : [...list.filter((entry) => !match(entry)), item.payload]
+  writeStore(next)
 }
 
 export function buildFavoriteId(formData) {

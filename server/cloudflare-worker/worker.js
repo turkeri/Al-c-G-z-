@@ -12,6 +12,7 @@ import { fetchListing, listPlatforms } from './listing/fetcher.js'
 import { constantTimeEqual, hasAcceptableBodySize } from './security.js'
 import { authenticateRequest } from './auth.js'
 import { findUserForAuth, linkDeviceData } from './ownership.js'
+import { pullSync, pushSync, syncUserId } from './sync.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -966,6 +967,22 @@ export default {
       } catch {
         return json({ error: 'Cihaz verileri eşleştirilemedi' }, 500, { ...cors, 'Cache-Control': 'no-store' })
       }
+    }
+
+    if (url.pathname === '/sync') {
+      if (!env.DB) return json({ error: 'Veritabani baglanmamis' }, 503, { ...cors, 'Cache-Control': 'no-store' })
+      const auth = await requireAuth(request, env, cors)
+      if (auth instanceof Response) return auth
+      const userId = await syncUserId(env, auth)
+      if (!userId) return json({ error: 'Cihaz eşleştirmesi gerekli' }, 409, { ...cors, 'Cache-Control': 'no-store' })
+      try {
+        if (request.method === 'GET') return json(await pullSync(env, userId, url.searchParams.get('cursor'), url.searchParams.get('limit')), 200, { ...cors, 'Cache-Control': 'no-store' })
+        if (request.method === 'POST') {
+          const outcome = await pushSync(env, userId, (await request.json()).operations)
+          return json(outcome, outcome.status || 200, { ...cors, 'Cache-Control': 'no-store' })
+        }
+        return json({ error: 'Desteklenmeyen yontem' }, 405, cors)
+      } catch { return json({ error: 'Senkronizasyon basarisiz' }, 400, { ...cors, 'Cache-Control': 'no-store' }) }
     }
 
     // Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalıyken de
