@@ -1,6 +1,6 @@
 import { ensureUserForAuth } from './ownership.js'
 
-const PERMISSIONS = { admin: ['admin:access','announcement:read','announcement:write','announcement:publish','settings:read','settings:write','audit:read','role:manage'], editor: ['admin:access','announcement:read','announcement:write','announcement:publish'], support: ['admin:access','announcement:read'] }
+const PERMISSIONS = { admin: ['admin:access','announcement:read','announcement:write','announcement:publish','settings:read','settings:write','audit:read','role:manage','catalog:read','catalog:write','catalog:validate','catalog:publish','catalog:rollback'], editor: ['admin:access','announcement:read','announcement:write','announcement:publish','catalog:read','catalog:write','catalog:validate'], support: ['admin:access','announcement:read','catalog:read'] }
 const SETTINGS = new Set(['maintenance_mode','maintenance_message','minimum_web_version','minimum_android_version','free_analysis_limit','support_email'])
 const uuid = () => crypto.randomUUID()
 
