@@ -14,6 +14,8 @@ import { authenticateRequest } from './auth.js'
 import { findUserForAuth, linkDeviceData } from './ownership.js'
 import { pullSync, pushSync, syncUserId } from './sync.js'
 import { adminActor, announcementDates, audit, SETTINGS, textSafe } from './admin.js'
+import { handlePublicCatalog } from './catalog/public.js'
+import { handleAdminCatalog } from './catalog/admin.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -966,12 +968,30 @@ export default {
       return json({ items: rows.results || [] }, 200, { ...cors, 'Cache-Control': 'public, max-age=60' })
     }
 
+    if (url.pathname.startsWith('/catalog/')) {
+      try {
+        const response = await handlePublicCatalog(request, env, url, cors)
+        if (response) return response
+        return json({ error: 'Bulunamadı' }, 404, cors)
+      } catch {
+        return json({ error: 'Katalog şu anda kullanılamıyor', available: false, source: 'legacy-fallback-required' }, 503, { ...cors, 'Cache-Control': 'no-store' })
+      }
+    }
+
     if (url.pathname.startsWith('/admin')) {
       if (!env.DB) return json({ error: 'Yönetim servisi kullanılamıyor' }, 503, { ...cors, 'Cache-Control': 'no-store' })
       const auth = await requireAuth(request, env, cors); if (auth instanceof Response) return auth
       const needed = url.pathname.includes('/audit') ? 'audit:read' : url.pathname.includes('/settings') ? (request.method === 'GET' ? 'settings:read' : 'settings:write') : url.pathname.includes('/announcements') ? (request.method === 'GET' ? 'announcement:read' : url.pathname.endsWith('/publish') ? 'announcement:publish' : 'announcement:write') : 'admin:access'
       const actor = await adminActor(env, auth, needed)
       if (!actor) return json({ error: 'Bu alana erişim yetkiniz yok' }, 403, { ...cors, 'Cache-Control': 'no-store' })
+      if (url.pathname.startsWith('/admin/catalog')) {
+        try {
+          const response = await handleAdminCatalog(request, env, url, actor)
+          if (response) return new Response(response.body, { status: response.status, headers: { ...Object.fromEntries(response.headers), ...cors, 'Cache-Control': 'no-store' } })
+        } catch {
+          return json({ error: 'Katalog işlemi tamamlanamadı' }, 500, { ...cors, 'Cache-Control': 'no-store' })
+        }
+      }
       if (url.pathname === '/admin/me' && request.method === 'GET') return json({ roles: actor.roles, permissions: actor.permissions }, 200, { ...cors, 'Cache-Control': 'no-store' })
       if (url.pathname === '/admin/announcements' && request.method === 'GET') { const rows = await env.DB.prepare('SELECT id,title,message,status,starts_at,ends_at,version,updated_at FROM announcements ORDER BY updated_at DESC LIMIT 100').all(); return json({ items: rows.results || [] }, 200, { ...cors, 'Cache-Control': 'no-store' }) }
       if (url.pathname === '/admin/announcements' && request.method === 'POST') { const body = await request.json().catch(() => null); const dates=announcementDates(body); if (!textSafe(body?.title, 120) || !textSafe(body?.message, 2000) || !dates) return json({ error: 'Geçersiz duyuru' }, 400, cors); const now = Date.now(); const id = crypto.randomUUID(); await env.DB.prepare("INSERT INTO announcements (id,title,message,status,starts_at,ends_at,created_at,updated_at,created_by,updated_by) VALUES (?1,?2,?3,'draft',?4,?5,?6,?6,?7,?7)").bind(id, body.title.trim(), body.message.trim(), dates.startsAt, dates.endsAt, now, actor.userId).run(); await audit(env, actor, 'announcement.create', 'announcement', id); return json({ id, status: 'draft' }, 201, { ...cors, 'Cache-Control': 'no-store' }) }
