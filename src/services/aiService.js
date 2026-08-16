@@ -20,7 +20,7 @@ import { accountHeaders, setCachedAccount } from './accountService'
 // Kendi sunucunu kurarsan .env dosyasına VITE_AI_PROXY_URL yazarak burayı ezebilirsin.
 const DEFAULT_PROXY_URL = 'https://arac-dedektifi-ai.turkerinurullah.workers.dev'
 
-const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || DEFAULT_PROXY_URL
+const PROXY_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_AI_PROXY_URL || DEFAULT_PROXY_URL
 // Sunucudaki üst sınırdan (30 sn) biraz uzun tutulur ki hata mesajı
 // zaman aşımı yerine sunucudan gelen gerçek nedeni gösterebilsin.
 const TIMEOUT_MS = 40000

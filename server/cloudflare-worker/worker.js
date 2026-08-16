@@ -384,8 +384,9 @@ ${ORTAK_KURALLAR}`
   }
 }
 
-function corsHeaders(origin, allowedOrigins) {
-  const allowAll = !allowedOrigins || allowedOrigins.trim() === '' || allowedOrigins.trim() === '*'
+function corsHeaders(origin, allowedOrigins, env = {}) {
+  const production = String(env.APP_ENV || '').toLowerCase() === 'production'
+  const allowAll = !production && (!allowedOrigins || allowedOrigins.trim() === '' || allowedOrigins.trim() === '*')
   const list = allowAll ? [] : allowedOrigins.split(',').map((o) => o.trim())
   const allow = allowAll ? '*' : list.includes(origin) ? origin : null
   const headers = {
@@ -399,9 +400,10 @@ function corsHeaders(origin, allowedOrigins) {
   return headers
 }
 
-function isAllowedOrigin(origin, allowedOrigins) {
+function isAllowedOrigin(origin, allowedOrigins, env = {}) {
+  const production = String(env.APP_ENV || '').toLowerCase() === 'production'
   if (!origin) return true
-  if (!allowedOrigins || allowedOrigins.trim() === '' || allowedOrigins.trim() === '*') return true
+  if (!allowedOrigins || allowedOrigins.trim() === '' || allowedOrigins.trim() === '*') return !production
   return allowedOrigins.split(',').map((o) => o.trim()).includes(origin)
 }
 
@@ -921,15 +923,22 @@ async function handleDataImport(env, body, cors) {
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || ''
-    const cors = corsHeaders(origin, env.ALLOWED_ORIGINS)
+    const cors = corsHeaders(origin, env.ALLOWED_ORIGINS, env)
     const url = new URL(request.url)
 
-    if (!isAllowedOrigin(origin, env.ALLOWED_ORIGINS)) {
+    if (!isAllowedOrigin(origin, env.ALLOWED_ORIGINS, env)) {
       return json({ error: 'Bu kaynak için erişim izni yok' }, 403, cors)
     }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors })
+    }
+
+    if (url.pathname === '/health' && request.method === 'GET') {
+      const auth = Boolean(env.SUPABASE_URL && env.SUPABASE_JWT_ISSUER && env.SUPABASE_JWT_AUDIENCE)
+      let database = 'unavailable'
+      try { if (env.DB) { await env.DB.prepare('SELECT 1 AS ok').first(); database = 'reachable' } } catch { database = 'unavailable' }
+      return json({ ok: database === 'reachable', environment: String(env.APP_ENV || 'development'), database, auth: auth ? 'configured' : 'unconfigured', version: VERSION }, database === 'reachable' ? 200 : 503, { ...cors, 'Cache-Control': 'no-store' })
     }
 
     if (request.method === 'POST' && !hasAcceptableBodySize(request)) {

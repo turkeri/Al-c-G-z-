@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "test": "node --test --test-concurrency=1 test/listingAdapters.test.js test/catalog.test.js test/listingParser.test.js test/workerSecurity.test.js test/workerHistory.test.js test/d1Migration.test.js test/auth.test.js test/ownership.test.js test/sync.test.js",
     "verify": "npm run lint && npm test && npm run build"
+    ,"check:production-config": "node scripts/check-production-config.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
