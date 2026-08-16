@@ -200,6 +200,8 @@ Revizyon numarasını artırmayı unutursan istemciler güncellemeyi görmez.
 | `GET /data/vehicles?since=N` | N'den yeni kayıtlar (sayfalı, 60'arlı) |
 | `POST /data/import` | Veri yükleme (ADMIN_TOKEN ister, 40'arlı parçalar) |
 | `GET /account` | Cihazın kalan analiz hakkı (hak DÜŞMEZ, sadece okur) |
+| `GET /listing/platforms` | Desteklenen ilan siteleri ve hangisinin çekilebildiği |
+| `POST /listing/fetch` | İlan numarası/bağlantıdan ilan çekme denemesi |
 
 Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalı olsa da veritabanı çalışır.
 D1 bağlı değilse uçlar 503 döner ve uygulama sessizce gömülü veriye düşer.
@@ -277,3 +279,76 @@ Cihaz kimliğini kullanıcı, tarayıcı konsolunda
 
 Kota uygulanmaz ve servis çalışmaya devam eder (IP hız limiti devrede kalır).
 Bu, veritabanı bir sorun yaşadığında uygulamanın tamamen durmaması içindir.
+
+
+# İlan Çekme (ListingFetcherService)
+
+## Akış
+
+```
+Frontend → Backend API → ListingFetcherService → Platform Adapter → Parser
+                                                        ↓
+                                              Vehicle Analysis Engine
+```
+
+Frontend hiçbir zaman ilan sitesine doğrudan gitmez: tarayıcı zaten CORS
+yüzünden okuyamaz, ayrıca istek sunucudan çıkınca önbellek, zaman aşımı ve
+hata yönetimi tek yerde toplanır.
+
+## Otomatik çekme şu an çalışmıyor — ve bu bir hata değil
+
+Ölçüldü (Ağustos 2026):
+
+| Site | Sunucu taraflı istek |
+| --- | --- |
+| sahibinden.com | HTTP 403 (robots.txt dahil) |
+| arabam.com | HTTP 403 |
+
+Her iki site de bot koruması uyguluyor ve kullanım şartları otomatik veri
+çekmeyi açıkça yasaklıyor. Bu, karşı tarafın bilinçli tercihidir.
+
+Adaptörler bu yüzden `fetchable: false` ile duruyor. Kapalı bir platforma
+istek **hiç gönderilmez**; `status: 'engelli'` dönüp arayüzü çalışan yola
+yönlendirir. Parser kodu yazılı ve test edilebilir durumda — resmî bir API,
+iş ortaklığı ya da başka bir erişim yolu doğarsa tek yapılacak şey
+`server/cloudflare-worker/listing/adapters.js` içinde bayrağı açmaktır.
+
+Kılık değiştirme yapılmıyor: giden isteklerde User-Agent olarak kendimizi
+açıkça bildiriyoruz. Bot korumasını aşmaya çalışmak bu projenin işi değil.
+
+## Çalışan yol: ekran görüntüsü
+
+Kullanıcı ilan sayfasının ekran görüntüsünü yükler; `listing-vision` görevi
+görselden marka, model, yıl, kilometre, fiyat, hasar ve boya beyanını okur.
+
+Modelin en önemli kuralı: **görselde yazmayan alanı doldurmaz, boş bırakır.**
+Okunamayan alanlar kullanıcıya listelenir. Uydurulmuş tek bir kilometre,
+sonraki tüm analizi sessizce bozar.
+
+Sunucu sınırları (istemciye güvenilmez): en fazla 6 görsel, her biri en fazla
+~900 KB.
+
+## Önbellek
+
+KV namespace bağlıysa çekilen ilanlar 6 saat önbelleklenir. Bağlı değilse
+önbellek atlanır, servis çalışmaya devam eder.
+
+## Yeni platform eklemek
+
+`listing/adapters.js` içindeki `ADAPTERS` dizisine bir nesne eklemek yeterli:
+
+```js
+{
+  id: 'yenisite',
+  label: 'yenisite.com',
+  fetchable: true,
+  hostPattern: /(^|\.)yenisite\.com$/i,
+  idPattern: /\b(\d{6,12})\b/,
+  buildUrl: (id) => `https://www.yenisite.com/ilan/${id}`,
+  parse: parseGenericListing
+}
+```
+
+`parseGenericListing` önce JSON-LD (schema.org), sonra Open Graph meta
+etiketleri, sonra özellik tablosunu dener. Çağıran taraf (`fetcher.js`) hiç
+değişmez.
