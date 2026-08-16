@@ -13,6 +13,7 @@ import { constantTimeEqual, hasAcceptableBodySize } from './security.js'
 import { authenticateRequest } from './auth.js'
 import { findUserForAuth, linkDeviceData } from './ownership.js'
 import { pullSync, pushSync, syncUserId } from './sync.js'
+import { adminActor, audit, SETTINGS, textSafe } from './admin.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -956,6 +957,28 @@ export default {
         200,
         { ...cors, 'Cache-Control': 'no-store' }
       )
+    }
+
+    if (url.pathname === '/announcements/active' && request.method === 'GET') {
+      if (!env.DB) return json({ items: [] }, 200, { ...cors, 'Cache-Control': 'public, max-age=60' })
+      const now = Date.now()
+      const rows = await env.DB.prepare("SELECT id,title,message,starts_at,ends_at,version FROM announcements WHERE status='published' AND (starts_at IS NULL OR starts_at<=?1) AND (ends_at IS NULL OR ends_at>?1) ORDER BY starts_at DESC LIMIT 20").bind(now).all()
+      return json({ items: rows.results || [] }, 200, { ...cors, 'Cache-Control': 'public, max-age=60' })
+    }
+
+    if (url.pathname.startsWith('/admin')) {
+      if (!env.DB) return json({ error: 'Yönetim servisi kullanılamıyor' }, 503, { ...cors, 'Cache-Control': 'no-store' })
+      const auth = await requireAuth(request, env, cors); if (auth instanceof Response) return auth
+      const needed = url.pathname.includes('/audit') ? 'audit:read' : url.pathname.includes('/settings') ? (request.method === 'GET' ? 'settings:read' : 'settings:write') : url.pathname.includes('/announcements') ? (request.method === 'GET' ? 'announcement:read' : url.pathname.endsWith('/publish') ? 'announcement:publish' : 'announcement:write') : 'admin:access'
+      const actor = await adminActor(env, auth, needed)
+      if (!actor) return json({ error: 'Bu alana erişim yetkiniz yok' }, 403, { ...cors, 'Cache-Control': 'no-store' })
+      if (url.pathname === '/admin/me' && request.method === 'GET') return json({ roles: actor.roles, permissions: actor.permissions }, 200, { ...cors, 'Cache-Control': 'no-store' })
+      if (url.pathname === '/admin/announcements' && request.method === 'GET') { const rows = await env.DB.prepare('SELECT id,title,message,status,starts_at,ends_at,version,updated_at FROM announcements ORDER BY updated_at DESC LIMIT 100').all(); return json({ items: rows.results || [] }, 200, { ...cors, 'Cache-Control': 'no-store' }) }
+      if (url.pathname === '/admin/announcements' && request.method === 'POST') { const body = await request.json().catch(() => null); if (!textSafe(body?.title, 120) || !textSafe(body?.message, 2000)) return json({ error: 'Geçersiz duyuru' }, 400, cors); const now = Date.now(); const id = crypto.randomUUID(); await env.DB.prepare("INSERT INTO announcements (id,title,message,status,starts_at,ends_at,created_at,updated_at,created_by,updated_by) VALUES (?1,?2,?3,'draft',?4,?5,?6,?6,?7,?7)").bind(id, body.title.trim(), body.message.trim(), Number(body.starts_at) || null, Number(body.ends_at) || null, now, actor.userId).run(); await audit(env, actor, 'announcement.create', 'announcement', id); return json({ id, status: 'draft' }, 201, { ...cors, 'Cache-Control': 'no-store' }) }
+      if (url.pathname === '/admin/settings' && request.method === 'GET') { const rows = await env.DB.prepare('SELECT key,value,updated_at FROM app_settings').all(); return json({ items: (rows.results || []).filter((r) => SETTINGS.has(r.key)) }, 200, { ...cors, 'Cache-Control': 'no-store' }) }
+      const setting = /^\/admin\/settings\/([a-z_]+)$/.exec(url.pathname)
+      if (setting && request.method === 'PUT') { if (!SETTINGS.has(setting[1])) return json({ error: 'Bu ayar değiştirilemez' }, 400, cors); const body = await request.json().catch(() => null); if (typeof body?.value !== 'string' || body.value.length > 1000) return json({ error: 'Geçersiz ayar' }, 400, cors); const now = Date.now(); await env.DB.prepare('INSERT INTO app_settings (key,value,updated_at,updated_by) VALUES (?1,?2,?3,?4) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at,updated_by=excluded.updated_by').bind(setting[1], body.value, now, actor.userId).run(); await audit(env, actor, 'setting.update', 'setting', setting[1]); return json({ ok: true }, 200, { ...cors, 'Cache-Control': 'no-store' }) }
+      return json({ error: 'Bulunamadı' }, 404, cors)
     }
 
     if (url.pathname === '/auth/link-device') {

@@ -45,3 +45,9 @@ test('continuous sync migration is additive and indexes the stable cursor', asyn
   const executableSql = migration.replace(/^--.*$/gm, '')
   assert.doesNotMatch(executableSql, /\bDROP\b|\bDELETE\s+FROM\b/i)
 })
+
+test('admin migration is additive and contains role, content and audit tables', async () => {
+  const migration = await readFile(new URL('../server/d1/migrations/0005_admin_foundation.sql', import.meta.url), 'utf8')
+  for (const table of ['user_roles', 'announcements', 'app_settings', 'admin_audit_logs']) assert.match(migration, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`, 'i'))
+  assert.doesNotMatch(migration.replace(/^--.*$/gm, ''), /\bDROP\b|\bDELETE\s+FROM\b/i)
+})
