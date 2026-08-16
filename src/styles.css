@@ -74,6 +74,14 @@ button {
   animation: route-fade-in 0.28s ease both;
 }
 
+.route-loading {
+  min-height: 45vh;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.95rem;
+}
+
 @keyframes route-fade-in {
   from {
     opacity: 0;

@@ -157,11 +157,15 @@ export default function ExpertiseReportPage() {
             <section className="report-section">
               <h2>3. Fiyat Karşılaştırması</h2>
               <Row label="İlan fiyatı" value={formatPrice(market.listedPrice)} />
-              <Row label="Tahmini piyasa değeri" value={formatPrice(market.estimatedPrice)} />
+              <Row
+                label={market.confidence === 'Düşük' ? 'Referans fiyat göstergesi' : 'Tahmini piyasa değeri'}
+                value={formatPrice(market.estimatedPrice)}
+              />
+              <Row label="Veri güveni" value={market.confidence || 'Bilinmiyor'} />
               <Row label="Fark" value={`${market.diffAmount >= 0 ? '+' : ''}${market.diffPercent}% — ${market.label}`} />
               <p className="report-note">
-                Bu tutar marka/model/yaş/kilometreye dayalı bir amortisman hesabıdır; gerçek
-                zamanlı ilan verisi değildir. Referanslar {market.baseline} piyasasına göredir.
+                {market.limitations ||
+                  `Bu tutar gerçek zamanlı ilan verisi değildir; referanslar ${market.baseline} piyasasına göredir.`}
               </p>
             </section>
           )}

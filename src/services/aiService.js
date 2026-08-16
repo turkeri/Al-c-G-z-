@@ -26,6 +26,7 @@ const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || DEFAULT_PROXY_URL
 const TIMEOUT_MS = 40000
 const CACHE_KEY = 'arac-dedektifi:ai-cache'
 const CACHE_LIMIT = 20
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
 export const PROXY_BASE_URL = PROXY_URL
 
@@ -58,10 +59,21 @@ function cacheKeyFor(task, payload) {
    * sanırken eski sonucu okurdu.
    */
   const photos = Array.isArray(payload?.photos)
-    ? payload.photos.map((p) => `${p.panel}:${p.data.length}:${p.data.slice(0, 24)}`).join('|')
+    ? payload.photos.map((p) => `${p.panel}:${fingerprint(p.data)}`).join('|')
     : ''
 
   return `${task}::${v}${pair}::${text}::${photos}`
+}
+
+/** Görsel veriyi saklamadan, önbellek anahtarı için kararlı bir parmak izi üretir. */
+function fingerprint(value) {
+  const text = String(value || '')
+  let hash = 2166136261
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= text.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return `${text.length}:${(hash >>> 0).toString(36)}`
 }
 
 function readCache() {
@@ -85,12 +97,18 @@ function writeCache(store) {
 
 function getCached(key) {
   const store = readCache()
-  return store[key] || null
+  const entry = store[key]
+  if (!entry) return null
+  // Eski uygulama sürümünün ham cache kayıtları uyumluluk için okunur;
+  // yeni kayıtlar ise 24 saat sonra yenilenir.
+  if (!entry.value) return entry
+  if (Number(entry.savedAt) + CACHE_TTL_MS < Date.now()) return null
+  return entry.value
 }
 
 function setCached(key, value) {
   const store = readCache()
-  store[key] = value
+  store[key] = { savedAt: Date.now(), value }
   writeCache(store)
 }
 

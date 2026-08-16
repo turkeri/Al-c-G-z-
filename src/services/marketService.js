@@ -23,6 +23,11 @@ const KM_ADJUSTMENT_MIN = 0.7
 const KM_ADJUSTMENT_MAX = 1.3
 const NORMAL_BAND_PERCENT = 10
 
+// referencePrice doğrulanmış aktif ilan emsallerinden üretilmiş bir endeks
+// değildir. Canlı emsal verisi bağlanana kadar sonuç düşük güvenli bir
+// göstergedir; ekranlar bunu kesin piyasa değeri diye sunmamalıdır.
+const EMBEDDED_ANCHOR_CONFIDENCE = 'Düşük'
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value))
 }
@@ -68,7 +73,8 @@ export function estimateMarketPrice(formData) {
    * gerçek ilan verisi değil. Aralık vermek hem daha dürüst hem pazarlıkta
    * daha kullanışlı — alıcı "şu bandın altına çekmeliyim" diye düşünebiliyor.
    */
-  const RANGE_PERCENT = 0.04
+  // Tek bir referans çıpası için %4 bandı sahte kesinlik yaratır.
+  const RANGE_PERCENT = 0.15
   const estimatedRange = {
     min: Math.round((estimatedPrice * (1 - RANGE_PERCENT)) / 1000) * 1000,
     max: Math.round((estimatedPrice * (1 + RANGE_PERCENT)) / 1000) * 1000
@@ -82,6 +88,11 @@ export function estimateMarketPrice(formData) {
     diffPercent,
     verdict,
     label,
-    baseline: PRICE_BASELINE_LABEL
+    baseline: PRICE_BASELINE_LABEL,
+    confidence: EMBEDDED_ANCHOR_CONFIDENCE,
+    sourceType: 'gömülü-referans-çıpası',
+    comparableCount: 0,
+    limitations:
+      'Canlı, doğrulanmış emsal ilan verisi bağlı değil. Bu sonuç; gömülü referans fiyat, yıl ve kilometre düzeltmesinden oluşan bir göstergedir. Hasar, donanım, şehir ve gerçek kondisyon için kesin piyasa değeri yerine kullanılmamalıdır.'
   }
 }

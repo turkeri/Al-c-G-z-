@@ -383,13 +383,26 @@ ${ORTAK_KURALLAR}`
 function corsHeaders(origin, allowedOrigins) {
   const allowAll = !allowedOrigins || allowedOrigins.trim() === '' || allowedOrigins.trim() === '*'
   const list = allowAll ? [] : allowedOrigins.split(',').map((o) => o.trim())
-  const allow = allowAll ? '*' : list.includes(origin) ? origin : list[0] || 'null'
-  return {
-    'Access-Control-Allow-Origin': allow,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+  const allow = allowAll ? '*' : list.includes(origin) ? origin : null
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    // X-Device-Id frontend'in kota/geçmiş için gönderdiği zorunlu başlıktır.
+    'Access-Control-Allow-Headers': 'Content-Type, X-Device-Id',
     'Access-Control-Max-Age': '86400'
   }
+  if (allow) headers['Access-Control-Allow-Origin'] = allow
+  if (!allowAll) headers.Vary = 'Origin'
+  return headers
+}
+
+function isAllowedOrigin(origin, allowedOrigins) {
+  if (!origin) return true
+  if (!allowedOrigins || allowedOrigins.trim() === '' || allowedOrigins.trim() === '*') return true
+  return allowedOrigins.split(',').map((o) => o.trim()).includes(origin)
+}
+
+function requestIp(request) {
+  return request.headers.get('CF-Connecting-IP') || 'bilinmeyen'
 }
 
 function json(body, status, headers) {
@@ -881,6 +894,10 @@ export default {
     const cors = corsHeaders(origin, env.ALLOWED_ORIGINS)
     const url = new URL(request.url)
 
+    if (!isAllowedOrigin(origin, env.ALLOWED_ORIGINS)) {
+      return json({ error: 'Bu kaynak için erişim izni yok' }, 403, cors)
+    }
+
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors })
     }
@@ -938,11 +955,17 @@ export default {
     }
 
     if (url.pathname === '/listing/fetch' && request.method === 'POST') {
+      if (!(await checkRateLimit(env, requestIp(request)))) {
+        return json({ error: 'Çok fazla istek gönderildi, biraz bekleyin' }, 429, cors)
+      }
       let body
       try {
         body = await request.json()
       } catch {
         return json({ error: 'Geçersiz istek' }, 400, cors)
+      }
+      if (typeof body?.input !== 'string' || body.input.trim().length === 0 || body.input.length > 2000) {
+        return json({ error: 'Geçerli ve en fazla 2000 karakterlik ilan bağlantısı/numarası gerekli' }, 400, cors)
       }
       try {
         const outcome = await fetchListing(body?.input, {
@@ -1012,7 +1035,7 @@ export default {
       return json({ error: 'Sadece POST destekleniyor' }, 405, cors)
     }
 
-    const ip = request.headers.get('CF-Connecting-IP') || 'bilinmeyen'
+    const ip = requestIp(request)
     if (!(await checkRateLimit(env, ip))) {
       return json({ error: 'Çok fazla istek gönderildi, biraz bekleyin' }, 429, cors)
     }

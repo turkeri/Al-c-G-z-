@@ -27,6 +27,51 @@ import { PROXY_BASE_URL } from './aiService'
 import { accountHeaders } from './accountService'
 
 const TIMEOUT_MS = 20000
+const LISTING_CACHE_KEY = 'arac-dedektifi:listing-fetch-cache'
+const LISTING_CACHE_TTL_MS = 6 * 60 * 60 * 1000
+const LISTING_CACHE_LIMIT = 20
+
+/** Aynı ilanı URL/numara yazım farklarından bağımsız olarak tek anahtara bağlar. */
+export function listingCacheKey(input, platform = 'sahibinden') {
+  return `${platform}:${String(input || '').trim().toLocaleLowerCase('tr').replace(/\/$/, '')}`
+}
+
+function readListingCache() {
+  try {
+    const raw = localStorage.getItem(LISTING_CACHE_KEY)
+    const value = raw ? JSON.parse(raw) : {}
+    return value && typeof value === 'object' ? value : {}
+  } catch {
+    return {}
+  }
+}
+
+function writeListingCache(cache) {
+  try {
+    const entries = Object.entries(cache)
+      .sort(([, a], [, b]) => Number(b?.savedAt || 0) - Number(a?.savedAt || 0))
+      .slice(0, LISTING_CACHE_LIMIT)
+    localStorage.setItem(LISTING_CACHE_KEY, JSON.stringify(Object.fromEntries(entries)))
+  } catch {
+    // Depolama kapalı/doluysa ağ sonucu yine kullanılabilir; cache zorunlu değil.
+  }
+}
+
+function cachedListing(input, platform) {
+  const entry = readListingCache()[listingCacheKey(input, platform)]
+  if (!entry || Number(entry.savedAt) + LISTING_CACHE_TTL_MS < Date.now()) return null
+  return entry.result?.status === 'ok' ? { ...entry.result, cached: true, cacheSource: 'cihaz' } : null
+}
+
+function cacheListing(input, platform, result) {
+  // İlan metni/görselleri değil, yalnızca Worker'ın yapılandırılmış sonucu
+  // saklanır. Başarısız/engelli cevaplar cache'lenmez; platform sonradan
+  // erişilebilir hale gelirse kullanıcı gereksiz yere eski hatayı görmez.
+  if (result?.status !== 'ok') return
+  const cache = readListingCache()
+  cache[listingCacheKey(input, platform)] = { savedAt: Date.now(), result }
+  writeListingCache(cache)
+}
 
 /** Girdinin ilan numarası/bağlantı olup olmadığını kabaca söyler. */
 export function looksLikeListingInput(text) {
@@ -44,6 +89,10 @@ export function looksLikeListingInput(text) {
 export async function fetchListingByInput(input, platform) {
   if (!PROXY_BASE_URL) return null
 
+  const selectedPlatform = platform || 'sahibinden'
+  const cached = cachedListing(input, selectedPlatform)
+  if (cached) return cached
+
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
   try {
@@ -56,7 +105,9 @@ export async function fetchListingByInput(input, platform) {
     if (!response.ok) {
       return { status: 'hata', error: 'Sunucuya ulaşıldı ama istek reddedildi.' }
     }
-    return await response.json()
+    const result = await response.json()
+    cacheListing(input, selectedPlatform, result)
+    return result
   } catch (err) {
     return {
       status: 'hata',
@@ -98,7 +149,19 @@ export function toFormData(listing) {
     price: digits(f.price),
     engine: f.engine || '',
     fuelType: f.fuelType || '',
-    transmission: f.transmission || ''
+    transmission: f.transmission || '',
+    // Bu alanlar formun zorunlu girdisi değildir ama yapılandırılmış ilan
+    // verisi kaybolmadan VehicleProfile ve rapora aktarılmalıdır.
+    packageName: f.packageName || f.package || '',
+    bodyType: f.bodyType || '',
+    power: f.power || '',
+    displacement: f.displacement || '',
+    color: f.color || '',
+    city: f.city || '',
+    sellerType: f.sellerType || '',
+    condition: f.condition || '',
+    paintInfo: f.paintInfo || '',
+    heavyDamage: f.heavyDamage || ''
   }
 }
 

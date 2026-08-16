@@ -189,7 +189,7 @@ export default function AnalysisResultPage() {
                 <strong>{formatPrice(marketEstimate.listedPrice)}</strong>
               </div>
               <div>
-                <span>Tahmini piyasa değeri</span>
+                <span>{marketEstimate.confidence === 'Düşük' ? 'Referans fiyat göstergesi' : 'Tahmini piyasa değeri'}</span>
                 <strong>{formatPrice(marketEstimate.estimatedPrice)}</strong>
               </div>
               <div>
@@ -201,9 +201,9 @@ export default function AnalysisResultPage() {
               </div>
             </div>
             <p className="market-disclaimer">
-              Bu tutar, marka/model/yaş/kilometreye dayalı kaba bir amortisman hesabıdır; gerçek zamanlı piyasa
-              verisi değildir, yalnızca fikir vermek içindir. Fiyat referansları {marketEstimate.baseline}{' '}
-              piyasasına göredir; ilan fiyatlarıyla arada fark olabilir.
+              Güven seviyesi: <strong>{marketEstimate.confidence || 'Bilinmiyor'}</strong>.{' '}
+              {marketEstimate.limitations ||
+                `Bu tutar gerçek zamanlı piyasa verisi değildir; referanslar ${marketEstimate.baseline} piyasasına göredir.`}
             </p>
           </section>
         )}

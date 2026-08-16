@@ -1,30 +1,34 @@
-import { useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import BottomNav from './components/Layout/BottomNav'
 import SplashScreen from './components/SplashScreen'
 import { hydrateVehicleData, subscribeDataset } from './services/vehicleDataStore'
-import HomePage from './pages/HomePage'
-import AnalysisFormPage from './pages/AnalysisFormPage'
-import ListingAnalysisPage from './pages/ListingAnalysisPage'
-import ExpertiseReportPage from './pages/ExpertiseReportPage'
-import AnalysisResultPage from './pages/AnalysisResultPage'
-import ChronicIssuesPage from './pages/ChronicIssuesPage'
-import InspectionChecklistPage from './pages/InspectionChecklistPage'
-import ComparePage from './pages/ComparePage'
-import LoanCalculatorPage from './pages/LoanCalculatorPage'
-import ExpertiseNotesPage from './pages/ExpertiseNotesPage'
-import PaintCheckPage from './pages/PaintCheckPage'
-import VehicleComparePage from './pages/VehicleComparePage'
-import DiagnosisPage from './pages/DiagnosisPage'
-import InspectionHubPage from './pages/InspectionHubPage'
-import GuidePage from './pages/GuidePage'
-import GaragePage from './pages/GaragePage'
-import DamageRecordPage from './pages/DamageRecordPage'
-import MicronReportPage from './pages/MicronReportPage'
-import OwnershipCostPage from './pages/OwnershipCostPage'
-import ObdCodePage from './pages/ObdCodePage'
-import SafePurchasePage from './pages/SafePurchasePage'
-import SellerQuestionsPage from './pages/SellerQuestionsPage'
+
+// Her araç ekranını ilk açılışta indirmek, mobil bağlantıda ilan analizine
+// ulaşmadan 1 MB'ın üzerinde JavaScript bekletiyordu. Sayfalar ihtiyaç
+// anında yüklenir; veri deposu ve PWA davranışı aynen korunur.
+const HomePage = lazy(() => import('./pages/HomePage'))
+const AnalysisFormPage = lazy(() => import('./pages/AnalysisFormPage'))
+const ListingAnalysisPage = lazy(() => import('./pages/ListingAnalysisPage'))
+const ExpertiseReportPage = lazy(() => import('./pages/ExpertiseReportPage'))
+const AnalysisResultPage = lazy(() => import('./pages/AnalysisResultPage'))
+const ChronicIssuesPage = lazy(() => import('./pages/ChronicIssuesPage'))
+const InspectionChecklistPage = lazy(() => import('./pages/InspectionChecklistPage'))
+const ComparePage = lazy(() => import('./pages/ComparePage'))
+const LoanCalculatorPage = lazy(() => import('./pages/LoanCalculatorPage'))
+const ExpertiseNotesPage = lazy(() => import('./pages/ExpertiseNotesPage'))
+const PaintCheckPage = lazy(() => import('./pages/PaintCheckPage'))
+const VehicleComparePage = lazy(() => import('./pages/VehicleComparePage'))
+const DiagnosisPage = lazy(() => import('./pages/DiagnosisPage'))
+const InspectionHubPage = lazy(() => import('./pages/InspectionHubPage'))
+const GuidePage = lazy(() => import('./pages/GuidePage'))
+const GaragePage = lazy(() => import('./pages/GaragePage'))
+const DamageRecordPage = lazy(() => import('./pages/DamageRecordPage'))
+const MicronReportPage = lazy(() => import('./pages/MicronReportPage'))
+const OwnershipCostPage = lazy(() => import('./pages/OwnershipCostPage'))
+const ObdCodePage = lazy(() => import('./pages/ObdCodePage'))
+const SafePurchasePage = lazy(() => import('./pages/SafePurchasePage'))
+const SellerQuestionsPage = lazy(() => import('./pages/SellerQuestionsPage'))
 
 export default function App() {
   const location = useLocation()
@@ -49,6 +53,7 @@ export default function App() {
             hesapladığı için, sunucudan yeni veri geldiğinde yeniden kurulmaları
             gerekir. Veri en fazla açılışta bir kez değişir, maliyeti yok. */}
         <div className="route-transition" key={location.pathname + ':' + dataVersion}>
+          <Suspense fallback={<div className="route-loading" role="status">Sayfa yükleniyor…</div>}>
           <Routes location={location}>
             <Route path="/" element={<HomePage />} />
 
@@ -84,6 +89,7 @@ export default function App() {
             {/* Eski adres, yeni yerine yönlendirilir */}
             <Route path="/favoriler" element={<Navigate to="/garaj" replace />} />
           </Routes>
+          </Suspense>
         </div>
       </div>
       <BottomNav />

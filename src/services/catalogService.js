@@ -89,6 +89,23 @@ export function buildVehicleProfile(formData) {
     : null
 
   return {
+    // Bu ham bilgiler adapter/Vision/metin ayrıştırıcısından sonra tek bir
+    // sözleşmede kalır. Katalog eşleşmesi bulunamasa bile rapor kaynak veriyi
+    // kaybetmez; bulunamayan alanlar boş bırakılır, tahmin edilmez.
+    vehicle: {
+      brand: formData.brand || '',
+      model: formData.model || '',
+      year: formData.year || '',
+      bodyType: formData.bodyType || '',
+      engine: formData.engine || '',
+      fuelType: formData.fuelType || '',
+      transmission: formData.transmission || '',
+      packageName: formData.packageName || '',
+      km: formData.km || '',
+      price: formData.price || '',
+      city: formData.city || '',
+      color: formData.color || ''
+    },
     ...engineAndTransmission,
     brand: getBrandInfo(formData.brand),
     ownership: brandOwnershipScore(formData.brand),

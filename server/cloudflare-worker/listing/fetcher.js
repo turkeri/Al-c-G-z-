@@ -31,6 +31,7 @@
 import { ADAPTERS, resolveInput } from './adapters'
 
 const FETCH_TIMEOUT_MS = 12000
+const MAX_HTML_BYTES = 2 * 1024 * 1024
 
 /** Önbellek süresi: aynı ilan kısa sürede tekrar sorulursa siteye gidilmez. */
 export const LISTING_CACHE_TTL_SECONDS = 21600 // 6 saat
@@ -94,6 +95,9 @@ export async function fetchListing(input, options = {}) {
   try {
     response = await fetch(url, {
       signal: controller.signal,
+      // İzinli bir ilan sitesi başka bir hedefe yönlendirebilir. Yönlendirmeyi
+      // otomatik izlememek, adaptör gelecekte açılırsa SSRF sınırını korur.
+      redirect: 'manual',
       headers: {
         // Gerçek bir tarayıcı gibi görünmeye ÇALIŞILMAZ; kimliğimizi açıkça
         // bildiririz. Kılık değiştirmek, bot korumasını aşma girişimidir.
@@ -111,6 +115,15 @@ export async function fetchListing(input, options = {}) {
     }
   }
   clearTimeout(timer)
+
+  if (response.status >= 300 && response.status < 400) {
+    return {
+      status: 'engelli',
+      platform: adapter.id,
+      error: 'İlan sitesi yönlendirme istedi; güvenlik nedeniyle izlenmedi.',
+      fallback: [FALLBACK_SCREENSHOT, FALLBACK_PASTE]
+    }
+  }
 
   if (response.status === 404) {
     return {
@@ -134,7 +147,25 @@ export async function fetchListing(input, options = {}) {
     }
   }
 
+  const contentLength = Number(response.headers.get('content-length') || 0)
+  if (contentLength > MAX_HTML_BYTES) {
+    return {
+      status: 'okunamadi',
+      platform: adapter.id,
+      error: 'İlan sayfası güvenli işleme sınırını aşıyor.',
+      fallback: [FALLBACK_SCREENSHOT, FALLBACK_PASTE]
+    }
+  }
+
   const html = await response.text()
+  if (html.length > MAX_HTML_BYTES) {
+    return {
+      status: 'okunamadi',
+      platform: adapter.id,
+      error: 'İlan sayfası güvenli işleme sınırını aşıyor.',
+      fallback: [FALLBACK_SCREENSHOT, FALLBACK_PASTE]
+    }
+  }
   const parsed = adapter.parse(html)
 
   // Marka ya da başlık yoksa ayrıştırma başarısız sayılır; yarım veriyle

@@ -35,7 +35,7 @@
  * uydurma nesil bilgisi üretmez.
  */
 
-export const MODELS = [
+const CURATED_MODELS = [
   // ==========================================================================
   // VOLKSWAGEN
   // ==========================================================================
@@ -780,8 +780,123 @@ export const MODELS = [
         note: 'i-DTEC dizelde kısa mesafe kullanımı yağ seyrelmesine yol açar; yağ seviyesi ARTIYORSA servis şart.'
       }
     ]
+  },
+
+  // ========================================================================
+  // KAPSAM GENİŞLETME — motor/şanzıman aileleri katalogda zaten kayıtlı olan
+  // yaygın Türkiye modelleri. Burada yeni arıza veya maliyet uydurulmaz;
+  // yalnızca mevcut, bağımsız motor/şanzıman kayıtları doğru nesle bağlanır.
+  // Paket ayrıntısı doğrulanmadıkça ayrıca eklenmez.
+  // ========================================================================
+  {
+    brand: 'Renault',
+    model: 'Fluence',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'Fluence',
+        years: '2009-2016',
+        facelift: '2012',
+        bodyTypes: ['Sedan'],
+        engineIds: ['renault-k4m', 'renault-k9k', 'renault-r9m'],
+        transmissionIds: ['renault-edc', 'manuel'],
+        note: 'Motor ve şanzıman eşlemesi mevcut Renault aile kayıtlarına dayanır; ilan üzerindeki motor kodu doğrulanmalıdır.'
+      }
+    ]
+  },
+  {
+    brand: 'Toyota',
+    model: 'Yaris',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'XP130',
+        years: '2011-2020',
+        facelift: '2014',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['toyota-1nr-1kr', 'toyota-1nd-tv'],
+        transmissionIds: ['toyota-multidrive', 'manuel'],
+        note: 'Şanzıman tipi ilandan/VIN üzerinden teyit edilmeden kesin kabul edilmez.'
+      }
+    ]
+  },
+  {
+    brand: 'Peugeot',
+    model: '208',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'A9',
+        years: '2012-2019',
+        facelift: '2015',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['psa-dv6', 'psa-puretech'],
+        transmissionIds: ['manuel'],
+        note: 'Otomatikleştirilmiş ve tork konvertörlü farklı seçenekler olabildiğinden şanzıman bilgisi yalnızca ilandan tahmin edilmemelidir.'
+      }
+    ]
+  },
+  {
+    brand: 'Opel',
+    model: 'Corsa',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Corsa D',
+        years: '2006-2014',
+        facelift: '2010',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['opel-twinport', 'opel-cdti-17'],
+        transmissionIds: ['manuel'],
+        note: 'Otomatik/robotize seçenek varsa şanzıman kodu ayrı doğrulanmalıdır.'
+      },
+      {
+        code: 'Corsa E',
+        years: '2014-2019',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['opel-turbo-14', 'opel-cdti-16'],
+        transmissionIds: ['manuel'],
+        note: 'Motor ve şanzıman kimliği, ilan ticari adından değil servis/VIN kaydından teyit edilmelidir.'
+      }
+    ]
   }
 ]
+
+/*
+ * TEMEL KAPSAMA
+ *
+ * Bu modeller `vehicles.json` içindeki mevcut, kullanıcıya zaten sunulan
+ * kayıtlarla aynıdır. Ayrıntılı nesil/motor/paket ilişkisi henüz editoryal
+ * olarak doğrulanmadığı için boş bırakılır: sistem bunları "bilinmeyen"
+ * sayar, tahmin üretmez. Böylece katalogdaki model seçeneği iki katına
+ * çıkarken yanlış nesil, paket veya kronik sorun gösterilmez.
+ */
+const BASIC_COVERAGE_MODELS = [
+  ['Audi', 'A1', 'mini'], ['Audi', 'A5', 'orta'], ['Audi', 'A6', 'üst'],
+  ['Audi', 'Q2', 'suv'], ['Audi', 'Q3', 'suv'], ['Audi', 'Q5', 'suv'],
+  ['Audi', 'Q7', 'suv'], ['Audi', 'TT', 'spor'],
+  ['BMW', '2 Serisi', 'orta'], ['BMW', '4 Serisi', 'orta'], ['BMW', '7 Serisi', 'üst'],
+  ['BMW', 'X1', 'suv'], ['BMW', 'X3', 'suv'], ['BMW', 'X4', 'suv'],
+  ['BMW', 'X5', 'suv'], ['BMW', 'X6', 'suv'],
+  ['Mercedes-Benz', 'B Serisi', 'mini'], ['Mercedes-Benz', 'CLA', 'orta'],
+  ['Mercedes-Benz', 'GLA', 'suv'], ['Mercedes-Benz', 'GLC', 'suv'],
+  ['Mercedes-Benz', 'GLE / ML', 'suv'], ['Mercedes-Benz', 'Vito', 'ticari'],
+  ['Volkswagen', 'Arteon', 'orta'], ['Volkswagen', 'T-Roc', 'suv'],
+  ['Toyota', 'Auris', 'kompakt'], ['Toyota', 'Avensis', 'orta'], ['Toyota', 'C-HR', 'suv'],
+  ['Toyota', 'Camry', 'üst'], ['Toyota', 'RAV4', 'suv'],
+  ['Renault', 'Captur', 'suv'], ['Renault', 'Kadjar', 'suv'], ['Renault', 'Kangoo', 'ticari'],
+  ['Renault', 'Symbol', 'mini'], ['Renault', 'Talisman', 'orta'],
+  ['Fiat', 'Doblo', 'ticari'], ['Fiat', 'Linea', 'kompakt'], ['Fiat', 'Panda', 'mini'], ['Fiat', 'Tipo', 'kompakt'],
+  ['Ford', 'EcoSport', 'suv'], ['Ford', 'Kuga', 'suv'], ['Ford', 'Mondeo', 'orta']
+].map(([brand, model, segment]) => ({
+  brand,
+  model,
+  segment,
+  coverage: 'temel',
+  generations: []
+}))
+
+export const MODELS = [...CURATED_MODELS, ...BASIC_COVERAGE_MODELS]
 
 // ============================================================================
 // SORGU YARDIMCILARI

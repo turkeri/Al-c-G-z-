@@ -19,6 +19,14 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: './',
         scope: './',
+        // Android paylaş menüsünde, kurulu PWA'nın ilan bağlantısını almasını
+        // sağlar. Uygulama URL'yi yalnızca içe aktarır; ilan sayfasına otomatik
+        // istek atmaz veya platformun korumasını aşmaya çalışmaz.
+        share_target: {
+          action: './?share-url={url}&share-title={title}&share-text={text}',
+          method: 'GET',
+          enctype: 'application/x-www-form-urlencoded'
+        },
         icons: [
           {
             src: 'icons/pwa-192.png',

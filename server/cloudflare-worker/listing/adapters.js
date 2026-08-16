@@ -106,6 +106,8 @@ const FIELD_MAP = {
   model: 'model',
   yıl: 'year',
   'model yılı': 'year',
+  paket: 'packageName',
+  'donanım paketi': 'packageName',
   'yakıt': 'fuelType',
   'yakit': 'fuelType',
   'yakıt tipi': 'fuelType',
@@ -119,6 +121,10 @@ const FIELD_MAP = {
   'motor hacmi': 'displacement',
   'çekiş': 'drivetrain',
   renk: 'color',
+  il: 'city',
+  şehir: 'city',
+  sehir: 'city',
+  fiyat: 'price',
   'garanti': 'warranty',
   'ağır hasar kayıtlı': 'heavyDamage',
   'plaka / uyruk': 'plate',
@@ -266,6 +272,12 @@ export function resolveInput(raw, defaultPlatform = 'sahibinden') {
       url = new URL(input)
     } catch {
       return { ok: false, error: 'Bağlantı okunamadı' }
+    }
+    // Adaptörler yalnızca açıkça tanımlı HTTPS platformlarına gider. Bu
+    // sınır, ileride bir adaptör açıldığında kullanıcı girdisinin yerel ağ
+    // veya düz HTTP uçlarına yönelmesini engeller.
+    if (url.protocol !== 'https:') {
+      return { ok: false, error: 'Yalnızca HTTPS ilan bağlantıları kabul edilir' }
     }
     const adapter = ADAPTERS.find((a) => a.hostPattern.test(url.hostname))
     if (!adapter) {

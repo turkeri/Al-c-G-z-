@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import EmptyState from '../components/EmptyState'
@@ -15,7 +15,7 @@ import { evaluateDamage } from '../services/damageService'
 import { buildDecisionSummary } from '../services/decisionService'
 import { buildVehicleProfile } from '../services/catalogService'
 import { assessChronicRisk } from '../services/chronicProblemService'
-import { fetchListingByInput, visionToFormData, toFormData } from '../services/listingFetchService'
+import { fetchListingByInput, looksLikeListingInput, visionToFormData, toFormData } from '../services/listingFetchService'
 import { fetchListingFromScreenshot, isAiConfigured } from '../services/aiService'
 import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
 import { recordAnalysis } from '../services/historyService'
@@ -105,6 +105,31 @@ export default function ListingAnalysisPage() {
   const [notice, setNotice] = useState(null)
   const [shots, setShots] = useState([])
   const account = useAccount()
+  const location = useLocation()
+  const handledShares = useRef(new Set())
+
+  // PWA'nın Android paylaş menüsünden gelen bağlantı/metin, kullanıcı hiçbir
+  // şey yazmadan doğru giriş sekmesine yerleştirilir. Veri sadece formda
+  // görünür; analizin başlatılması hâlâ kullanıcının açık eylemidir.
+  useEffect(() => {
+    if (!location.search || handledShares.current.has(location.search)) return
+    handledShares.current.add(location.search)
+
+    const params = new URLSearchParams(location.search)
+    const url = params.get('share-url') || ''
+    const sharedText = params.get('share-text') || ''
+    const sharedTitle = params.get('share-title') || ''
+
+    if (looksLikeListingInput(url)) {
+      setMode('link')
+      setLinkInput(url)
+      setNotice({ tone: 'ok', text: 'İlan bağlantısı paylaşımdan alındı. Devam etmek için “İlanı Getir”e dokun.' })
+    } else if (sharedText.trim() || sharedTitle.trim()) {
+      setMode('metin')
+      setText([sharedTitle, sharedText].filter(Boolean).join('\n'))
+      setNotice({ tone: 'ok', text: 'Paylaşılan metin analize hazır.' })
+    }
+  }, [location.search])
 
   /**
    * Rapor üretimi.
@@ -131,10 +156,12 @@ export default function ListingAnalysisPage() {
      * renk, şehir, satıcı tipi) analize de girer: paket adı donanım listesini,
      * kasa tipi bakım segmentini belirler. Bunları okuyup atmak, kullanıcının
      * bir analiz hakkını boşa harcamak olurdu.
-     */
+    */
     if (seed?.extra) {
-      if (seed.extra.packageName && !merged.packageName) merged.packageName = seed.extra.packageName
-      if (seed.extra.bodyType) merged.bodyType = seed.extra.bodyType
+      const extraFields = ['packageName', 'bodyType', 'power', 'displacement', 'color', 'city', 'sellerType']
+      extraFields.forEach((field) => {
+        if (seed.extra[field] && !merged[field]) merged[field] = seed.extra[field]
+      })
     }
 
     const market = estimateMarketPrice(merged)
@@ -181,7 +208,12 @@ export default function ListingAnalysisPage() {
     }
 
     if (outcome.status === 'ok') {
-      setSeed({ formData: toFormData(outcome.listing), via: outcome.platformLabel })
+      setSeed({
+        formData: toFormData(outcome.listing),
+        via: outcome.platformLabel + (outcome.cached ? ' · cihaz önbelleği' : ''),
+        listingId: outcome.listingId || '',
+        listingUrl: outcome.url || ''
+      })
       setSubmitted(outcome.listing.description || '')
       setNotice({ tone: 'ok', text: `${outcome.platformLabel} ilanı okundu.` })
       return
@@ -711,7 +743,7 @@ export default function ListingAnalysisPage() {
                     <strong>{formatPrice(report.market.listedPrice)}</strong>
                   </div>
                   <div>
-                    <span>Tahmini gerçek piyasa</span>
+                    <span>{report.market.confidence === 'Düşük' ? 'Referans fiyat göstergesi' : 'Tahmini piyasa aralığı'}</span>
                     <strong>
                       {formatPrice(report.market.estimatedRange.min)} –{' '}
                       {formatPrice(report.market.estimatedRange.max)}
@@ -730,10 +762,9 @@ export default function ListingAnalysisPage() {
                   {marketSentence(report.market)}
                 </p>
                 <p className="market-disclaimer">
-                  Bu aralık marka/model/yaş/kilometreye dayalı kaba bir amortisman hesabıdır;
-                  gerçek zamanlı ilan verisi değildir. Tek bir sayı yerine aralık verilir
-                  çünkü bu hesap o kadar hassas değildir. Referanslar {report.market.baseline}{' '}
-                  piyasasına göredir.
+                  Güven seviyesi: <strong>{report.market.confidence || 'Bilinmiyor'}</strong>.{' '}
+                  {report.market.limitations ||
+                    `Bu aralık gerçek zamanlı ilan verisi değildir; referanslar ${report.market.baseline} piyasasına göredir.`}
                 </p>
               </section>
             )}
