@@ -8,6 +8,7 @@ import RiskBadge from '../components/RiskBadge'
 import ProblemCard from '../components/ProblemCard'
 import HeadlightLoader from '../components/HeadlightLoader'
 import QuotaNote, { useAccount } from '../components/QuotaNote'
+import PackageExplorer from '../components/PackageExplorer'
 import { analyzeListing } from '../services/listingAnalysisService'
 import { analyzeVehicle } from '../services/analysisService'
 import { estimateMarketPrice } from '../services/marketService'
@@ -1051,6 +1052,20 @@ export default function ListingAnalysisPage() {
                   </p>
                 )}
               </section>
+            )}
+
+            {/*
+             * Paket adı ilanda yazmadığında ya da katalogla eşleşmediğinde,
+             * 8c bölümü hiç çıkmaz. Bu durumda kullanıcı yine de o model/yıl
+             * için hangi paketlerin bulunduğunu ve içlerinde ne olduğunu
+             * görebilmelidir — satıcıya "sizinki hangi paket?" diye sorup
+             * cevabı karşılaştırabilsin diye.
+             */}
+            {!report.catalog?.package && report.catalog?.availablePackages?.length > 0 && (
+              <PackageExplorer
+                title="Bu Model İçin Bilinen Paketler"
+                packages={report.catalog.availablePackages}
+              />
             )}
 
             {/* ---------------- 8d. MARKA SAHİPLİK YÜKÜ ---------------- */}

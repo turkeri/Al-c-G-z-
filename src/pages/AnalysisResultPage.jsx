@@ -7,6 +7,7 @@ import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ScoreGauge from '../components/ScoreGauge'
 import ProblemCard from '../components/ProblemCard'
+import PackageExplorer from '../components/PackageExplorer'
 import FavoriteButton from '../components/FavoriteButton'
 import { formatKm, formatPrice } from '../utils/formatters'
 import {
@@ -291,7 +292,8 @@ export default function AnalysisResultPage() {
             <ul className="result-list neutral">
               {catalog.maintenance.items.map((item) => (
                 <li key={item.id}>
-                  {item.label}: {formatPrice(item.cost.min)} – {formatPrice(item.cost.max)}
+                  {item.label}: {formatPrice(item.min)} – {formatPrice(item.max)}
+                  {item.reason ? ` (${item.reason})` : ''}
                 </li>
               ))}
             </ul>
@@ -299,21 +301,19 @@ export default function AnalysisResultPage() {
         )}
 
         {catalog?.availablePackages?.length > 0 && (
-          <section className="result-card">
-            <h3>Bilinen Donanım Paketleri</h3>
-            <div className="check-tags">
-              {catalog.availablePackages.map((pkg) => (
-                <span className="check-tag" key={pkg.id}>
-                  {pkg.name} · {pkg.tier}
-                </span>
-              ))}
-            </div>
+          <>
+            <PackageExplorer
+              title="Bilinen Donanım Paketleri"
+              packages={catalog.availablePackages}
+              activeName={catalog.package?.name}
+            />
             {!catalog.package && (
               <p className="market-disclaimer">
                 Aracın paket adı girilmediği için donanımlar kesin paketle eşleştirilemedi.
+                Yukarıdaki paketlerden birine dokunarak içeriğini görebilirsin.
               </p>
             )}
-          </section>
+          </>
         )}
 
         {/* Veritabanında olmayan araçta kronik sorun listesi boş kalır;

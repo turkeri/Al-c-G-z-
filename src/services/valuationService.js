@@ -144,7 +144,13 @@ export function valuate(vehicle) {
 
   // --- Donanım paketi -------------------------------------------------------
   let packageFactor = 1
-  const pkg = matchPackage(vehicle.brand, vehicle.model, vehicle.year, vehicle.packageName)
+  const pkg = matchPackage(
+    vehicle.brand,
+    vehicle.model,
+    vehicle.year,
+    vehicle.packageName,
+    vehicle.bodyType
+  )
   if (pkg && PACKAGE_FACTORS[pkg.tier]) {
     packageFactor = PACKAGE_FACTORS[pkg.tier]
     factors.push({

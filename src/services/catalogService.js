@@ -30,6 +30,23 @@ import { matchTransmissionInfo } from '../data/catalog/transmissions'
 export { getCatalogStats, getPackagesFor, brandOwnershipScore, upcomingMaintenance, validateCatalog }
 
 /**
+ * Bir paket kaydını ekranda gösterilebilir hâle getirir: kimlik listeleri
+ * kategorilere ayrılmış tam donanım kayıtlarına çevrilir.
+ *
+ * Ayrı bir fonksiyon olmasının nedeni, aynı dönüşümün üç yerde (analiz sonucu,
+ * ilan raporu, yazdırılabilir rapor) tekrar etmesidir.
+ */
+export function describePackage(pkg) {
+  if (!pkg) return null
+  return {
+    ...pkg,
+    includesDetail: groupEquipment(expandEquipment(pkg.includes)),
+    excludesDetail: expandEquipment(pkg.excludes),
+    optionalDetail: expandEquipment(pkg.optional)
+  }
+}
+
+/**
  * Bir form/ilan verisinden motor ve şanzıman kaydını bulur.
  *
  * @param {object} formData  { brand, model, year, engine, fuelType, transmission }
@@ -78,15 +95,14 @@ export function buildVehicleProfile(formData) {
   const generation = generationInfo?.generation || null
 
   // --- Paket ---------------------------------------------------------------
-  const pkg = matchPackage(formData.brand, formData.model, formData.year, formData.packageName)
-  const packageDetail = pkg
-    ? {
-        ...pkg,
-        includesDetail: groupEquipment(expandEquipment(pkg.includes)),
-        excludesDetail: expandEquipment(pkg.excludes),
-        optionalDetail: expandEquipment(pkg.optional)
-      }
-    : null
+  const pkg = matchPackage(
+    formData.brand,
+    formData.model,
+    formData.year,
+    formData.packageName,
+    formData.bodyType
+  )
+  const packageDetail = describePackage(pkg)
 
   return {
     // Bu ham bilgiler adapter/Vision/metin ayrıştırıcısından sonra tek bir
@@ -114,7 +130,12 @@ export function buildVehicleProfile(formData) {
     facelift: generation ? faceliftStatus(generation, formData.year) : null,
     allGenerations: generationInfo?.generations || [],
     package: packageDetail,
-    availablePackages: getPackagesFor(formData.brand, formData.model, formData.year),
+    availablePackages: getPackagesFor(
+      formData.brand,
+      formData.model,
+      formData.year,
+      formData.bodyType
+    ),
     maintenance: upcomingMaintenance(formData)
   }
 }

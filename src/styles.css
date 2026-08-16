@@ -4098,3 +4098,133 @@ button {
 .factor-effect.is-down {
   color: var(--color-danger, #b91c1c);
 }
+
+/* ============================================================================
+   DONANIM PAKETİ GEZGİNİ
+   ============================================================================
+   Açılır-kapanır satırlar; tek seferde tek paket açık kalır. Dokunmatik
+   hedefler 44 px üzerinde tutulur çünkü kullanıcı bu ekranı çoğunlukla aracın
+   başındayken, tek elle kullanır. */
+.package-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.package-row {
+  border: 1px solid color-mix(in srgb, var(--color-text, #0f172a) 12%, transparent);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-surface, #fff);
+}
+
+.package-row.is-active {
+  border-color: var(--color-primary, #3454d1);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary, #3454d1) 35%, transparent);
+}
+
+.package-head {
+  width: 100%;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name caret'
+    'meta caret';
+  align-items: center;
+  gap: 2px 12px;
+  padding: 10px 14px;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.package-name {
+  grid-area: name;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.package-active-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary, #3454d1) 14%, transparent);
+  color: var(--color-primary, #3454d1);
+}
+
+.package-meta {
+  grid-area: meta;
+  font-size: 0.72rem;
+  color: var(--color-muted, #64748b);
+}
+
+.package-caret {
+  grid-area: caret;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-muted, #64748b);
+}
+
+.package-body {
+  padding: 4px 14px 14px;
+  border-top: 1px dashed color-mix(in srgb, var(--color-text, #0f172a) 12%, transparent);
+}
+
+.package-group + .package-group {
+  margin-top: 12px;
+}
+
+.package-group h4 {
+  margin: 10px 0 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-muted, #64748b);
+}
+
+.package-equipment {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.package-equipment li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.package-equipment strong {
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.package-equipment span {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--color-muted, #64748b);
+}
+
+.package-inline {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--color-muted, #64748b);
+}
