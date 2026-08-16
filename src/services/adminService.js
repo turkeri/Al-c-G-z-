@@ -13,4 +13,4 @@ export const getAdminMe = () => request('/admin/me')
 export const getAdminSettings = () => request('/admin/settings')
 export const updateAdminSetting = (key, value) => request(`/admin/settings/${encodeURIComponent(key)}`, 'PUT', { value })
 export const getAdminAudit = ({ cursor, limit = 50 } = {}) => request(`/admin/audit?limit=${limit}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`)
-export function can(permissions, permission) { return Array.isArray(permissions) && permissions.includes(permission) }
+export { can, adminNavigation, canShowAdminLink, canSaveSettings, canLoadMoreAudit, mergeAuditItems } from './adminPermissions'
