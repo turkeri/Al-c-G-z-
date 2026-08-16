@@ -24,6 +24,22 @@ Yıl aralıkları makul sınırlar ve sıralama CHECK’leri ile doğrulanır; s
 
 Published revision yoksa bu bir yapılandırma hatası değildir. 0006 yalnız şemayı hazırlar; import ve yayın sonraki aşamalardadır. Bu sürede Worker D1 araç overlay’i ve istemcideki mevcut statik/gömülü kaynaklar çalışmaya devam eder.
 
+## Paket ve donanım
+
+Paket kimliği global paket adı değildir: farklı marka, model, nesil ve yıllarda `Comfort`, `Premium` veya `Sport` aynı adla bulunabilir. Bu nedenle `catalog_packages` yalnız revision içindeki stabil ID ile kimliklenir. `catalog_generation_packages`, paketin hangi nesilde/yıl aralığında/gövde tipinde geçerli olduğunu taşır. Nullable yıl aralıkları için SQLite NULL unique davranışı expression unique index ile güvenli tutulur.
+
+`catalog_package_equipment`, paket ve donanımı aynı revision içinde bağlar. `availability` tek anlam kaynağıdır: `standard`, `optional`, `unavailable`, `unknown`. Kolay sorgu için tutulan `standard` alanı CHECK ile yalnız `availability = standard` durumunda `1` olabilir; böylece iki alan çelişmez.
+
+134 paket ve 53 donanım import sırasında ayrı kayıtlara dönüştürülecektir. Paket kaynağı bazı kayıtlarda generation ID yerine marka/model/yıl/kasa metni taşır; bunlar otomatik tahminle bağlanmayacak, validator kanıtına göre ilişkilendirilecektir. Envanterdeki yedi eşleşmeyen paket de validation warning olarak kalacaktır.
+
+## Canonical araç varyantı
+
+`catalog_vehicle_variants`, kullanıcının seçebileceği marka/model/nesil/motor/şanzıman/paket/yıl bileşimini temsil eder. Bu tablo 213 üst seviye `vehicles.json` kaydının kopyası değildir; stabil ID’li canonical seçilebilir kombinasyondur. 335 vehicle motor varyantı ile 107 bağımsız engine definition arasındaki bağ ileride burada kurulur.
+
+Motor, şanzıman veya paket kaynağı belirsizse sahte ID üretilmez; ilgili foreign key nullable kalır. `legacy_vehicle_key`, stabil ID taşımayan eski vehicles kaydıyla geçici izlenebilir eşleme içindir. İsim değişikliği canonical varyant ID’sini değiştirmez ve isim benzerliğine göre otomatik birleşme yapılmaz.
+
+Varyantın paketi aynı revision içinde bulunmak zorundadır. Paketin o generation’a gerçekten uygulanabilir olması ise koşullu composite FK ile güvenli biçimde ifade edilemediğinden import/validation aşamasının sorumluluğudur; şema bu kural için sahte constraint üretmez.
+
 ## Sonraki kapsam
 
-0007’de paket, donanım, problem, bakım ve fiyat snapshot tabloları; package-generation canonical ilişkileri; applicability ve kaynak kanıtı eklenecektir. Mevcut `vehicles` tablosu, `vehicles.json` ve statik katalog dosyaları import/migration tamamlanana kadar korunur.
+Sonraki migration problem, bakım ve fiyat snapshot tabloları ile applicability ve kaynak kanıtı katmanını ekleyecektir. Mevcut `vehicles` tablosu, `vehicles.json` ve statik katalog dosyaları import/migration tamamlanana kadar korunur.
