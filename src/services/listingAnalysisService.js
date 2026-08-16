@@ -501,7 +501,9 @@ export function analyzeListing(text, options = {}) {
       price: extracted.price || '',
       engine: extracted.engine || '',
       fuelType: extracted.fuelType || '',
-      transmission: extracted.transmission || ''
+      transmission: extracted.transmission || '',
+      // Paket adı, donanım beklentisini belirlediği için forma taşınır.
+      packageName: extracted.packageName || ''
     }
   }
 }

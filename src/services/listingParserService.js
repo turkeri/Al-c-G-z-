@@ -1,5 +1,6 @@
 import { FUEL_TYPES } from '../utils/constants'
 import { getBrands, getModelsByBrand, getEngineNames } from './vehicleService'
+import { getPackagesFor } from '../data/catalog'
 
 /**
  * İLAN METNİ AYRIŞTIRICI
@@ -168,6 +169,23 @@ export function parseListingText(text) {
   // --- Sayısal alanlar ------------------------------------------------------
   const yearMatch = text.match(/\b(19[5-9]\d|20[0-4]\d)\b/)
   if (yearMatch) found.year = yearMatch[1]
+
+  /*
+   * --- Donanım paketi ------------------------------------------------------
+   *
+   * Paket adı ilan başlığında geçer ("Golf 1.6 TDI Comfortline") ve donanım
+   * beklentisini doğrudan belirler. Yıl bu noktada okunmuş olduğu için paket
+   * adayları yıla göre daraltılabilir.
+   *
+   * Yalnızca katalogda KAYITLI paket adları aranır; serbest bir kelimeyi paket
+   * sanıp kullanıcıya olmayan donanım listesi göstermek en kötü sonuçtur.
+   */
+  if (found.brand) {
+    const packages = getPackagesFor(found.brand, found.model, found.year)
+    const names = packages.flatMap((p) => p.name.split('/').map((n) => n.trim())).filter(Boolean)
+    const match = findLongestMatch(normalized, names)
+    if (match) found.packageName = match
+  }
 
   const kmMatch = text.match(/(\d{1,3}(?:[.,]\d{3})+|\d{4,6})\s*km\b/i)
   if (kmMatch) found.km = String(parseNumber(kmMatch[1]))

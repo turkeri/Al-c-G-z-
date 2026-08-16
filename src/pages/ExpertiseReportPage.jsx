@@ -9,7 +9,7 @@ import { getExpertiseNotes } from '../services/expertiseNotesService'
 import { analyzeVehicle } from '../services/analysisService'
 import { estimateMarketPrice } from '../services/marketService'
 import { buildDecisionSummary } from '../services/decisionService'
-import { enrichVehicle } from '../services/catalogService'
+import { buildVehicleProfile } from '../services/catalogService'
 import { formatKm, formatPrice } from '../utils/formatters'
 
 /**
@@ -55,7 +55,7 @@ export default function ExpertiseReportPage() {
     () => (analysis ? buildDecisionSummary(analysis, market) : null),
     [analysis, market]
   )
-  const catalog = useMemo(() => enrichVehicle(vehicle || {}), [vehicle])
+  const catalog = useMemo(() => buildVehicleProfile(vehicle || {}) || {}, [vehicle])
 
   // Bu araca ait en son boya ölçümü ve notlar
   const label = vehicleLabel(vehicle)
@@ -202,6 +202,58 @@ export default function ExpertiseReportPage() {
                   </ul>
                 </>
               )}
+            </section>
+          )}
+
+          {catalog.generation && (
+            <section className="report-section">
+              <h2>4b. Nesil</h2>
+              <Row label="Nesil" value={catalog.generation.code} />
+              <Row label="Üretim yılları" value={catalog.generation.years} />
+              <Row label="Makyaj durumu" value={catalog.facelift?.label} />
+              {catalog.generation.note && <p className="report-note">{catalog.generation.note}</p>}
+            </section>
+          )}
+
+          {catalog.package && (
+            <section className="report-section">
+              <h2>4c. Donanım Paketi — {catalog.package.name}</h2>
+              <ul className="report-list">
+                {catalog.package.includesDetail.flatMap((g) => g.items).map((item) => (
+                  <li key={item.id}>{item.label}</li>
+                ))}
+              </ul>
+              {catalog.package.optionalDetail.length > 0 && (
+                <p className="report-note">
+                  Opsiyonel olabilir:{' '}
+                  {catalog.package.optionalDetail.map((i) => i.label).join(', ')}. Araçta
+                  gerçekten olduğu görülmeden fiyata dahil edilmemeli.
+                </p>
+              )}
+              <p className="report-note">
+                Paket içerikleri yıla ve pazara göre değişebilir; kesin donanım beyanı değildir.
+              </p>
+            </section>
+          )}
+
+          {catalog.maintenance?.items.length > 0 && (
+            <section className="report-section">
+              <h2>4d. Yaklaşan Bakım Kalemleri</h2>
+              <ul className="report-list">
+                {catalog.maintenance.items.map((item) => (
+                  <li key={item.id}>
+                    <strong>{item.label}</strong> — {formatPrice(item.min)} – {formatPrice(item.max)} ({item.reason})
+                  </li>
+                ))}
+              </ul>
+              <Row
+                label="Toplam (yapılmadıysa)"
+                value={`${formatPrice(catalog.maintenance.total.min)} – ${formatPrice(catalog.maintenance.total.max)}`}
+              />
+              <p className="report-note">
+                Bu toplam kesin ödenecek para değildir; satıcı bir kısmını yaptırmış olabilir.
+                Listenin işlevi, hangi kalemler için fatura isteneceğini göstermektir.
+              </p>
             </section>
           )}
 

@@ -13,7 +13,7 @@ import { analyzeVehicle } from '../services/analysisService'
 import { estimateMarketPrice } from '../services/marketService'
 import { evaluateDamage } from '../services/damageService'
 import { buildDecisionSummary } from '../services/decisionService'
-import { enrichVehicle } from '../services/catalogService'
+import { buildVehicleProfile } from '../services/catalogService'
 import { assessChronicRisk } from '../services/chronicProblemService'
 import { fetchListingByInput, visionToFormData, toFormData } from '../services/listingFetchService'
 import { fetchListingFromScreenshot, isAiConfigured } from '../services/aiService'
@@ -105,7 +105,7 @@ export default function ListingAnalysisPage() {
     const analysis = merged.brand ? analyzeVehicle(merged) : null
     const damage = evaluateDamage({ ...listing.damageInput, price: merged.price })
     const decision = analysis ? buildDecisionSummary(analysis, market) : null
-    const catalog = enrichVehicle(merged)
+    const catalog = buildVehicleProfile(merged)
     const chronic = assessChronicRisk(merged, { analysis, catalog })
 
     return { listing, market, analysis, damage, decision, catalog, chronic }
@@ -607,6 +607,184 @@ export default function ListingAnalysisPage() {
                     <p className="ai-text">{report.catalog.transmission.buyingNote}</p>
                   </div>
                 )}
+              </section>
+            )}
+
+
+            {/* ---------------- 8b. NESİL VE MAKYAJ ---------------- */}
+            {report.catalog?.generation && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>Nesil Bilgisi</h3>
+                  <span className="market-label tone-normal">{report.catalog.generation.code}</span>
+                </div>
+                <div className="market-facts">
+                  <div>
+                    <span>Üretim yılları</span>
+                    <strong>{report.catalog.generation.years}</strong>
+                  </div>
+                  {report.catalog.facelift && (
+                    <div>
+                      <span>Makyaj durumu</span>
+                      <strong>{report.catalog.facelift.label}</strong>
+                    </div>
+                  )}
+                  {report.catalog.generation.bodyTypes?.length > 0 && (
+                    <div>
+                      <span>Kasa tipleri</span>
+                      <strong>{report.catalog.generation.bodyTypes.join(', ')}</strong>
+                    </div>
+                  )}
+                </div>
+                {report.catalog.generation.note && (
+                  <p className="ai-text">{report.catalog.generation.note}</p>
+                )}
+                {/* Nesil, riski doğrudan belirler; kullanıcı hangi nesli aldığını bilmeli. */}
+                <p className="market-disclaimer">
+                  Aynı model adının farklı nesilleri farklı risk taşır. Bir kronik sorun
+                  makyajla düzeltilmiş olabilir; bu yüzden üretim yılı sorulmalı ve ruhsattan
+                  doğrulanmalıdır.
+                </p>
+              </section>
+            )}
+
+            {/* ---------------- 8c. PAKET VE DONANIM ---------------- */}
+            {report.catalog?.package && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>{report.catalog.package.name} Paketi</h3>
+                  <span className="market-label tone-normal">{report.catalog.package.tier}</span>
+                </div>
+
+                {report.catalog.package.includesDetail.map((group) => (
+                  <div className="ai-block" key={group.id}>
+                    <p className="expertise-category-title">{group.label}</p>
+                    <div className="problem-list">
+                      {group.items.map((item) => (
+                        <div className="problem-item" key={item.id}>
+                          <div className="problem-item-head">
+                            <span className="problem-item-title">{item.label}</span>
+                          </div>
+                          {/* Donanımın varlığı değil, ÇALIŞTIĞI önemli. */}
+                          <div className="problem-solution">
+                            <span className="problem-solution-label">Nasıl kontrol edilir</span>
+                            <p>{item.checkHow}</p>
+                          </div>
+                          {item.riskIfBroken && (
+                            <div className="problem-item-meta">
+                              <span className="problem-item-cost">{item.riskIfBroken}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {report.catalog.package.optionalDetail.length > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Bu pakette opsiyonel olabilir</p>
+                    <div className="check-tags">
+                      {report.catalog.package.optionalDetail.map((i) => (
+                        <span className="check-tag" key={i.id}>{i.label}</span>
+                      ))}
+                    </div>
+                    <p className="market-disclaimer" style={{ marginTop: 8 }}>
+                      Bu donanımlar aynı pakette bazı araçlarda var, bazılarında yoktur.
+                      Araçta gerçekten olduğunu gözünle görmeden fiyata dahil etme.
+                    </p>
+                  </div>
+                )}
+
+                {report.catalog.package.excludesDetail.length > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Bu pakette bulunmaz</p>
+                    <div className="check-tags">
+                      {report.catalog.package.excludesDetail.map((i) => (
+                        <span className="check-tag" key={i.id}>{i.label}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {report.catalog.package.confidence === 'kismi' && (
+                  <p className="market-disclaimer">
+                    Paket içerikleri yıla ve pazara göre değişebilir; bu liste kesin donanım
+                    beyanı değildir. Satıcının söylediğini değil, araçta gördüğünü esas al.
+                  </p>
+                )}
+              </section>
+            )}
+
+            {/* ---------------- 8d. MARKA SAHİPLİK YÜKÜ ---------------- */}
+            {report.catalog?.ownership && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>Markaya Bağlı Sahiplik Yükü</h3>
+                  <span className="market-label tone-normal">
+                    {report.catalog.ownership.score}/100
+                  </span>
+                </div>
+                <div className="market-facts">
+                  <div>
+                    <span>Parça maliyeti</span>
+                    <strong>{'●'.repeat(report.catalog.brand.partsCost)}</strong>
+                  </div>
+                  <div>
+                    <span>Servis ağı</span>
+                    <strong>{'●'.repeat(report.catalog.brand.serviceNetwork)}</strong>
+                  </div>
+                  <div>
+                    <span>Satarken alıcı bulma</span>
+                    <strong>{'●'.repeat(report.catalog.brand.resaleSpeed)}</strong>
+                  </div>
+                </div>
+                <p className="ai-text">{report.catalog.ownership.note}</p>
+                <p className="market-disclaimer">
+                  Bu puanlar mutlak ölçüm değil, Türkiye pazarındaki yaygın deneyimin göreli
+                  özetidir. Aracın kendisini değil, o markaya sahip olmanın maliyetini anlatır.
+                </p>
+              </section>
+            )}
+
+            {/* ---------------- 8e. YAKLAŞAN BAKIM ---------------- */}
+            {report.catalog?.maintenance?.items.length > 0 && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>Yaklaşan Bakım Kalemleri</h3>
+                  <span className="market-label tone-normal">
+                    {formatPrice(report.catalog.maintenance.total.min)} –{' '}
+                    {formatPrice(report.catalog.maintenance.total.max)}
+                  </span>
+                </div>
+                <p className="market-disclaimer" style={{ marginTop: 0 }}>
+                  Önümüzdeki {formatKm(report.catalog.maintenance.horizonKm)} içinde sırası
+                  gelen kalemler. <strong>Bu toplam kesin ödeyeceğin para değildir</strong> —
+                  satıcı bunların bir kısmını yaptırmış olabilir. Listenin asıl işi, hangi
+                  kalemler için <strong>fatura isteyeceğini</strong> göstermek. Faturası
+                  olmayan her kalem senin cebinden çıkar ve pazarlık kozudur.
+                </p>
+                <div className="problem-list">
+                  {report.catalog.maintenance.items.map((item) => (
+                    <div className="problem-item" key={item.id}>
+                      <div className="problem-item-head">
+                        <span className="problem-item-title">{item.label}</span>
+                        <span className="problem-item-cost">
+                          {formatPrice(item.min)} – {formatPrice(item.max)}
+                        </span>
+                      </div>
+                      {item.note && <p>{item.note}</p>}
+                      <div className="problem-item-meta">
+                        <span className="problem-item-km">{item.reason}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="market-disclaimer">
+                  {report.catalog.maintenance.segment} sınıfı için {report.catalog.maintenance.baseline}{' '}
+                  fiyatlarıyla kaba tahmindir; yetkili servis ve orijinal parça tercihi üst
+                  sınıra yaklaştırır.
+                </p>
               </section>
             )}
 

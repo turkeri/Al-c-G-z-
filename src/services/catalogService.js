@@ -14,11 +14,20 @@ import {
   enrichWithCatalog,
   matchEngine,
   getCatalogStats,
-  getPackagesFor
+  getPackagesFor,
+  matchPackage,
+  getBrandInfo,
+  brandOwnershipScore,
+  getGeneration,
+  faceliftStatus,
+  expandEquipment,
+  groupEquipment,
+  upcomingMaintenance,
+  validateCatalog
 } from '../data/catalog'
 import { matchTransmissionInfo } from '../data/catalog/transmissions'
 
-export { getCatalogStats, getPackagesFor }
+export { getCatalogStats, getPackagesFor, brandOwnershipScore, upcomingMaintenance, validateCatalog }
 
 /**
  * Bir form/ilan verisinden motor ve şanzıman kaydını bulur.
@@ -48,3 +57,47 @@ export function enrichVehicle(formData) {
 }
 
 export { enrichWithCatalog }
+
+/**
+ * Bir araç için TÜM katalog katmanlarını tek çağrıda toplar.
+ *
+ * Ekranlar bu tek fonksiyonu çağırır; hangi verinin hangi dosyadan geldiğini
+ * bilmek zorunda kalmazlar. Bulunamayan katman `null` döner ve ekran o bölümü
+ * hiç göstermez — eksik veriyi tahminle doldurmak yerine göstermemeyi
+ * tercih ediyoruz.
+ *
+ * @param {object} formData  { brand, model, year, km, engine, fuelType, transmission, packageName }
+ */
+export function buildVehicleProfile(formData) {
+  if (!formData?.brand) return null
+
+  const engineAndTransmission = enrichVehicle(formData)
+
+  // --- Nesil ---------------------------------------------------------------
+  const generationInfo = getGeneration(formData.brand, formData.model, formData.year)
+  const generation = generationInfo?.generation || null
+
+  // --- Paket ---------------------------------------------------------------
+  const pkg = matchPackage(formData.brand, formData.model, formData.year, formData.packageName)
+  const packageDetail = pkg
+    ? {
+        ...pkg,
+        includesDetail: groupEquipment(expandEquipment(pkg.includes)),
+        excludesDetail: expandEquipment(pkg.excludes),
+        optionalDetail: expandEquipment(pkg.optional)
+      }
+    : null
+
+  return {
+    ...engineAndTransmission,
+    brand: getBrandInfo(formData.brand),
+    ownership: brandOwnershipScore(formData.brand),
+    modelInfo: generationInfo?.model || null,
+    generation,
+    facelift: generation ? faceliftStatus(generation, formData.year) : null,
+    allGenerations: generationInfo?.generations || [],
+    package: packageDetail,
+    availablePackages: getPackagesFor(formData.brand, formData.model, formData.year),
+    maintenance: upcomingMaintenance(formData)
+  }
+}

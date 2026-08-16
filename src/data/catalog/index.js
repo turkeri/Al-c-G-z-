@@ -42,10 +42,18 @@
 
 import { ENGINES, getEngineById } from './engines'
 import { TRANSMISSIONS, getTransmissionById, matchTransmission } from './transmissions'
-import { PACKAGES, getPackagesFor } from './packages'
+import { PACKAGES, getPackagesFor, matchPackage } from './packages'
+import { BRANDS, getBrandInfo, brandOwnershipScore } from './brands'
+import { MODELS, getModelInfo, getGeneration, faceliftStatus, getGenerationCount } from './models'
+import { EQUIPMENT, expandEquipment, groupEquipment, getEquipment } from './equipment'
+import { MAINTENANCE_ITEMS, upcomingMaintenance, guessSegment } from './maintenance'
 
-export { ENGINES, TRANSMISSIONS, PACKAGES }
-export { getEngineById, getTransmissionById, matchTransmission, getPackagesFor }
+export { ENGINES, TRANSMISSIONS, PACKAGES, BRANDS, MODELS, EQUIPMENT, MAINTENANCE_ITEMS }
+export { getEngineById, getTransmissionById, matchTransmission, getPackagesFor, matchPackage }
+export { getBrandInfo, brandOwnershipScore }
+export { getModelInfo, getGeneration, faceliftStatus }
+export { expandEquipment, groupEquipment, getEquipment }
+export { upcomingMaintenance, guessSegment }
 
 /**
  * Metni eşleştirme için sadeleştirir.
@@ -395,11 +403,71 @@ export function enrichWithCatalog({ brand, engineName, transmissionName, fuelTyp
 /** Katalog büyüklüğü (ana ekran istatistikleri ve doküman için). */
 export function getCatalogStats() {
   return {
+    brandCount: BRANDS.length,
+    modelCount: MODELS.length,
+    generationCount: getGenerationCount(),
     engineCount: ENGINES.length,
     engineCodeCount: ENGINES.reduce((sum, e) => sum + e.codes.length, 0),
     transmissionCount: TRANSMISSIONS.length,
     packageCount: PACKAGES.length,
+    equipmentCount: EQUIPMENT.length,
+    maintenanceItemCount: MAINTENANCE_ITEMS.length,
     engineProblemCount: ENGINES.reduce((sum, e) => sum + e.problems.length, 0),
     transmissionProblemCount: TRANSMISSIONS.reduce((sum, t) => sum + t.problems.length, 0)
+  }
+}
+
+/**
+ * KATALOG BÜTÜNLÜK DENETİMİ
+ *
+ * models.js, motorlara ve şanzımanlara KİMLİKLE bağlanır. Bir kimlik yanlış
+ * yazılırsa hiçbir hata oluşmaz — o nesil sessizce motorsuz kalır ve kullanıcı
+ * eksik bilgiyle karar verir. Sessiz veri hatası, gürültülü koddan çok daha
+ * tehlikelidir.
+ *
+ * Bu yüzden çapraz referanslar denetlenebilir tutulur; testte çağrılır.
+ *
+ * @returns {{ok: boolean, missingEngines: string[], missingTransmissions: string[]}}
+ */
+export function validateCatalog() {
+  const engineIds = new Set(ENGINES.map((e) => e.id))
+  const transmissionIds = new Set(TRANSMISSIONS.map((t) => t.id))
+
+  const missingEngines = []
+  const missingTransmissions = []
+
+  MODELS.forEach((model) => {
+    model.generations.forEach((generation) => {
+      (generation.engineIds || []).forEach((id) => {
+        if (!engineIds.has(id)) missingEngines.push(`${model.brand} ${model.model} ${generation.code} → ${id}`)
+      })
+      ;(generation.transmissionIds || []).forEach((id) => {
+        if (!transmissionIds.has(id)) {
+          missingTransmissions.push(`${model.brand} ${model.model} ${generation.code} → ${id}`)
+        }
+      })
+    })
+  })
+
+  /*
+   * Paketler donanım sözlüğüne kimlikle bağlanır; yanlış yazılmış bir kimlik
+   * o donanımın listede hiç görünmemesine yol açar. Aynı sessiz hata sınıfı.
+   */
+  const equipmentIds = new Set(EQUIPMENT.map((e) => e.id))
+  const missingEquipment = []
+  PACKAGES.forEach((pkg) => {
+    [...(pkg.includes || []), ...(pkg.excludes || []), ...(pkg.optional || [])].forEach((id) => {
+      if (!equipmentIds.has(id)) missingEquipment.push(`${pkg.brand} ${pkg.model} ${pkg.name} → ${id}`)
+    })
+  })
+
+  return {
+    ok:
+      missingEngines.length === 0 &&
+      missingTransmissions.length === 0 &&
+      missingEquipment.length === 0,
+    missingEngines,
+    missingTransmissions,
+    missingEquipment
   }
 }
