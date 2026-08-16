@@ -71,6 +71,12 @@ export default function GaragePage() {
     })
   }
 
+  async function handleClearHistory() {
+    if (!window.confirm('Analiz geçmişindeki araç özetleri silinsin mi? Bu işlem geri alınamaz.')) return
+    setHistory([])
+    await clearHistory()
+  }
+
   const isEmpty =
     favorites.length === 0 &&
     notes.length === 0 &&
@@ -89,7 +95,7 @@ export default function GaragePage() {
               <button
                 type="button"
                 className="favorite-item-remove"
-                onClick={() => setHistory(clearHistory())}
+                onClick={handleClearHistory}
               >
                 Temizle
               </button>
@@ -123,7 +129,8 @@ export default function GaragePage() {
             </div>
             <p className="market-disclaimer">
               Geçmişte yalnızca araç künyesi ve skor tutulur. İlan metni, fotoğraf ve
-              notların sunucuya gönderilmez; cihazında kalır.
+              notlar sunucuya gönderilmez; cihazında kalır. Temizle seçeneği bu özetleri
+              cihazdan ve sunucudan siler.
             </p>
           </>
         )}

@@ -2,7 +2,7 @@
 
 ## Mevcut
 
-Worker; `GET /data/version`, `GET /data/vehicles?since=`, `POST /data/import`, `GET /account`, `GET|POST /history`, `GET /listing/platforms`, `POST /listing/fetch` ve AI görev uçlarını sağlar. D1 veya secret yoksa bazı uçlar kontrollü hata verir; istemci gömülü veri/fallback ile devam eder.
+Worker; `GET /data/version`, `GET /data/vehicles?since=`, `POST /data/import`, `GET /account`, `GET|POST|DELETE /history`, `GET /listing/platforms`, `POST /listing/fetch` ve AI görev uçlarını sağlar. D1 veya secret yoksa bazı uçlar kontrollü hata verir; istemci gömülü veri/fallback ile devam eder. `DELETE /history`, yalnızca `X-Device-Id` ile eşleşen özet kayıtları siler.
 
 `POST /listing/fetch` yalnızca izin listeli HTTPS alan adlarını kabul eder. Şu an tüm adapterler `fetchable: false` olduğundan hedef siteye ağ isteği yapılmaz ve `engelli` sonucu ile ekran görüntüsü/metin fallback'i döner. Bu bir scraping API değildir.
 

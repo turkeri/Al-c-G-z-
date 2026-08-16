@@ -137,11 +137,25 @@ export function getLocalHistory() {
   return readLocal()
 }
 
-export function clearHistory() {
+export async function clearHistory() {
   try {
     localStorage.removeItem(LOCAL_KEY)
   } catch {
     // yoksayılır
+  }
+
+  if (PROXY_BASE_URL) {
+    try {
+      // Sunucu, yalnızca X-Device-Id ile eşleşen özet kayıtları siler.
+      // İlan metni/fotoğraf/not zaten sunucuya yazılmadığı için silinmez.
+      await fetch(PROXY_BASE_URL.replace(/\/$/, '') + '/history', {
+        method: 'DELETE',
+        headers: accountHeaders()
+      })
+    } catch {
+      // Cihazdaki geçmiş yine silinmiştir. Sunucu silme isteği bağlantı
+      // yokken tekrar denenemez; gerçek hesap altyapısında kuyruklanacaktır.
+    }
   }
   return []
 }

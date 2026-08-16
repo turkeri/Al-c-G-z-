@@ -8,8 +8,8 @@
  * Kurulum için: server/README.md
  */
 
-import { fetchListing, listPlatforms } from './listing/fetcher'
-import { constantTimeEqual, hasAcceptableBodySize } from './security'
+import { fetchListing, listPlatforms } from './listing/fetcher.js'
+import { constantTimeEqual, hasAcceptableBodySize } from './security.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -386,7 +386,7 @@ function corsHeaders(origin, allowedOrigins) {
   const list = allowAll ? [] : allowedOrigins.split(',').map((o) => o.trim())
   const allow = allowAll ? '*' : list.includes(origin) ? origin : null
   const headers = {
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     // X-Device-Id frontend'in kota/geçmiş için gönderdiği zorunlu başlıktır.
     'Access-Control-Allow-Headers': 'Content-Type, X-Device-Id',
     'Access-Control-Max-Age': '86400'
@@ -627,6 +627,12 @@ async function handleHistoryList(env, deviceId, cors) {
     .all()
 
   return json({ items: result.results || [] }, 200, cors)
+}
+
+/** Kullanıcının yalnızca kendi cihaz kimliğine bağlı sunucu geçmişini siler. */
+async function handleHistoryClear(env, deviceId, cors) {
+  await env.DB.prepare('DELETE FROM analysis_history WHERE account_id = ?1').bind(deviceId).run()
+  return json({ ok: true }, 200, cors)
 }
 
 async function tryModel(env, model, prompt, schema, { disableThinking = true } = {}) {
@@ -1001,6 +1007,7 @@ export default {
           const body = await request.json().catch(() => null)
           return await handleHistorySave(env, deviceId, body, cors)
         }
+        if (request.method === 'DELETE') return await handleHistoryClear(env, deviceId, cors)
         return json({ error: 'Desteklenmeyen yontem' }, 405, cors)
       } catch {
         return json({ error: 'Gecmis islemi basarisiz' }, 500, cors)

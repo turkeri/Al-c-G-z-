@@ -6,7 +6,7 @@ Favoriler, notlar, analiz geçmişi ve bazı önbellekler cihazın `localStorage
 
 ## Hedef
 
-Kullanıcıya her veri akışında neyin cihazda, Worker'da ve AI sağlayıcısında işlendiği açıklanır. Görseller varsayılan olarak cihazda kalır; sunucuya yalnızca kullanıcı açıkça AI görsel analizi istediğinde geçici olarak gönderilir. İlan hesabı, çerez ve oturum verisi asla toplanmaz veya aktarılmaz.
+Kullanıcıya her veri akışında neyin cihazda, Worker'da ve AI sağlayıcısında işlendiği açıklanır. Görseller varsayılan olarak cihazda kalır; sunucuya yalnızca kullanıcı açıkça AI görsel analizi istediğinde geçici olarak gönderilir. İlan hesabı, çerez ve oturum verisi asla toplanmaz veya aktarılmaz. Garajdaki geçmiş temizleme, cihazdaki kopyayı ve aynı cihaz kimliğine bağlı D1 özetlerini siler.
 
 ## Kabul ölçütleri
 

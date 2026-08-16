@@ -28,7 +28,7 @@
  * arayüz "çekemedim" deyip bırakmaz, çalışan yola yönlendirir.
  */
 
-import { ADAPTERS, resolveInput } from './adapters'
+import { ADAPTERS, resolveInput } from './adapters.js'
 
 const FETCH_TIMEOUT_MS = 12000
 const MAX_HTML_BYTES = 2 * 1024 * 1024
