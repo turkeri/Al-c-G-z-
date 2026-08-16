@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
 import { getDatabaseStats } from '../services/vehicleService'
+import ActiveAnnouncements from '../components/ActiveAnnouncements'
 
 /**
  * Ana ekran kareleri.
@@ -94,6 +95,7 @@ export default function HomePage() {
       </header>
 
       <PageContainer>
+        <ActiveAnnouncements />
         <div className="card-grid">
           {CARDS.map((card, index) => (
             <div

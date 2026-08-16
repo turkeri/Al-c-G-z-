@@ -962,7 +962,7 @@ export default {
     if (url.pathname === '/announcements/active' && request.method === 'GET') {
       if (!env.DB) return json({ items: [] }, 200, { ...cors, 'Cache-Control': 'public, max-age=60' })
       const now = Date.now()
-      const rows = await env.DB.prepare("SELECT id,title,message,starts_at,ends_at,version FROM announcements WHERE status='published' AND (starts_at IS NULL OR starts_at<=?1) AND (ends_at IS NULL OR ends_at>?1) ORDER BY starts_at DESC LIMIT 20").bind(now).all()
+      const rows = await env.DB.prepare("SELECT id,title,message,starts_at,ends_at,updated_at,version FROM announcements WHERE status='published' AND (starts_at IS NULL OR starts_at<=?1) AND (ends_at IS NULL OR ends_at>?1) ORDER BY starts_at DESC LIMIT 20").bind(now).all()
       return json({ items: rows.results || [] }, 200, { ...cors, 'Cache-Control': 'public, max-age=60' })
     }
 
