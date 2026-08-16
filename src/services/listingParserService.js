@@ -81,6 +81,46 @@ function findLongestMatch(haystack, candidates) {
   )
 }
 
+/*
+ * Motor adında geçen yaygın son ekler. Liste uzun tutulur çünkü buradaki bir
+ * eksik, o motorun kronik arızalarının analize hiç girmemesi demektir.
+ */
+const ENGINE_SUFFIXES =
+  'tdi|tsi|tfsi|fsi|dci|cdi|cgi|hdi|bluehdi|crdi|tdci|ecoboost|ecoblue|vti|thp|puretech|gdi|mpi|' +
+  't-gdi|tgdi|vvt-i|dual vvt-i|valvematic|d-4d|skyactiv|jtd|jtdm|multijet|cdti|vcdi|ddis|di-d|' +
+  'sce|tce|dig-t|ig-t|i-vtec|vtec|i-ctdi|i-dtec|kompressor|hybrid|hibrit|e-tech|blue dci|xdi|ed4|td4'
+
+/**
+ * Serbest metinden motor adı ya da ticari kod çıkarır.
+ * Bulamazsa null döner; uydurma yapılmaz.
+ */
+export function extractEngineHint(text) {
+  const source = String(text || '')
+
+  // 1) Hacim + son ek — en güvenilir biçim ("1.6 TDI", "2.0 Multijet")
+  const volume = source.match(new RegExp(`\\b(\\d\\.\\d)\\s*(${ENGINE_SUFFIXES})\\b`, 'i'))
+  if (volume) return `${volume[1]} ${volume[2]}`.replace(/\s+/g, ' ')
+
+  /*
+   * 2) Ticari kod — BMW/Mercedes ilanlarının standardı.
+   *    Kodun önünde seri harfi olabilir: "C200 CDI", "E220d", "A180d".
+   *    Bu yüzden rakamdan önce isteğe bağlı bir harf kabul edilir; yoksa
+   *    "C200" içindeki "200" kelime sınırı olmadığı için hiç yakalanmıyordu.
+   */
+  const designation = source.match(/\b([a-z]?)(\d{3})\s?(d|i|cdi|cgi|dci)\b/i)
+  if (designation) {
+    const suffix = designation[3].toLowerCase()
+    const joiner = suffix === 'd' || suffix === 'i' ? '' : ' '
+    return `${designation[2]}${joiner}${designation[3]}`
+  }
+
+  // 3) Yalnız hacim + yakıt sözcüğü ("1.6 dizel")
+  const plain = source.match(/\b(\d\.\d)\s*(dizel|benzin|hibrit)\b/i)
+  if (plain) return `${plain[1]} ${plain[2]}`
+
+  return null
+}
+
 export function parseListingText(text) {
   const found = {}
   if (!text || !text.trim()) return found
@@ -106,6 +146,23 @@ export function parseListingText(text) {
       const engine = findLongestMatch(normalized, getEngineNames(brand, model))
       if (engine) found.engine = engine
     }
+  }
+
+  /*
+   * --- Motor ipucu ---------------------------------------------------------
+   *
+   * Yukarıdaki motor eşleşmesi yalnızca marka VE model bulunduğunda çalışır.
+   * Oysa ilanların çoğu modeli katalogdaki adıyla yazmaz: "BMW 320d 2012"
+   * ilanında model "3 Serisi" diye geçmez, bu yüzden motor da boş kalırdı ve
+   * o aracın en bilinen riski (N47 zincir sorunu) analize hiç girmezdi.
+   *
+   * Bu yüzden motor adı metinden bağımsız olarak da aranır:
+   *   hacim + son ek   "1.6 TDI", "2.0 dCi", "1.5 EcoBoost"
+   *   ticari kod       "320d", "220 CDI", "118i"
+   */
+  if (!found.engine) {
+    const hint = extractEngineHint(text)
+    if (hint) found.engine = hint
   }
 
   // --- Sayısal alanlar ------------------------------------------------------

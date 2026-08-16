@@ -6,28 +6,40 @@ import EmptyState from '../components/EmptyState'
 import ScoreGauge from '../components/ScoreGauge'
 import RiskBadge from '../components/RiskBadge'
 import ProblemCard from '../components/ProblemCard'
+import HeadlightLoader from '../components/HeadlightLoader'
+import QuotaNote, { useAccount } from '../components/QuotaNote'
 import { analyzeListing } from '../services/listingAnalysisService'
 import { analyzeVehicle } from '../services/analysisService'
 import { estimateMarketPrice } from '../services/marketService'
 import { evaluateDamage } from '../services/damageService'
 import { buildDecisionSummary } from '../services/decisionService'
 import { enrichVehicle } from '../services/catalogService'
+import { assessChronicRisk } from '../services/chronicProblemService'
+import { fetchListingByInput, visionToFormData, toFormData } from '../services/listingFetchService'
+import { fetchListingFromScreenshot, isAiConfigured } from '../services/aiService'
+import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
 import { formatKm, formatPrice } from '../utils/formatters'
 
 /**
- * İLAN ANALİZİ — TEK EKRAN, UÇTAN UCA RAPOR
+ * İLAN ANALİZİ — ÜÇ GİRDİ YOLU, TEK RAPOR
  *
- * Kullanıcı ilan metnini yapıştırır; uygulama tek seferde şunları üretir:
+ * ============================================================================
+ * NEDEN ÜÇ YOL VAR
+ * ============================================================================
+ * En kolay yol (ilan numarası yaz, gerisini sistem halletsin) ne yazık ki her
+ * zaman çalışmıyor: sahibinden.com ve arabam.com sunucu taraflı isteklere bot
+ * koruması uyguluyor (403) ve kullanım şartları otomatik veri çekmeyi
+ * yasaklıyor. Bu bir kod hatası değil, karşı tarafın bilinçli tercihi.
  *
- *   · İlan güven puanı   (metindeki riskli kalıplar, çelişkiler)
- *   · Araç risk puanı    (yaş, km, kronik arıza — mevcut analiz motoru)
- *   · Piyasa karşılaştırması
- *   · Beyan edilen hasardan değer kaybı
- *   · Motor/şanzıman katalog bilgisi
- *   · Karar özeti
+ * Bu yüzden üç yol birlikte sunuluyor:
  *
- * Sıralama bilinçlidir: önce İLANA, sonra ARACA bakılır. Çünkü ilan yalan
- * söylüyorsa aracın teknik analizinin bir anlamı kalmaz.
+ *   1. İlan no / bağlantı  — mimari hazır; platform açılırsa kendiliğinden çalışır
+ *   2. Ekran görüntüsü     — ASIL ÇALIŞAN YOL; görselden alanlar okunur
+ *   3. Metin yapıştır      — internet/AI olmadan da çalışır
+ *
+ * Üçü de aynı analiz motoruna girer; rapor hangi yoldan gelindiğinden bağımsız
+ * olarak aynıdır. Kullanıcıya hangi yolun kullanıldığı ve verinin ne kadarının
+ * okunabildiği açıkça gösterilir.
  */
 
 const LEVEL_META = {
@@ -37,6 +49,12 @@ const LEVEL_META = {
 }
 
 const DECISION_ICON = { al: '✓', dikkatli: '!', alma: '×', belirsiz: '?' }
+
+const MODES = [
+  { id: 'link', label: 'İlan No / Link' },
+  { id: 'gorsel', label: 'Ekran Görüntüsü' },
+  { id: 'metin', label: 'Metin Yapıştır' }
+]
 
 const ORNEK_ILAN = `Volkswagen Golf 1.6 TDI Comfortline
 2015 model, 142.000 km, Dizel, DSG
@@ -48,86 +66,301 @@ Tüm bakımları yetkili serviste yapıldı, faturaları mevcut.
 Acil ihtiyaçtan satılıktır, ilk gelen alır. Takasa uygundur.`
 
 export default function ListingAnalysisPage() {
+  const [mode, setMode] = useState('link')
+  const [linkInput, setLinkInput] = useState('')
   const [text, setText] = useState('')
   const [submitted, setSubmitted] = useState('')
+  const [seed, setSeed] = useState(null) // dışarıdan gelen alanlar (link/görsel)
+  const [busy, setBusy] = useState('')
+  const [notice, setNotice] = useState(null)
+  const [shots, setShots] = useState([])
+  const account = useAccount()
 
+  /**
+   * Rapor üretimi.
+   *
+   * Girdi yolundan bağımsız olarak aynı motorlar çalışır. `seed` varsa
+   * (link/görselden okunan alanlar) metinden çıkarılan alanların üzerine yazar;
+   * çünkü yapılandırılmış veri, serbest metinden çıkarımdan daha güvenilirdir.
+   */
   const report = useMemo(() => {
-    if (!submitted.trim()) return null
+    const hasText = submitted.trim().length > 0
+    if (!hasText && !seed) return null
 
-    // Piyasa farkı, "fiyat çok ucuz" uyarısını tetiklediği için ilan
-    // analizinden ÖNCE hesaplanır ve bağlam olarak içeri verilir.
-    const first = analyzeListing(submitted)
+    const source = hasText ? submitted : ''
+    const first = analyzeListing(source || ' ')
     if (!first) return null
 
-    const market = estimateMarketPrice(first.formData)
-    const listing = analyzeListing(submitted, {
-      marketDiffPercent: market ? market.diffPercent : undefined
+    const merged = { ...first.formData, ...(seed?.formData || {}) }
+    Object.keys(merged).forEach((k) => {
+      if (!merged[k]) merged[k] = first.formData[k] || ''
     })
 
-    const analysis = listing.formData.brand ? analyzeVehicle(listing.formData) : null
-    const damage = evaluateDamage(listing.damageInput)
+    const market = estimateMarketPrice(merged)
+    const listing = analyzeListing(source || ' ', {
+      marketDiffPercent: market ? market.diffPercent : undefined
+    })
+    listing.formData = merged
+
+    const analysis = merged.brand ? analyzeVehicle(merged) : null
+    const damage = evaluateDamage({ ...listing.damageInput, price: merged.price })
     const decision = analysis ? buildDecisionSummary(analysis, market) : null
-    const catalog = enrichVehicle(listing.formData)
+    const catalog = enrichVehicle(merged)
+    const chronic = assessChronicRisk(merged, { analysis, catalog })
 
-    return { listing, market, analysis, damage, decision, catalog }
-  }, [submitted])
+    return { listing, market, analysis, damage, decision, catalog, chronic }
+  }, [submitted, seed])
 
-  function handleAnalyze() {
+  // ------------------------------------------------------------------ girdi
+
+  async function handleFetchLink() {
+    setBusy('link')
+    setNotice(null)
+    const outcome = await fetchListingByInput(linkInput)
+    setBusy('')
+
+    if (!outcome) {
+      setNotice({ tone: 'warning', text: 'Sunucu yapılandırılmamış; ekran görüntüsü ya da metin yolunu kullan.' })
+      return
+    }
+
+    if (outcome.status === 'ok') {
+      setSeed({ formData: toFormData(outcome.listing), via: outcome.platformLabel })
+      setSubmitted(outcome.listing.description || '')
+      setNotice({ tone: 'ok', text: `${outcome.platformLabel} ilanı okundu.` })
+      return
+    }
+
+    /*
+     * 'engelli' bir arıza değil. Kullanıcıya nedenini söyleyip çalışan yola
+     * yönlendiriyoruz — "olmadı" deyip bırakmak, kullanıcıyı çıkmazda bırakır.
+     */
+    if (outcome.status === 'engelli') {
+      setMode('gorsel')
+      setNotice({
+        tone: 'warning',
+        text:
+          (outcome.platformLabel || 'Bu site') +
+          ' sunucu taraflı okumaya kapalı (bot koruması ve kullanım şartları). ' +
+          'İlan sayfasının ekran görüntüsünü yükle; alanları görselden okuyalım.'
+      })
+      return
+    }
+
+    setNotice({
+      tone: 'warning',
+      text: (outcome.error || 'İlan alınamadı.') + ' Ekran görüntüsü yolunu deneyebilirsin.'
+    })
+    setMode('gorsel')
+  }
+
+  async function handleShotFiles(fileList) {
+    const files = Array.from(fileList || []).slice(0, 4)
+    if (!files.length) return
+    setBusy('gorsel-hazirlik')
+    try {
+      const next = []
+      for (const file of files) {
+        const img = await loadImageFromFile(file)
+        // 1100 piksel: ilan sayfasındaki küçük punto yazıların okunabilmesi için
+        // panel fotoğraflarından (800) daha yüksek tutulur.
+        const canvas = drawToCanvas(img, 1100)
+        next.push({ dataUrl: canvasToJpeg(canvas, 0.72), name: file.name })
+      }
+      setShots(next)
+      setNotice(null)
+    } catch {
+      setNotice({ tone: 'warning', text: 'Görsel okunamadı, başka bir dosya dene.' })
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleReadShots() {
+    if (!shots.length) return
+    setBusy('gorsel')
+    setNotice(null)
+    const response = await fetchListingFromScreenshot(shots)
+    setBusy('')
+
+    if (!response) {
+      setNotice({ tone: 'warning', text: 'Görsel okuma şu an kullanılamıyor.' })
+      return
+    }
+    if (response.error) {
+      setNotice({ tone: 'warning', text: response.error })
+      return
+    }
+
+    const parsed = visionToFormData(response.result)
+    setSeed({ formData: parsed.formData, via: 'ekran görüntüsü', missing: parsed.missingFields })
+    setSubmitted(parsed.text || ' ')
+    setNotice({
+      tone: 'ok',
+      text:
+        'Görselden okundu.' +
+        (parsed.missingFields.length ? ' Okunamayan alanlar: ' + parsed.missingFields.join(', ') + '.' : '')
+    })
+  }
+
+  function handleAnalyzeText() {
+    setSeed(null)
     setSubmitted(text)
+    setNotice(null)
   }
 
   function handleExample() {
+    setMode('metin')
     setText(ORNEK_ILAN)
+    setSeed(null)
     setSubmitted('')
   }
 
+  // ----------------------------------------------------------------- ekran
+
   return (
     <>
-      <Header
-        title="İlan Analizi"
-        subtitle="İlan metnini yapıştır, tek ekranda tam rapor al."
-        showBack
-      />
+      <Header title="İlan Analizi" subtitle="İlanı ver, tek ekranda tam rapor al." showBack />
       <PageContainer>
         <section className="result-card">
-          <h3>İlan Metni</h3>
-          <p className="market-disclaimer" style={{ marginTop: 0 }}>
-            İlan sayfasındaki başlığı, açıklamayı ve özellik tablosunu kopyalayıp buraya
-            yapıştır. Ne kadar çok metin yapıştırırsan analiz o kadar isabetli olur.
-          </p>
-          <label htmlFor="listing-text">İlan metni</label>
-          <textarea
-            id="listing-text"
-            rows={8}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="İlan başlığı, açıklama ve özellikleri buraya yapıştır..."
-          />
-          <div className="action-links" style={{ marginTop: 12 }}>
-            <button className="action-link" type="button" onClick={handleAnalyze} disabled={!text.trim()}>
-              İlanı Analiz Et
-            </button>
-            <button className="action-link" type="button" onClick={handleExample}>
-              Örnek İlan Doldur
-            </button>
+          <div className="mode-tabs">
+            {MODES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                className={'mode-tab' + (mode === m.id ? ' is-active' : '')}
+                onClick={() => setMode(m.id)}
+              >
+                {m.label}
+              </button>
+            ))}
           </div>
-          {/* Kullanıcının verisinin nereye gittiği açıkça yazılır. */}
+
+          {mode === 'link' && (
+            <>
+              <label htmlFor="listing-link">İlan numarası veya bağlantı</label>
+              <input
+                id="listing-link"
+                type="text"
+                inputMode="url"
+                placeholder="1234567890 veya https://www.sahibinden.com/ilan/..."
+                value={linkInput}
+                onChange={(e) => setLinkInput(e.target.value)}
+              />
+              <button
+                className="primary-button"
+                type="button"
+                style={{ width: '100%', marginTop: 12 }}
+                onClick={handleFetchLink}
+                disabled={!linkInput.trim() || busy === 'link'}
+              >
+                {busy === 'link' ? 'Deneniyor...' : 'İlanı Getir'}
+              </button>
+              {/* Kullanıcı beklentisini baştan doğru kuruyoruz. */}
+              <p className="market-disclaimer">
+                sahibinden.com ve arabam.com sunucu taraflı okumaya kapalıdır (bot koruması ve
+                kullanım şartları). Bu yüzden numara/bağlantı çoğu zaman getirilemez ve seni
+                ekran görüntüsü yoluna yönlendiririz — o yol çalışıyor ve aynı raporu üretir.
+              </p>
+            </>
+          )}
+
+          {mode === 'gorsel' && (
+            <>
+              <label htmlFor="listing-shot">İlan sayfasının ekran görüntüsü</label>
+              <input
+                id="listing-shot"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleShotFiles(e.target.files)}
+              />
+              <p className="market-disclaimer" style={{ marginTop: 8 }}>
+                İlan sayfasını telefonda açıp ekran görüntüsü al. Bilgi tablosunun (yıl,
+                kilometre, yakıt, vites, fiyat) göründüğünden emin ol. En fazla 4 görsel
+                yükleyebilirsin; uzun sayfayı parça parça çekebilirsin.
+              </p>
+
+              {shots.length > 0 && (
+                <div className="shot-strip">
+                  {shots.map((s) => (
+                    <img key={s.name} src={s.dataUrl} alt={s.name} />
+                  ))}
+                </div>
+              )}
+
+              {busy === 'gorsel-hazirlik' && <HeadlightLoader label="Görseller hazırlanıyor..." />}
+              {busy === 'gorsel' && <HeadlightLoader label="İlan görselden okunuyor..." />}
+
+              {isAiConfigured() && shots.length > 0 && busy === '' && (
+                <>
+                  <QuotaNote account={account} style={{ marginTop: 8 }} />
+                  <button
+                    className="primary-button"
+                    type="button"
+                    style={{ width: '100%' }}
+                    onClick={handleReadShots}
+                    disabled={Boolean(account && account.remaining <= 0)}
+                  >
+                    {account && account.remaining <= 0 ? 'Analiz hakkın doldu' : 'Görselden Oku ve Analiz Et'}
+                  </button>
+                </>
+              )}
+            </>
+          )}
+
+          {mode === 'metin' && (
+            <>
+              <label htmlFor="listing-text">İlan metni</label>
+              <textarea
+                id="listing-text"
+                rows={8}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="İlan başlığı, açıklama ve özellikleri buraya yapıştır..."
+              />
+              <div className="action-links" style={{ marginTop: 12 }}>
+                <button className="action-link" type="button" onClick={handleAnalyzeText} disabled={!text.trim()}>
+                  İlanı Analiz Et
+                </button>
+                <button className="action-link" type="button" onClick={handleExample}>
+                  Örnek İlan Doldur
+                </button>
+              </div>
+            </>
+          )}
+
+          {notice && (
+            <p className={'market-disclaimer tone-' + notice.tone} style={{ marginTop: 12 }}>
+              {notice.text}
+            </p>
+          )}
+
           <p className="market-disclaimer">
-            Yapıştırdığın metin hiçbir sunucuya gönderilmez; analiz tamamen kendi cihazında
-            yapılır. Uygulama ilan sitelerine bağlanmaz, bu yüzden metni sen yapıştırırsın.
+            Metin ve görseller yalnızca analiz için işlenir; ilan metni cihazında ayrıştırılır.
+            Görsel okuma için görüntü sunucumuza gider ve saklanmaz.
           </p>
         </section>
 
         {!report && (
           <EmptyState
             icon="checklist"
-            title="Analiz için ilan metni yapıştır"
-            description="İlanın kendi içinde çelişip çelişmediğini, riskli ifadeler içerip içermediğini ve fiyatın piyasaya göre nerede durduğunu birlikte değerlendireceğiz."
+            title="Analiz için ilanı ver"
+            description="İlanın kendi içinde çelişip çelişmediğini, riskli ifadeler içerip içermediğini, motorunun kronik sorunlarını ve fiyatın piyasaya göre nerede durduğunu birlikte değerlendireceğiz."
           />
         )}
 
         {report && (
           <>
+            {seed && (
+              <section className="result-card">
+                <p className="market-disclaimer" style={{ margin: 0 }}>
+                  Kaynak: <strong>{seed.via}</strong>
+                  {seed.missing?.length ? ` · Okunamayan alanlar: ${seed.missing.join(', ')}` : ''}
+                </p>
+              </section>
+            )}
+
             {/* ---------------- 1. İLAN GÜVENİ ---------------- */}
             <section className="result-summary">
               <ScoreGauge
@@ -163,36 +396,28 @@ export default function ListingAnalysisPage() {
                 <div>
                   <span>Araç</span>
                   <strong>
-                    {[report.listing.extracted.brand, report.listing.extracted.model]
+                    {[report.listing.formData.brand, report.listing.formData.model]
                       .filter(Boolean)
                       .join(' ') || 'Okunamadı'}
                   </strong>
                 </div>
                 <div>
                   <span>Yıl</span>
-                  <strong>{report.listing.extracted.year || '—'}</strong>
+                  <strong>{report.listing.formData.year || '—'}</strong>
                 </div>
                 <div>
                   <span>Kilometre</span>
                   <strong>
-                    {report.listing.extracted.km ? formatKm(report.listing.extracted.km) : '—'}
+                    {report.listing.formData.km ? formatKm(report.listing.formData.km) : '—'}
                   </strong>
                 </div>
                 <div>
                   <span>Fiyat</span>
                   <strong>
-                    {report.listing.extracted.price
-                      ? formatPrice(report.listing.extracted.price)
-                      : '—'}
+                    {report.listing.formData.price ? formatPrice(report.listing.formData.price) : '—'}
                   </strong>
                 </div>
               </div>
-              {report.listing.missing.length > 0 && (
-                <p className="market-disclaimer">
-                  İlandan okunamayan alanlar: {report.listing.missing.join(', ')}. Bu alanlar
-                  olmadan analiz eksik kalır; metnin tamamını yapıştırdığından emin ol.
-                </p>
-              )}
             </section>
 
             {/* ---------------- 3. UYARILAR ---------------- */}
@@ -232,7 +457,57 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
-            {/* ---------------- 5. PİYASA ---------------- */}
+            {/* ---------------- 5. KRONİK RİSK MOTORU ---------------- */}
+            {report.chronic && report.chronic.items.length > 0 && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>Kronik Risk Değerlendirmesi</h3>
+                  <span className={'market-label tone-' + report.chronic.band.tone}>
+                    {report.chronic.band.label}
+                  </span>
+                </div>
+                <div className="market-facts">
+                  <div>
+                    <span>Risk puanı</span>
+                    <strong>{report.chronic.score}/100</strong>
+                  </div>
+                  <div>
+                    <span>Beklenen masraf</span>
+                    <strong>
+                      {formatPrice(report.chronic.costRange.min)} – {formatPrice(report.chronic.costRange.max)}
+                    </strong>
+                  </div>
+                  <div>
+                    <span>Kilometreye göre yakın</span>
+                    <strong>{report.chronic.dueCount} kalem</strong>
+                  </div>
+                </div>
+                <div className="problem-list">
+                  {report.chronic.items.slice(0, 8).map((item) => (
+                    <div className="problem-item" key={item.title + item.source}>
+                      <div className="problem-item-head">
+                        <span className="problem-item-title">{item.title}</span>
+                        <RiskBadge risk={item.risk} />
+                      </div>
+                      {item.note && <p>{item.note}</p>}
+                      <div className="problem-item-meta">
+                        <span className="problem-item-km">{item.source}</span>
+                        {item.cost && <span className="problem-item-cost">{item.cost}</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="market-disclaimer">
+                  Bu değerlendirme yapay zekâ yorumu değildir; motor ve şanzıman kataloğundaki
+                  kayıtlardan hesaplanır. Listedeki kalemler bu motor ailesinde yaygın olarak
+                  bildirilen sorunlardır — bu araçta bulundukları anlamına gelmez. Masraf
+                  rakamı kalemlerin toplamı DEĞİLDİR; hiçbir araçta arızaların hepsi birden
+                  çıkmaz. Her kalem gerçekleşme olasılığıyla ağırlıklandırılıp toplanır.
+                </p>
+              </section>
+            )}
+
+            {/* ---------------- 6. PİYASA ---------------- */}
             {report.market && (
               <section className="result-card">
                 <div className="market-row">
@@ -266,7 +541,7 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
-            {/* ---------------- 6. BEYAN EDİLEN HASAR ---------------- */}
+            {/* ---------------- 7. BEYAN EDİLEN HASAR ---------------- */}
             {report.damage && (
               <section className="result-card">
                 <div className="market-row">
@@ -296,7 +571,7 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
-            {/* ---------------- 7. MOTOR / ŞANZIMAN KATALOĞU ---------------- */}
+            {/* ---------------- 8. MOTOR / ŞANZIMAN ---------------- */}
             {(report.catalog.engine || report.catalog.transmission) && (
               <section className="result-card">
                 <h3>Motor ve Şanzıman Kaydı</h3>
@@ -307,26 +582,12 @@ export default function ListingAnalysisPage() {
                       {report.catalog.engine.name} · {report.catalog.engine.family}
                     </p>
                     <p className="ai-text">
-                      Motor kodu: {report.catalog.engine.codes.join(', ')} · {report.catalog.engine.power}{' '}
-                      · {report.catalog.engine.years}
+                      Motor kodu: {report.catalog.engine.codes.join(', ')} ·{' '}
+                      {report.catalog.engine.power} · {report.catalog.engine.years}
                       {report.catalog.engine.maintenance?.timing && (
                         <> · {report.catalog.engine.maintenance.timing}</>
                       )}
                     </p>
-                    <div className="problem-list">
-                      {report.catalog.engine.problems.map((p) => (
-                        <div className="problem-item" key={p.title}>
-                          <div className="problem-item-head">
-                            <span className="problem-item-title">{p.title}</span>
-                            <RiskBadge risk={p.risk} />
-                          </div>
-                          {p.note && <p>{p.note}</p>}
-                          <div className="problem-item-meta">
-                            <span className="problem-item-cost">{p.cost}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 )}
 
@@ -344,29 +605,15 @@ export default function ListingAnalysisPage() {
                       </p>
                     )}
                     <p className="ai-text">{report.catalog.transmission.buyingNote}</p>
-                    <div className="problem-list">
-                      {report.catalog.transmission.problems.map((p) => (
-                        <div className="problem-item" key={p.title}>
-                          <div className="problem-item-head">
-                            <span className="problem-item-title">{p.title}</span>
-                            <RiskBadge risk={p.risk} />
-                          </div>
-                          {p.note && <p>{p.note}</p>}
-                          <div className="problem-item-meta">
-                            <span className="problem-item-cost">{p.cost}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 )}
               </section>
             )}
 
-            {/* ---------------- 8. ARACIN KRONİK SORUNLARI ---------------- */}
+            {/* ---------------- 9. VERİTABANI KRONİK SORUNLARI ---------------- */}
             {report.analysis && report.analysis.knownProblems.length > 0 && (
               <section className="result-card">
-                <h3>Bu Aracın Kronik Sorunları</h3>
+                <h3>Bu Aracın Kayıtlı Kronik Sorunları</h3>
                 <div className="problem-list">
                   {report.analysis.knownProblems.map((problem) => (
                     <ProblemCard problem={problem} key={problem.title} />
@@ -375,10 +622,13 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
-            {/* ---------------- 9. DEVAM ---------------- */}
+            {/* ---------------- 10. DEVAM ---------------- */}
             <section className="result-card">
               <h3>Bu İlanla Devam Et</h3>
               <div className="action-links">
+                <Link className="action-link" to="/rapor">
+                  Ekspertiz Raporu Oluştur
+                </Link>
                 <Link className="action-link" to="/satici-sorulari" state={{ formData: report.listing.formData }}>
                   Satıcıya Sorulacaklar
                 </Link>

@@ -8,6 +8,8 @@
  * Kurulum için: server/README.md
  */
 
+import { fetchListing, listPlatforms } from './listing/fetcher'
+
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
  * Bu yüzden tek bir isme bağlı kalmıyoruz: aşağıdaki adaylar sırayla denenir,
@@ -32,7 +34,7 @@ const MODEL_CANDIDATES = [
 
 // Sürüm damgası: doğru kodun yayına alınıp alınmadığını kontrol etmek için.
 // Tarayıcıdan worker adresini açınca bu numara görünür.
-const VERSION = 7
+const VERSION = 8
 
 // Çalıştığı doğrulanan model (worker örneği hayatta olduğu sürece hatırlanır)
 let cachedWorkingModel = null
@@ -186,6 +188,71 @@ GÖREVİN:
 4. negotiationTips: Pazarlıkta kullanabileceği somut argümanlar (madde madde).
 5. redFlags: Bu aracı görmeye gittiğinde görürse HEMEN vazgeçmesi gereken durumlar (madde madde).
 ${ORTAK_KURALLAR}`
+    }
+  },
+
+  /* İlan ekran görüntüsünden alanları okuma (OCR + anlama) */
+  'listing-vision': {
+    /*
+     * Otomatik çekme kapalı olduğu için asıl çalışan yol budur: kullanıcı ilan
+     * sayfasının ekran görüntüsünü yükler, model görseldeki metni okuyup
+     * yapılandırılmış alanlara çevirir.
+     *
+     * Kritik kural: görselde OLMAYAN alanı doldurmaz. Boş bırakır. Uydurulmuş
+     * bir kilometre ya da fiyat, tüm analizi sessizce bozar.
+     */
+    schema: {
+      type: 'object',
+      properties: {
+        brand: STR, model: STR, packageName: STR, year: STR, bodyType: STR,
+        km: STR, engine: STR, displacement: STR, power: STR, fuelType: STR,
+        transmission: STR, color: STR, price: STR, city: STR, sellerType: STR,
+        damageRecord: STR, paintInfo: STR, description: STR,
+        readFields: STR_LIST,
+        missingFields: STR_LIST
+      },
+      required: ['readFields', 'missingFields']
+    },
+    parts: (b) => {
+      const text = `Sen bir ilan sayfası ekran görüntüsünü okuyup yapılandırılmış veriye çeviren bir okuyucusun.
+
+GÖREVİN: Görseldeki ikinci el araç ilanından aşağıdaki alanları OKU.
+
+MUTLAK KURAL: Görselde AÇIKÇA YAZMAYAN hiçbir alanı doldurma, boş bırak.
+Tahmin yürütme, akıl yürütme, "muhtemelen" deme. Uydurulmuş tek bir kilometre
+ya da fiyat, sonraki tüm analizi sessizce bozar. Emin değilsen boş bırak.
+
+ALANLAR:
+- brand: marka (örn. Volkswagen)
+- model: model (örn. Golf)
+- packageName: donanım paketi / versiyon (örn. Comfortline, Dynamic)
+- year: model yılı (4 hane)
+- bodyType: kasa tipi (Sedan, Hatchback, SUV...)
+- km: kilometre, SADECE rakam (nokta/virgül olmadan)
+- engine: motor adı (örn. 1.6 TDI)
+- displacement: motor hacmi (örn. 1598 cc)
+- power: beygir gücü (örn. 110 hp)
+- fuelType: yakıt (Benzin/Dizel/LPG/Hibrit/Elektrik)
+- transmission: şanzıman (Manuel/Otomatik/DSG/...)
+- color: renk
+- price: fiyat, SADECE rakam
+- city: şehir/ilçe
+- sellerType: Sahibinden / Galeriden / Yetkili bayiden
+- damageRecord: hasar kaydı / tramer ile ilgili yazan her şey (aynen aktar)
+- paintInfo: boya-değişen ile ilgili yazan her şey (aynen aktar)
+- description: satıcı açıklamasından okunabilen kısım
+
+Ayrıca:
+- readFields: gerçekten okuyabildiğin alan adlarının listesi
+- missingFields: görselde bulunmayan, bu yüzden boş bıraktığın alan adları
+
+Yanıtın sadece istenen JSON şemasında olsun.`
+
+      const parts = [{ text }]
+      ;(b.photos || []).forEach((photo) => {
+        parts.push({ inlineData: { mimeType: 'image/jpeg', data: photo.data } })
+      })
+      return parts
     }
   },
 
@@ -772,6 +839,42 @@ export default {
       }
     }
 
+    /*
+     * İLAN ÇEKME UCU
+     *
+     * Frontend hiçbir zaman ilan sitesine doğrudan gitmez; istek buradan
+     * çıkar. Böylece önbellek, zaman aşımı ve hata yönetimi tek yerde durur.
+     * Yapay zekâ anahtarından bağımsızdır: AI kapalıyken de çalışır.
+     */
+    if (url.pathname === '/listing/platforms' && request.method === 'GET') {
+      return json({ platforms: listPlatforms() }, 200, cors)
+    }
+
+    if (url.pathname === '/listing/fetch' && request.method === 'POST') {
+      let body
+      try {
+        body = await request.json()
+      } catch {
+        return json({ error: 'Geçersiz istek' }, 400, cors)
+      }
+      try {
+        const outcome = await fetchListing(body?.input, {
+          platform: body?.platform,
+          // KV bağlıysa önbellek kullanılır; yoksa her istek siteye gider.
+          cache: env.RATE_LIMIT_KV || null
+        })
+        // 'engelli' bir hata değil, beklenen bir durumdur: 200 ile döner ve
+        // arayüz kullanıcıyı çalışan yola (ekran görüntüsü) yönlendirir.
+        return json(outcome, 200, cors)
+      } catch (err) {
+        return json(
+          { status: 'hata', error: 'İlan alınamadı', detail: String(err).slice(0, 200) },
+          500,
+          cors
+        )
+      }
+    }
+
     if (!env.GEMINI_API_KEY) {
       return json({ error: 'Sunucu yapılandırılmamış' }, 503, cors)
     }
@@ -840,7 +943,7 @@ export default {
      * ciddi miktarda jeton harcar). Bu yüzden adet ve boyut burada,
      * sunucuda sınırlanır; istemciye güvenilmez.
      */
-    if (taskName === 'photo-inspect') {
+    if (taskName === 'photo-inspect' || taskName === 'listing-vision') {
       const photos = Array.isArray(body?.photos) ? body.photos : []
       if (photos.length === 0) {
         return json({ error: 'En az bir fotoğraf gerekli' }, 400, cors)

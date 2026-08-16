@@ -154,6 +154,32 @@ const NORMALIZERS = {
   },
 
   /*
+   * İlan ekran görüntüsünden alan okuma.
+   *
+   * Model, görselde olmayan alanı boş bırakmakla yükümlü. Burada ek bir
+   * güvenlik yok — çünkü boş bırakılan alanı istemci dolduramaz; yapılan tek
+   * şey alanların metin olduğundan emin olmak.
+   */
+  'listing-vision'(raw) {
+    if (!raw || typeof raw !== 'object') return null
+    const pick = (k) => str(raw[k])
+    const out = {
+      brand: pick('brand'), model: pick('model'), packageName: pick('packageName'),
+      year: pick('year'), bodyType: pick('bodyType'), km: pick('km'),
+      engine: pick('engine'), displacement: pick('displacement'), power: pick('power'),
+      fuelType: pick('fuelType'), transmission: pick('transmission'), color: pick('color'),
+      price: pick('price'), city: pick('city'), sellerType: pick('sellerType'),
+      damageRecord: pick('damageRecord'), paintInfo: pick('paintInfo'),
+      description: pick('description'),
+      readFields: strList(raw.readFields),
+      missingFields: strList(raw.missingFields)
+    }
+    // Hiçbir alan okunamadıysa sonuç yok sayılır.
+    const anyValue = Object.entries(out).some(([k, v]) => !['readFields', 'missingFields'].includes(k) && v)
+    return anyValue ? out : null
+  },
+
+  /*
    * Görsel inceleme.
    *
    * `suspicion` yalnızca bilinen dört değerden biri olabilir. Model buna
@@ -294,6 +320,22 @@ export async function fetchVehicleInfo(vehicle) {
 export async function fetchVerdict({ vehicle, analysis }) {
   if (!vehicle?.brand) return null
   return callTask('verdict', { vehicle, analysis })
+}
+
+/**
+ * İlan ekran görüntüsünden araç alanlarını okur.
+ *
+ * Otomatik çekme kapalı olduğu için asıl çalışan yol budur. Fotoğraflar
+ * cihazda küçültülmüş JPEG olarak gelir; `data:` ön eki ayrılır.
+ */
+export async function fetchListingFromScreenshot(photos) {
+  const list = (photos || [])
+    .filter((p) => typeof p?.dataUrl === 'string')
+    .slice(0, 4)
+    .map((p, i) => ({ panel: 'ekran-' + (i + 1), data: p.dataUrl.replace(/^data:image\/[a-z]+;base64,/, '') }))
+
+  if (!list.length) return null
+  return callTask('listing-vision', { photos: list })
 }
 
 /**

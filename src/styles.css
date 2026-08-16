@@ -3937,3 +3937,67 @@ button {
     margin: 16mm 14mm;
   }
 }
+
+/* ==========================================================================
+   İLAN ANALİZİ — GİRDİ MODU SEKMELERİ
+   ==========================================================================
+   Üç girdi yolu (ilan no, ekran görüntüsü, metin) tek ekranda durur. Sekme
+   görünümü tercih edildi çünkü kullanıcı bir yolda takıldığında diğerine
+   geçtiğini görmeli; ayrı sayfalara bölmek bu geçişi gizler.
+   ========================================================================== */
+
+.mode-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 14px;
+  background: color-mix(in srgb, var(--color-text, #0f172a) 5%, transparent);
+  border-radius: 12px;
+}
+
+.mode-tab {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  border-radius: 9px;
+  padding: 9px 6px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-muted, #64748b);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.mode-tab.is-active {
+  background: var(--surface, #fff);
+  color: var(--color-primary, #3454d1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+/* Yüklenen ekran görüntülerinin küçük önizlemesi */
+.shot-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0 2px;
+}
+
+.shot-strip img {
+  height: 92px;
+  width: auto;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--color-text, #0f172a) 12%, transparent);
+  flex-shrink: 0;
+}
+
+/* Bildirim tonları — "engelli" durumu hata gibi değil, yönlendirme gibi görünmeli */
+.market-disclaimer.tone-ok {
+  color: var(--color-success, #15803d);
+  font-weight: 600;
+}
+
+.market-disclaimer.tone-warning {
+  color: var(--color-warning, #b45309);
+  font-weight: 600;
+}

@@ -265,11 +265,16 @@ function volumesOf(engine) {
 }
 
 /*
- * Hacim toleransı: katalogda "1.3" yazan Toyota motoru araç kaydında "1.33"
- * olarak geçer, VAG'ın 1.395 cc motoru hem "1.4" hem "1.5" adıyla satılır.
- * 0.15 L bu yazım farklarını kapsar ama 1.4 ile 1.6'yı ayırır.
+ * Hacim toleransı yalnızca YAZIM farkını kapsamalıdır, farklı motorları değil.
+ *
+ * Kapsaması gerekenler: "1.3" ↔ "1.33" (Toyota), "1.4" ↔ "1.395" (VAG).
+ * AYIRMASI gerekenler:  "1.5" ↔ "1.6"  — bunlar gerçekten farklı motorlardır.
+ *
+ * 0.15 çok genişti: Honda "1.6 i-VTEC" araması 1.5 VTEC Turbo ile eşleşiyor,
+ * yanlış motorun kronik arızaları gösteriliyordu. 0.06 her iki yazım farkını
+ * da kapsar (0.03 ve 0.005) ama 0.1'lik gerçek hacim farkını eler.
  */
-const VOLUME_TOLERANCE = 0.15
+const VOLUME_TOLERANCE = 0.06
 
 /** "2007 - 2015" -> [2007, 2015]. Açık uçlu ("2015 - ") bugüne kadar sayılır. */
 function yearSpan(text) {
