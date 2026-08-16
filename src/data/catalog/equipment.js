@@ -63,8 +63,54 @@ export const EQUIPMENT = [
     checkHow: 'Ayrı düğmesinden yakıp her ikisinin de çalıştığını gör.',
     riskIfBroken: 'Düşük maliyetli kalemdir.'
   },
+  {
+    id: 'halojen-far',
+    label: 'Halojen far',
+    category: 'aydinlatma',
+    whyItMatters:
+      'Giriş donanımının işaretidir. Kötü değil ama gece görüşü LED/xenon\'a göre zayıftır ve ikinci elde fiyat farkı yaratır.',
+    checkHow:
+      'Far camının içten buğulu olup olmadığına bak. Buğu, far içine su girdiğini ve ampul yuvasının paslanacağını gösterir.',
+    riskIfBroken: 'Far ünitesi 3.000 - 12.000 TL; ampul çok ucuzdur.'
+  },
+  {
+    id: 'led-gunduz',
+    label: 'LED gündüz farı',
+    category: 'aydinlatma',
+    whyItMatters:
+      'Farın kendisi LED olmasa da gündüz farı LED olabilir. İlanlarda "LED far" diye yazılan şeyin çoğu aslında budur.',
+    checkHow: 'Kontağı aç, farları kapalı tut. Yanan ince çizgi gündüz farıdır; kısa huzmeyi ayrıca yakıp rengini karşılaştır.',
+    riskIfBroken: 'LED şeridi çoğu araçta far ünitesine gömülüdür; tek LED sönse bile ünite komple değişir.'
+  },
+  {
+    id: 'otomatik-far',
+    label: 'Otomatik far (ışık sensörü)',
+    category: 'aydinlatma',
+    whyItMatters: 'Tünel ve akşam geçişlerinde farı unutmayı önler; orta ve üst donanım göstergesidir.',
+    checkHow: 'Far kolunu AUTO konumuna al, aracı kapalı bir garaja/gölgeye sok. Farlar kendiliğinden yanmalıdır.',
+    riskIfBroken: 'Ön cam iç yüzeyindeki sensör 2.000 - 6.000 TL; ön cam değiştiyse sensör doğru takılmamış olabilir.'
+  },
+
 
   // ---------------------------------------------------------------- KONFOR
+  {
+    id: 'manuel-klima',
+    label: 'Manuel klima',
+    category: 'konfor',
+    whyItMatters:
+      'Giriş donanımının işaretidir. Soğutma gücü otomatik klimayla aynıdır; fark sadece sıcaklığın elle ayarlanmasıdır.',
+    checkHow:
+      'Fanı en yükseğe, sıcaklığı en soğuğa al ve 5 dakika bekle. Menfezden gelen hava soğumuyorsa gaz kaçağı vardır.',
+    riskIfBroken: 'Gaz + kaçak onarımı 3.000 - 10.000 TL; kompresör 12.000 - 35.000 TL.'
+  },
+  {
+    id: 'arka-klima-menfezi',
+    label: 'Arka konsol havalandırma',
+    category: 'konfor',
+    whyItMatters: 'Arkada sürekli yolcu taşıyan aile için gerçek bir fark yaratır; alt donanımlarda çıkarılır.',
+    checkHow: 'Ön koltuklar arasındaki konsolun arka yüzüne bak; menfez yoksa sonradan eklenemez.',
+    riskIfBroken: 'Nadiren arızalanır.'
+  },
   {
     id: 'otomatik-klima',
     label: 'Otomatik (dijital) klima',
@@ -98,6 +144,67 @@ export const EQUIPMENT = [
     riskIfBroken: 'Koltuk motoru 6.000 - 20.000 TL.'
   },
   {
+    id: 'koltuk-hafiza',
+    label: 'Hafızalı koltuk',
+    category: 'konfor',
+    whyItMatters: 'Üst donanım göstergesi; aracı iki kişi kullanıyorsa günlük konfor farkı yaratır.',
+    checkHow: 'Bir konumu hafızaya al, koltuğu tamamen kaydır, sonra hafıza tuşuna bas. Koltuk aynı yere dönmelidir.',
+    riskIfBroken: 'Hafıza modülü ve motorlar birlikte 10.000 - 30.000 TL.'
+  },
+  {
+    id: 'koltuk-havalandirma',
+    label: 'Havalandırmalı (soğutmalı) koltuk',
+    category: 'konfor',
+    whyItMatters: 'Türkiye yaz koşullarında en çok değer verilen üst donanımlardan biridir; genelde sadece tepe pakette bulunur.',
+    checkHow:
+      'Çalıştır ve elini koltuk yüzeyine bastır — hava emişini hissetmelisin. Fan sesi var ama emiş yoksa kanal tıkalıdır.',
+    riskIfBroken: 'Koltuk fanı değişimi döşeme sökümü gerektirir: 8.000 - 25.000 TL.'
+  },
+  {
+    id: 'direksiyon-isitma',
+    label: 'Direksiyon ısıtma',
+    category: 'konfor',
+    whyItMatters: 'Kış konforu kalemidir; sonradan eklenmesi pratikte mümkün değildir.',
+    checkHow: 'Düğmesine bas ve 2-3 dakika içinde jantın ısındığını elinle doğrula.',
+    riskIfBroken: 'Direksiyon simidi komple değişir: 8.000 - 25.000 TL.'
+  },
+  {
+    id: 'kumas-doseme',
+    label: 'Kumaş döşeme',
+    category: 'konfor',
+    whyItMatters:
+      'Giriş/orta donanım işaretidir. Deriye göre ucuz görünür ama iyi durumdaki kumaş, yıpranmış deriden daha az masraf çıkarır.',
+    checkHow: 'Sürücü koltuğunun yan desteğinde tüylenme ve delik ara; leke temizliği 1.500 - 4.000 TL tutar.',
+    riskIfBroken: 'Tek koltuk kılıfı yenileme 4.000 - 10.000 TL.'
+  },
+  {
+    id: 'yarim-deri-doseme',
+    label: 'Yarı deri (deri + kumaş) döşeme',
+    category: 'konfor',
+    whyItMatters:
+      'İlanlarda çoğu zaman kısaca "deri" yazılır. Oturma yüzeyi kumaş, yanlar deri görünümlü suni malzemedir.',
+    checkHow: 'Oturma yüzeyine elini sürt: kumaşsa yarı deridir. İlanda "deri" yazıp yarı deri çıkan araç pazarlık konusudur.',
+    riskIfBroken: 'Suni deri yanlarda çatlama yapar; tek koltuk yenileme 6.000 - 15.000 TL.'
+  },
+  {
+    id: 'ambiyans-isik',
+    label: 'Ambiyans (iç mekân) aydınlatma',
+    category: 'konfor',
+    whyItMatters: 'Üst donanım göstergesidir; mekanik bir katkısı yoktur ama ikinci elde talebi artırır.',
+    checkHow: 'Menüden rengi değiştir; bir bölgenin sönük kalması LED şeridinin öldüğünü gösterir.',
+    riskIfBroken: 'Tek şerit değişimi kaplama sökümüyle 3.000 - 10.000 TL.'
+  },
+  {
+    id: 'deri-direksiyon',
+    label: 'Deri direksiyon',
+    category: 'konfor',
+    whyItMatters:
+      'Küçük ama kilometre hakkında ipucu veren bir kalemdir: aşınmış deri direksiyon ile düşük kilometre yan yana durmaz.',
+    checkHow:
+      'Saat 10 ve 2 tutuş noktalarına bak. Parlamış/incelmiş deri, gösterge kilometresinden fazla kullanım anlamına gelir.',
+    riskIfBroken: 'Deri kaplama yenileme 3.000 - 9.000 TL.'
+  },
+  {
     id: 'deri-doseme',
     label: 'Deri döşeme',
     category: 'konfor',
@@ -126,11 +233,54 @@ export const EQUIPMENT = [
   // ------------------------------------------------------------ SÜRÜŞ DESTEK
   {
     id: 'park-sensoru',
-    label: 'Park sensörü',
+    label: 'Park sensörü (arka)',
     category: 'surus',
     whyItMatters: 'Şehir içi kullanımda en çok kullanılan yardımcıdır.',
     checkHow: 'Geri vitese al, arkana bir engel koy. Sürekli öten ya da hiç ötmeyen sensör arızalıdır.',
     riskIfBroken: 'Tek sensör 1.500 - 5.000 TL.'
+  },
+  {
+    id: 'on-park-sensoru',
+    label: 'Ön park sensörü',
+    category: 'surus',
+    whyItMatters:
+      'Çoğu araçta arka sensör standart, ön sensör üst pakete özeldir. İlanda "park sensörü var" cümlesi ikisini ayırmaz.',
+    checkHow:
+      'İleri vitese al ve ön tampona yaklaş. Ön tamponda sensör deliği görünmüyorsa donanım yoktur; delik varsa boyalı olup olmadığına da bak.',
+    riskIfBroken: 'Tek sensör 1.500 - 5.000 TL; tampon boyandıysa sensör gövdesi boya yüzünden sağır kalabilir.'
+  },
+  {
+    id: 'otomatik-park',
+    label: 'Otomatik park asistanı',
+    category: 'surus',
+    whyItMatters: 'Üst donanım göstergesi; nadiren kullanılır ama varlığı paketin tepe seviye olduğunu doğrular.',
+    checkHow: 'Boş bir park yerinde tuşuna basıp sistemin yer aradığını gör; hata veriyorsa sensörlerden biri arızalıdır.',
+    riskIfBroken: 'Sensör + modül 15.000 - 40.000 TL.'
+  },
+  {
+    id: 'hiz-sabitleyici',
+    label: 'Hız sabitleyici (cruise control)',
+    category: 'surus',
+    whyItMatters: 'Adaptif olmayan klasik türü; uzun yol kullanımı olan alıcı için beklenen donanımdır.',
+    checkHow: 'Test sürüşünde 80 km/s üzerinde devreye al ve hızın sabit kaldığını gör.',
+    riskIfBroken: 'Direksiyon kumandası/kol değişimi 2.000 - 8.000 TL.'
+  },
+  {
+    id: 'yagmur-sensoru',
+    label: 'Yağmur sensörü',
+    category: 'surus',
+    whyItMatters: 'Orta ve üst donanım göstergesidir; ön cam değişimlerinde en sık atlanan parçadır.',
+    checkHow:
+      'Silecek kolunu AUTO\'ya al ve cama su püskürt. Çalışmıyorsa ön cam değişmiş ve sensör doğru yapıştırılmamış olabilir.',
+    riskIfBroken: 'Sensör + yapıştırma 2.000 - 6.000 TL.'
+  },
+  {
+    id: 'trafik-isareti',
+    label: 'Trafik işareti tanıma',
+    category: 'surus',
+    whyItMatters: 'Ön cam kamerasının varlığını gösterir; şerit takip ve acil frenleme genelde aynı kameraya bağlıdır.',
+    checkHow: 'Test sürüşünde gösterge panelinde hız limiti tabelasının belirdiğini gör.',
+    riskIfBroken: 'Kamera arızası şerit takip ve acil frenlemeyi de düşürür: 15.000 - 40.000 TL.'
   },
   {
     id: 'geri-kamera',
@@ -199,6 +349,25 @@ export const EQUIPMENT = [
     riskIfBroken: 'Sonradan eklenemez.'
   },
   {
+    id: 'acil-frenleme',
+    label: 'Otonom acil frenleme',
+    category: 'guvenlik',
+    whyItMatters:
+      'Şehir içi arkadan çarpmaların büyük kısmını önleyen donanımdır. 2018 sonrası araçlarda yaygınlaştı, öncesinde üst pakete özeldi.',
+    checkHow:
+      'Gösterge panelinde sistemin kapalı/arızalı ikazı olup olmadığına bak. Ön cam ya da ön tampon onarılmışsa kalibrasyonu sorulmalıdır.',
+    riskIfBroken: 'Radar/kamera değişimi ve kalibrasyon 20.000 - 60.000 TL.'
+  },
+  {
+    id: 'lastik-basinc',
+    label: 'Lastik basınç uyarı sistemi',
+    category: 'guvenlik',
+    whyItMatters:
+      'Yavaş hava kaçıran lastiği erken haber verir. Doğrudan ölçen türünde her jantta sensör vardır ve kış/yaz set değişiminde ek maliyet çıkarır.',
+    checkHow: 'Kontak açıldığında ikaz lambasının yanıp sönmesi gerekir. Sürekli yanıyorsa bir jantın sensörü ölmüştür.',
+    riskIfBroken: 'Sensör başına 1.500 - 5.000 TL; ikinci jant setinde sensör yoksa uyarı sürekli yanar.'
+  },
+  {
     id: 'yan-perde-airbag',
     label: 'Yan / perde hava yastığı',
     category: 'guvenlik',
@@ -234,7 +403,44 @@ export const EQUIPMENT = [
     riskIfBroken: 'Harita güncelleme 2.000 - 8.000 TL.'
   },
 
+  {
+    id: 'bluetooth',
+    label: 'Bluetooth telefon bağlantısı',
+    category: 'multimedya',
+    whyItMatters:
+      'Ekransız araçlarda bile bulunabilir. 2015 öncesi giriş donanımlarında yoktur ve sonradan eklenmesi ünite değişimi gerektirir.',
+    checkHow: 'Kendi telefonunu eşleştir ve bir arama yap; karşı taraf seni duyuyor mu diye sor — mikrofon ayrı arızalanır.',
+    riskIfBroken: 'Mikrofon 1.500 - 4.000 TL; ünite değişimi 8.000 - 30.000 TL.'
+  },
+  {
+    id: 'kablosuz-sarj',
+    label: 'Kablosuz telefon şarjı',
+    category: 'multimedya',
+    whyItMatters: 'Üst donanım göstergesi; 2018 sonrası araçlarda yaygınlaştı.',
+    checkHow: 'Telefonunu koy ve şarj ikonunun gerçekten geçtiğini gör; ısınma yapıyorsa ped zayıflamıştır.',
+    riskIfBroken: 'Şarj pedi 3.000 - 10.000 TL.'
+  },
+  {
+    id: 'dijital-gosterge',
+    label: 'Dijital gösterge paneli',
+    category: 'multimedya',
+    whyItMatters:
+      'Üst donanım göstergesidir. Analog göstergeye göre pahalıdır ve arızasında komple ünite değişir.',
+    checkHow: 'Ekranda ölü piksel, titreme ve açılış gecikmesi ara; soğuk havada geç açılan panel arızaya yakındır.',
+    riskIfBroken: 'Gösterge ünitesi + kodlama 20.000 - 60.000 TL.'
+  },
+
   // ---------------------------------------------------------------- DIŞ
+  {
+    id: 'celik-jant',
+    label: 'Çelik jant (kapaklı)',
+    category: 'dis',
+    whyItMatters:
+      'Giriş donanımının en görünür işaretidir. Kötü bir şey değildir — bordüre vurunca alaşım jant gibi çatlamaz — ama ikinci el fiyatını düşürür.',
+    checkHow:
+      'Kapağı çıkarıp jant yüzeyindeki pas ve ezikleri kontrol et. İlan fotoğrafında alaşım jant görünüp aracın kendisinde çelik jant çıkması sık rastlanan bir durumdur.',
+    riskIfBroken: 'Tek jant 1.500 - 4.000 TL; kapak birkaç yüz TL.'
+  },
   {
     id: 'alasim-jant',
     label: 'Alaşım jant',
@@ -242,6 +448,32 @@ export const EQUIPMENT = [
     whyItMatters: 'Görünümün yanında ikinci el fiyatına da yansır.',
     checkHow: 'Jant kenarlarındaki bordür izlerine bak; ağır darbe almış jant balans tutmaz.',
     riskIfBroken: 'Tek jant 4.000 - 20.000 TL.'
+  },
+  {
+    id: 'sunroof',
+    label: 'Açılır tavan (sunroof)',
+    category: 'dis',
+    whyItMatters: 'Panoramik tavanın küçük kardeşi; aynı su kaçağı riskini taşır ama onarımı daha ucuzdur.',
+    checkHow:
+      'Tam aç-kapa yaptır ve tavan döşemesinin köşelerini elle yokla. Nem, leke ya da küf kokusu drenaj kanallarının tıkalı olduğunu gösterir.',
+    riskIfBroken: 'Mekanizma onarımı 8.000 - 25.000 TL; su kaçağının yaptığı elektrik hasarı ayrıca.'
+  },
+  {
+    id: 'elektrikli-katlanir-ayna',
+    label: 'Elektrikli katlanır ayna',
+    category: 'dis',
+    whyItMatters: 'Dar sokakta ayna kırdırmayı önler; orta/üst donanım göstergesidir.',
+    checkHow: 'Katla-aç yaptır. Ses geliyor ama ayna hareket etmiyorsa dişli kırıktır — bu çok sık görülen bir arızadır.',
+    riskIfBroken: 'Ayna motoru/kapak 3.000 - 12.000 TL.'
+  },
+  {
+    id: 'tavan-rayi',
+    label: 'Tavan rayı (port bagaj rayı)',
+    category: 'dis',
+    whyItMatters:
+      'SUV ve station wagon\'larda donanım işaretidir. Ayrıca aracın yük/tatil kullanımı hakkında ipucu verir.',
+    checkHow: 'Ray etrafındaki boyada çizik ve conta kabarması ara; ray sökülmüşse tavan boyası kontrol edilmelidir.',
+    riskIfBroken: 'Ray seti 4.000 - 12.000 TL.'
   },
   {
     id: 'elektrikli-bagaj',

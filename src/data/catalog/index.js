@@ -42,7 +42,14 @@
 
 import { ENGINES, getEngineById } from './engines'
 import { TRANSMISSIONS, getTransmissionById, matchTransmission } from './transmissions'
-import { PACKAGES, getPackagesFor, matchPackage } from './packages'
+import {
+  PACKAGES,
+  PACKAGE_TIERS,
+  getPackagesFor,
+  matchPackage,
+  groupPackagesByModel,
+  getPackageBrands
+} from './packages'
 import { BRANDS, getBrandInfo, brandOwnershipScore } from './brands'
 import { MODELS, getModelInfo, getGeneration, faceliftStatus, getGenerationCount } from './models'
 import { EQUIPMENT, expandEquipment, groupEquipment, getEquipment } from './equipment'
@@ -52,6 +59,7 @@ import { PROBLEM_ARCHETYPES, matchArchetypes, groupBySystem, transmissionTypeOf 
 export { ENGINES, TRANSMISSIONS, PACKAGES, BRANDS, MODELS, EQUIPMENT, MAINTENANCE_ITEMS }
 export { PROBLEM_ARCHETYPES, matchArchetypes, groupBySystem, transmissionTypeOf }
 export { getEngineById, getTransmissionById, matchTransmission, getPackagesFor, matchPackage }
+export { PACKAGE_TIERS, groupPackagesByModel, getPackageBrands }
 export { getBrandInfo, brandOwnershipScore }
 export { getModelInfo, getGeneration, faceliftStatus }
 export { expandEquipment, groupEquipment, getEquipment }

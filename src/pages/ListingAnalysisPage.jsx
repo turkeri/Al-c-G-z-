@@ -8,9 +8,11 @@ import RiskBadge from '../components/RiskBadge'
 import ProblemCard from '../components/ProblemCard'
 import HeadlightLoader from '../components/HeadlightLoader'
 import QuotaNote, { useAccount } from '../components/QuotaNote'
+import PackageExplorer from '../components/PackageExplorer'
 import { analyzeListing } from '../services/listingAnalysisService'
 import { analyzeVehicle } from '../services/analysisService'
 import { estimateMarketPrice } from '../services/marketService'
+import { valuate, negotiationTarget } from '../services/valuationService'
 import { evaluateDamage } from '../services/damageService'
 import { buildDecisionSummary } from '../services/decisionService'
 import { buildVehicleProfile } from '../services/catalogService'
@@ -176,7 +178,17 @@ export default function ListingAnalysisPage() {
     const catalog = buildVehicleProfile(merged)
     const chronic = assessChronicRisk(merged, { analysis, catalog })
 
-    return { listing, market, analysis, damage, decision, catalog, chronic }
+    /*
+     * Değerleme motoru. marketService'in basit amortisman hesabının yerine
+     * geçmez, yanında durur: bu motor hangi faktörün fiyata ne kadar etki
+     * ettiğini de üretir ve pazarlık hedefi hesaplar.
+     */
+    const valuation = valuate(merged)
+    const negotiation = valuation
+      ? negotiationTarget(valuation, { damage, maintenance: catalog?.maintenance, chronic })
+      : null
+
+    return { listing, market, analysis, damage, decision, catalog, chronic, valuation, negotiation }
   }, [submitted, seed])
 
   /*
@@ -728,8 +740,106 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
-            {/* ---------------- 6. PİYASA ---------------- */}
-            {report.market && (
+            {/* ================================================================
+                PİYASA DEĞERLEME MOTORU
+                Çıplak bir sayı vermek kullanıcıya bir şey öğretmez ve yanlışsa
+                fark edemez. Bu yüzden hangi faktörün ne kadar etki ettiği de
+                gösteriliyor — kullanıcı hesabın mantığını görüp kendi
+                bildiğiyle karşılaştırabilsin.
+               ================================================================ */}
+            {report.valuation && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>Piyasa Değer Analizi</h3>
+                  {report.valuation.label && (
+                    <span className={'market-label tone-' + report.valuation.verdict}>
+                      {report.valuation.label}
+                    </span>
+                  )}
+                </div>
+
+                <div className="market-facts">
+                  <div>
+                    <span>Piyasa aralığı</span>
+                    <strong>
+                      {formatPrice(report.valuation.min)} – {formatPrice(report.valuation.max)}
+                    </strong>
+                  </div>
+                  {report.valuation.listed && (
+                    <div>
+                      <span>İlan fiyatı</span>
+                      <strong>{formatPrice(report.valuation.listed)}</strong>
+                    </div>
+                  )}
+                  {typeof report.valuation.diffPercent === 'number' && (
+                    <div>
+                      <span>Fark</span>
+                      <strong>
+                        {report.valuation.diffPercent >= 0 ? '+' : ''}
+                        {report.valuation.diffPercent}%
+                      </strong>
+                    </div>
+                  )}
+                </div>
+
+                {/* Faktör dökümü — bu bölüm sayının nasıl çıktığını gösterir. */}
+                <div className="ai-block">
+                  <p className="expertise-category-title">Fiyat neye göre hesaplandı</p>
+                  <div className="factor-list">
+                    {report.valuation.factors.map((f) => (
+                      <div className="factor-row" key={f.id}>
+                        <div className="factor-text">
+                          <strong>{f.label}</strong>
+                          {f.detail && <span>{f.detail}</span>}
+                        </div>
+                        <span className={'factor-effect' + (f.effect.startsWith('-') ? ' is-down' : f.effect.startsWith('+') ? ' is-up' : '')}>
+                          {f.value ? formatPrice(f.value) : f.effect}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pazarlık hedefi ve gerekçesi */}
+                {report.negotiation && report.negotiation.discount > 0 && (
+                  <div className="ai-block">
+                    <p className="expertise-category-title">Önerilen pazarlık hedefi</p>
+                    <p className="negotiation-amount">{formatPrice(report.negotiation.target)}</p>
+                    <div className="factor-list">
+                      {report.negotiation.reasons.map((r) => (
+                        <div className="factor-row" key={r.label}>
+                          <div className="factor-text">
+                            <strong>{r.label}</strong>
+                            <span>{r.detail}</span>
+                          </div>
+                          <span className="factor-effect is-down">
+                            {formatPrice(Math.abs(Math.round(r.amount)))}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="market-disclaimer">
+                      İlan fiyatından yaklaşık{' '}
+                      <strong>{formatPrice(report.negotiation.discount)}</strong> indirim
+                      isteyebilirsin. Pazarlıkta işe yarayan rakam değil, rakamın arkasındaki
+                      gerekçedir — yukarıdaki maddeleri satıcıya tek tek söyle.
+                    </p>
+                  </div>
+                )}
+
+                <p className="market-disclaimer">
+                  Bu hesap yapay zekâ tahmini DEĞİLDİR; katalogdaki referans fiyat ve açık
+                  katsayılarla yapılır, aynı araç için her zaman aynı sonucu verir. Ancak canlı
+                  bir piyasa taraması da değildir — uygulama ilan sitelerinden fiyat çekemiyor.
+                  Referanslar {report.valuation.baseline} piyasasına göredir.
+                  {report.valuation.confidence !== 'tam' &&
+                    ' Bazı alanlar eksik olduğu için aralık bilinçli olarak geniş tutuldu.'}
+                </p>
+              </section>
+            )}
+
+            {/* ---------------- 6b. ESKİ PİYASA KARŞILAŞTIRMASI ---------------- */}
+            {!report.valuation && report.market && (
               <section className="result-card">
                 <div className="market-row">
                   <h3 style={{ margin: 0 }}>Piyasa Karşılaştırması</h3>
@@ -942,6 +1052,20 @@ export default function ListingAnalysisPage() {
                   </p>
                 )}
               </section>
+            )}
+
+            {/*
+             * Paket adı ilanda yazmadığında ya da katalogla eşleşmediğinde,
+             * 8c bölümü hiç çıkmaz. Bu durumda kullanıcı yine de o model/yıl
+             * için hangi paketlerin bulunduğunu ve içlerinde ne olduğunu
+             * görebilmelidir — satıcıya "sizinki hangi paket?" diye sorup
+             * cevabı karşılaştırabilsin diye.
+             */}
+            {!report.catalog?.package && report.catalog?.availablePackages?.length > 0 && (
+              <PackageExplorer
+                title="Bu Model İçin Bilinen Paketler"
+                packages={report.catalog.availablePackages}
+              />
             )}
 
             {/* ---------------- 8d. MARKA SAHİPLİK YÜKÜ ---------------- */}

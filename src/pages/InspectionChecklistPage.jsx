@@ -249,7 +249,8 @@ export default function InspectionChecklistPage() {
           <section className="result-card">
             <h3>Raporu Kaydet</h3>
             <p className="market-disclaimer" style={{ marginTop: 0 }}>
-              Bu kontrolü Ekspertiz Notları'na kaydedip sonra tekrar bakabilir, fotoğraf ekleyebilirsin.
+              Bu kontrolü Ekspertiz Notları&apos;na kaydedip sonra tekrar bakabilir, fotoğraf
+              ekleyebilirsin.
             </p>
             <button type="button" className="primary-button" style={{ width: '100%' }} onClick={handleSaveReport}>
               Ekspertiz Notlarına Kaydet

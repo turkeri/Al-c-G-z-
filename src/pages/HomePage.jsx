@@ -131,6 +131,14 @@ export default function HomePage() {
             <span className="info-strip-value">{stats.transmissionCount}</span>
             <span className="info-strip-label">Şanzıman tanımı</span>
           </div>
+          <div className="info-strip-item">
+            <span className="info-strip-value">{stats.packageCount}</span>
+            <span className="info-strip-label">Donanım paketi</span>
+          </div>
+          <div className="info-strip-item">
+            <span className="info-strip-value">{stats.equipmentCount}</span>
+            <span className="info-strip-label">Donanım kaydı</span>
+          </div>
         </section>
       </PageContainer>
     </>

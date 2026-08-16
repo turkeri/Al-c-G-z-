@@ -2242,8 +2242,7 @@ button {
   }
 }
 
-/* ============================================================
-   GECE FAR SAHNESİ (AÇILIŞ) VE FAR YÜKLEME GÖSTERGESİ
+/* =====================================================   GECE FAR SAHNESİ (AÇILIŞ) VE FAR YÜKLEME GÖSTERGESİ
    ------------------------------------------------------------
    Bir farı gerçek yapan şey farın kendisi değil, çevresidir: karanlık,
    havada saçılan hüzme, yola vuran ışık havuzu ve mercek çevresindeki
@@ -2296,8 +2295,7 @@ button {
   opacity: 0.5;
 }
 
-/* ============================================================
-   AÇILIŞ SAHNESİ
+/* =====================================================   AÇILIŞ SAHNESİ
    ============================================================ */
 
 .splash {
@@ -2558,8 +2556,7 @@ button {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   SELEKTÖR ZAMAN ÇİZELGESİ
+/* =====================================================   SELEKTÖR ZAMAN ÇİZELGESİ
    ------------------------------------------------------------
    3,9 sn üzerinden: iki kısa selektör çakması, kısa bir karanlık,
    üçüncü çakma, sonra uzun far sabit yanar.
@@ -2651,8 +2648,7 @@ button {
   animation-delay: 0.09s;
 }
 
-/* ============================================================
-   FAR YÜKLEME GÖSTERGESİ (uygulama içi)
+/* =====================================================   FAR YÜKLEME GÖSTERGESİ (uygulama içi)
    ============================================================ */
 
 @keyframes hl-pulse-lit {
@@ -2732,8 +2728,7 @@ button {
   .splash-body { opacity: 0.75; }
 }
 
-/* ============================================================
-   KARE MENÜ KARTLARI
+/* =====================================================   KARE MENÜ KARTLARI
    ============================================================ */
 
 .tile-card {
@@ -2927,8 +2922,7 @@ button {
   }
 }
 
-/* ============================================================
-   SEÇİM ŞERİDİ (CHIP) VE FORM YARDIMCILARI
+/* =====================================================   SEÇİM ŞERİDİ (CHIP) VE FORM YARDIMCILARI
    ============================================================ */
 
 .chip-select {
@@ -3038,8 +3032,7 @@ button {
   background: var(--color-danger-soft);
 }
 
-/* ============================================================
-   ADIM LİSTESİ (YERİNDE KONTROL AKIŞI)
+/* =====================================================   ADIM LİSTESİ (YERİNDE KONTROL AKIŞI)
    ============================================================ */
 
 .step-list {
@@ -3136,8 +3129,7 @@ button {
   transition: width 0.3s ease;
 }
 
-/* ============================================================
-   SAYAÇ SATIRI (PARÇA ADEDİ)
+/* =====================================================   SAYAÇ SATIRI (PARÇA ADEDİ)
    ============================================================ */
 
 .counter-list {
@@ -3209,8 +3201,7 @@ button {
   color: var(--color-text);
 }
 
-/* ============================================================
-   DÖKÜM VE MALİYET
+/* =====================================================   DÖKÜM VE MALİYET
    ============================================================ */
 
 .breakdown-list {
@@ -3307,8 +3298,7 @@ button {
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* ============================================================
-   MİKRON RAPORU
+/* =====================================================   MİKRON RAPORU
    ============================================================ */
 
 .scale-legend {
@@ -3446,8 +3436,7 @@ button {
   color: var(--color-danger);
 }
 
-/* ============================================================
-   GÜVENLİ ALIM VE SORU LİSTELERİ
+/* =====================================================   GÜVENLİ ALIM VE SORU LİSTELERİ
    ============================================================ */
 
 .safe-list,
@@ -3571,8 +3560,7 @@ button {
   color: var(--color-text-muted);
 }
 
-/* ============================================================
-   GARAJ KAYIT LİSTESİ
+/* =====================================================   GARAJ KAYIT LİSTESİ
    ============================================================ */
 
 .saved-list {
@@ -3656,8 +3644,7 @@ button {
   gap: 14px;
 }
 
-/* ============================================================
-   BOYA KONTROLÜ - ÇEKİM PROTOKOLÜ VE KANIT GÖSTERİMİ
+/* =====================================================   BOYA KONTROLÜ - ÇEKİM PROTOKOLÜ VE KANIT GÖSTERİMİ
    ============================================================ */
 
 .protocol-list {
@@ -3726,8 +3713,7 @@ button {
   font-weight: 700;
 }
 
-/* ============================================================
-   SERBEST GİRİŞ VE VERİ TAMLIĞI
+/* =====================================================   SERBEST GİRİŞ VE VERİ TAMLIĞI
    ============================================================ */
 
 .mode-switch {
@@ -3794,10 +3780,8 @@ button {
   color: var(--color-warning);
 }
 
-/* ==========================================================================
-   YAZDIRILABİLİR EKSPERTİZ RAPORU
-   ==========================================================================
-   Ekranda kart görünümünde, kâğıtta sade bir belge olarak çıkar. PDF
+/* ===================================================================   YAZDIRILABİLİR EKSPERTİZ RAPORU
+   ===================================================================   Ekranda kart görünümünde, kâğıtta sade bir belge olarak çıkar. PDF
    kütüphanesi kullanılmaz: tarayıcının kendi yazdırma penceresi zaten
    "PDF olarak kaydet" sunar ve Türkçe karakterler için font gömmek gerekmez.
    ========================================================================== */
@@ -3954,10 +3938,8 @@ button {
   }
 }
 
-/* ==========================================================================
-   İLAN ANALİZİ — GİRDİ MODU SEKMELERİ
-   ==========================================================================
-   Üç girdi yolu (ilan no, ekran görüntüsü, metin) tek ekranda durur. Sekme
+/* ===================================================================   İLAN ANALİZİ — GİRDİ MODU SEKMELERİ
+   ===================================================================   Üç girdi yolu (ilan no, ekran görüntüsü, metin) tek ekranda durur. Sekme
    görünümü tercih edildi çünkü kullanıcı bir yolda takıldığında diğerine
    geçtiğini görmeli; ayrı sayfalara bölmek bu geçişi gizler.
    ========================================================================== */
@@ -4068,3 +4050,186 @@ button {
 .account-summary div { padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; }
 .account-summary dt { margin-bottom: 3px; }
 .account-summary dd { margin: 0; color: #0f172a; overflow-wrap: anywhere; }
+/* ===================================================================   DEĞERLEME FAKTÖR DÖKÜMÜ
+   ===================================================================   Fiyatın nasıl hesaplandığını satır satır gösterir. Kullanıcı çıplak bir
+   sayıya inanmak zorunda kalmasın, mantığını görebilsin diye vardır.
+   ========================================================================== */
+
+.factor-list {
+  margin-top: 8px;
+}
+
+.factor-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-text, #0f172a) 10%, transparent);
+}
+
+.factor-row:last-child {
+  border-bottom: 0;
+}
+
+.factor-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.factor-text strong {
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.factor-text span {
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: var(--color-muted, #64748b);
+}
+
+.factor-effect {
+  flex-shrink: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted, #64748b);
+}
+
+.factor-effect.is-up {
+  color: var(--color-success, #15803d);
+}
+
+.factor-effect.is-down {
+  color: var(--color-danger, #b91c1c);
+}
+
+/* =====================================================================   DONANIM PAKETİ GEZGİNİ
+   =====================================================================   Açılır-kapanır satırlar; tek seferde tek paket açık kalır. Dokunmatik
+   hedefler 44 px üzerinde tutulur çünkü kullanıcı bu ekranı çoğunlukla aracın
+   başındayken, tek elle kullanır. */
+.package-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.package-row {
+  border: 1px solid color-mix(in srgb, var(--color-text, #0f172a) 12%, transparent);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-surface, #fff);
+}
+
+.package-row.is-active {
+  border-color: var(--color-primary, #3454d1);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary, #3454d1) 35%, transparent);
+}
+
+.package-head {
+  width: 100%;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name caret'
+    'meta caret';
+  align-items: center;
+  gap: 2px 12px;
+  padding: 10px 14px;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.package-name {
+  grid-area: name;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.package-active-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary, #3454d1) 14%, transparent);
+  color: var(--color-primary, #3454d1);
+}
+
+.package-meta {
+  grid-area: meta;
+  font-size: 0.72rem;
+  color: var(--color-muted, #64748b);
+}
+
+.package-caret {
+  grid-area: caret;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-muted, #64748b);
+}
+
+.package-body {
+  padding: 4px 14px 14px;
+  border-top: 1px dashed color-mix(in srgb, var(--color-text, #0f172a) 12%, transparent);
+}
+
+.package-group + .package-group {
+  margin-top: 12px;
+}
+
+.package-group h4 {
+  margin: 10px 0 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-muted, #64748b);
+}
+
+.package-equipment {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.package-equipment li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.package-equipment strong {
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.package-equipment span {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--color-muted, #64748b);
+}
+
+.package-inline {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--color-muted, #64748b);
+}
