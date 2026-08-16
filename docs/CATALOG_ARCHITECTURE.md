@@ -42,4 +42,8 @@ Varyantın paketi aynı revision içinde bulunmak zorundadır. Paketin o generat
 
 ## Sonraki kapsam
 
-Sonraki migration problem, bakım ve fiyat snapshot tabloları ile applicability ve kaynak kanıtı katmanını ekleyecektir. Mevcut `vehicles` tablosu, `vehicles.json` ve statik katalog dosyaları import/migration tamamlanana kadar korunur.
+`catalog_problem_archetypes` 20 genel kontrol kalıbını, `catalog_problem_applicability` ise ilerideki 740 araç kapsamlı problem girdisini taşır. 137 normalize başlık otomatik arketip değildir; yalnız canonical ID ve validator kanıtı ilişki kurar. Confidence/evidence status belirsizliği açık tutar; alan dili kesin arıza iddiası oluşturmaz.
+
+14 genel bakım tanımı `catalog_maintenance_items` içinde, araç kapsamı `catalog_maintenance_applicability` içinde durur. `scope_type` global/filtered/vehicle ayrımını explicit yapar; boş kapsam yanlışlıkla global kabul edilmez.
+
+`catalog_reference_values` gerçek gözlenen referans değeri minor unit integer ile saklar; `catalog_valuation_factors` ise `marketData` benzeri genel katsayıdır ve fiyat değildir. Legacy ilişkiler nullable/düşük güvenli kalır; verified provenance import validator tarafından denetlenecektir. Mevcut `vehicles` ve statik kaynaklar import/publish tamamlanana kadar korunur.
