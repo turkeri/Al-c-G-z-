@@ -10,12 +10,12 @@
 - Deploy: iki Wrangler config riski belgelendi. Remote D1'de değişiklik yapılmadı.
 - Sahibinden sınırı: otomatik erişim veya bot atlatma yok; ekran görüntüsü/metin ve gelecekte kullanıcı görünür browser onayı fallback'tir.
 
-## Aşama 1 — Test ve CI temeli: tamamlanacak
+## Aşama 1 — Test ve CI temeli: tamamlandı
 
-- [ ] katalog doğrulama ve eşleştirme testleri
-- [ ] ilan parser testleri
-- [ ] Worker API test planı
-- [ ] tek komut doğrulama ve deploy'suz CI
+- Katalog çapraz referans, nesil/motor/şanzıman eşleştirme testleri eklendi.
+- İlan metni ayrıştırma ve motor ipucu testleri eklendi.
+- Worker endpoint test planı eklendi; gerçek Worker test havuzu Phase 2'ye bırakıldı.
+- `npm run verify` (lint + test + build) ve deploy'suz GitHub Actions CI eklendi.
 
 ## Sonraki kararlar
 
