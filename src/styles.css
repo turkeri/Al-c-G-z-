@@ -4235,3 +4235,18 @@ button {
 }
 .home-titlebar { display:flex; align-items:center; gap:8px; max-width:720px; margin:18px auto 4px; padding:0 18px; color:#263a78; }
 .home-titlebar h1 { margin:0; font-size:1.05rem; letter-spacing:-.02em; }
+
+/* ============================================================================
+   KATALOG REVIEW PANELİ
+   ============================================================================
+   .saved-item'in üstüne kurulur; review kaydı çok daha fazla eleman taşıdığı
+   (hedef seçici + üç aksiyon düğmesi) için satır sarmasına izin verilir. */
+.review-item {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.review-summary {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
