@@ -17,6 +17,8 @@ import { adminActor, announcementDates, audit, SETTINGS, textSafe } from './admi
 import { handlePublicCatalog } from './catalog/public.js'
 import { handleAdminCatalog } from './catalog/admin.js'
 import { handleCatalogRelation } from './catalog/relations.js'
+import { handleEntityList } from './catalog/entity-list.js'
+import { handleCatalogReview } from './catalog/review.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -991,6 +993,12 @@ export default {
             const relationResponse = await handleCatalogRelation(request, env, url, actor)
             if (relationResponse) return new Response(relationResponse.body, { status: relationResponse.status, headers: { ...Object.fromEntries(relationResponse.headers), ...cors, 'Cache-Control': 'no-store' } })
           }
+          if (url.pathname.includes('/review')) {
+            const reviewResponse = await handleCatalogReview(request, env, url, actor)
+            if (reviewResponse) return new Response(reviewResponse.body, { status: reviewResponse.status, headers: { ...Object.fromEntries(reviewResponse.headers), ...cors, 'Cache-Control': 'no-store' } })
+          }
+          const entityListResponse = await handleEntityList(request, env, url, actor)
+          if (entityListResponse) return new Response(entityListResponse.body, { status: entityListResponse.status, headers: { ...Object.fromEntries(entityListResponse.headers), ...cors, 'Cache-Control': 'no-store' } })
           const response = await handleAdminCatalog(request, env, url, actor)
           if (response) return new Response(response.body, { status: response.status, headers: { ...Object.fromEntries(response.headers), ...cors, 'Cache-Control': 'no-store' } })
         } catch {
