@@ -16,6 +16,7 @@ import { pullSync, pushSync, syncUserId } from './sync.js'
 import { adminActor, announcementDates, audit, SETTINGS, textSafe } from './admin.js'
 import { handlePublicCatalog } from './catalog/public.js'
 import { handleAdminCatalog } from './catalog/admin.js'
+import { handleCatalogRelation } from './catalog/relations.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -986,6 +987,10 @@ export default {
       if (!actor) return json({ error: 'Bu alana erişim yetkiniz yok' }, 403, { ...cors, 'Cache-Control': 'no-store' })
       if (url.pathname.startsWith('/admin/catalog')) {
         try {
+          if (url.pathname.includes('/relations/')) {
+            const relationResponse = await handleCatalogRelation(request, env, url, actor)
+            if (relationResponse) return new Response(relationResponse.body, { status: relationResponse.status, headers: { ...Object.fromEntries(relationResponse.headers), ...cors, 'Cache-Control': 'no-store' } })
+          }
           const response = await handleAdminCatalog(request, env, url, actor)
           if (response) return new Response(response.body, { status: response.status, headers: { ...Object.fromEntries(response.headers), ...cors, 'Cache-Control': 'no-store' } })
         } catch {

@@ -110,6 +110,7 @@ export default function App() {
             <Route path="/admin/katalog/revizyonlar" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
             <Route path="/admin/katalog/revizyonlar/:revisionId" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
             <Route path="/admin/katalog/revizyonlar/:revisionId/:section" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
+            <Route path="/admin/katalog/revizyonlar/:revisionId/:section/:entityId" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
             <Route path="/admin/*" element={<AuthGuard><AdminPage /></AuthGuard>} />
           </Routes>
           </Suspense>
