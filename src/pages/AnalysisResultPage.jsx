@@ -18,6 +18,7 @@ import {
 import { estimateMarketPrice } from '../services/marketService'
 import { buildNegotiationAdvice } from '../services/negotiationService'
 import { buildDecisionSummary } from '../services/decisionService'
+import { buildVehicleProfile } from '../services/catalogService'
 
 const DECISION_ICON = { al: '✓', dikkatli: '!', alma: '×', belirsiz: '?' }
 
@@ -36,6 +37,10 @@ export default function AnalysisResultPage() {
   const decision = useMemo(
     () => (state ? buildDecisionSummary(state.result, marketEstimate) : null),
     [state, marketEstimate]
+  )
+  const catalog = useMemo(
+    () => (state ? buildVehicleProfile(state.formData) : null),
+    [state]
   )
 
   const [ai, setAi] = useState({ status: 'idle', data: null, message: '' })
@@ -205,6 +210,109 @@ export default function AnalysisResultPage() {
               {marketEstimate.limitations ||
                 `Bu tutar gerçek zamanlı piyasa verisi değildir; referanslar ${marketEstimate.baseline} piyasasına göredir.`}
             </p>
+          </section>
+        )}
+
+        {catalog && (catalog.engine || catalog.transmission) && (
+          <section className="result-card">
+            <h3>Motor ve Şanzıman Kataloğu</h3>
+            {catalog.engine && (
+              <div className="ai-block">
+                <p className="expertise-category-title">
+                  {catalog.engine.name} · {catalog.engine.family}
+                </p>
+                <p className="ai-text">
+                  Motor kodu: {catalog.engine.codes.join(', ')} · {catalog.engine.power} ·{' '}
+                  {catalog.engine.years}
+                  {catalog.engine.maintenance?.timing
+                    ? ` · Triger: ${catalog.engine.maintenance.timing}`
+                    : ''}
+                </p>
+                {catalog.engine.maintenance?.note && (
+                  <p className="market-disclaimer">{catalog.engine.maintenance.note}</p>
+                )}
+              </div>
+            )}
+            {catalog.transmission && (
+              <div className="ai-block">
+                <p className="expertise-category-title">
+                  {catalog.transmissionConfidence === 'tahmin' ? 'Muhtemelen ' : ''}
+                  {catalog.transmission.name}
+                </p>
+                <p className="ai-text">
+                  {catalog.transmission.type} · Güvenilirlik: {catalog.transmission.reliability}/100
+                </p>
+                {catalog.transmission.buyingNote && (
+                  <p className="market-disclaimer">{catalog.transmission.buyingNote}</p>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+
+        {catalog?.generation && (
+          <section className="result-card">
+            <h3>Model Nesli</h3>
+            <div className="market-facts">
+              <div>
+                <span>Nesil</span>
+                <strong>{catalog.generation.code}</strong>
+              </div>
+              <div>
+                <span>Üretim yılları</span>
+                <strong>{catalog.generation.years}</strong>
+              </div>
+              {catalog.facelift && (
+                <div>
+                  <span>Makyaj</span>
+                  <strong>{catalog.facelift.label}</strong>
+                </div>
+              )}
+            </div>
+            {catalog.generation.bodyTypes?.length > 0 && (
+              <p className="ai-text">Kasa seçenekleri: {catalog.generation.bodyTypes.join(', ')}</p>
+            )}
+            {catalog.generation.note && (
+              <p className="market-disclaimer">{catalog.generation.note}</p>
+            )}
+          </section>
+        )}
+
+        {catalog?.maintenance?.items.length > 0 && (
+          <section className="result-card">
+            <h3>Yaklaşan Bakım Kalemleri</h3>
+            <p className="market-disclaimer">
+              Önümüzdeki {formatKm(catalog.maintenance.horizonKm)} için tahmini toplam:{' '}
+              <strong>
+                {formatPrice(catalog.maintenance.total.min)} –{' '}
+                {formatPrice(catalog.maintenance.total.max)}
+              </strong>
+            </p>
+            <ul className="result-list neutral">
+              {catalog.maintenance.items.map((item) => (
+                <li key={item.id}>
+                  {item.label}: {formatPrice(item.cost.min)} – {formatPrice(item.cost.max)}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {catalog?.availablePackages?.length > 0 && (
+          <section className="result-card">
+            <h3>Bilinen Donanım Paketleri</h3>
+            <div className="check-tags">
+              {catalog.availablePackages.map((pkg) => (
+                <span className="check-tag" key={pkg.id}>
+                  {pkg.name} · {pkg.tier}
+                </span>
+              ))}
+            </div>
+            {!catalog.package && (
+              <p className="market-disclaimer">
+                Aracın paket adı girilmediği için donanımlar kesin paketle eşleştirilemedi.
+              </p>
+            )}
           </section>
         )}
 
