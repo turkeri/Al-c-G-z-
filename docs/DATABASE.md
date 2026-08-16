@@ -4,7 +4,7 @@
 
 Şema [`server/d1/schema.sql`](../server/d1/schema.sql) içindedir: `meta`, `vehicles`, `submissions`, `accounts`, `ip_quota` ve `analysis_history`. `vehicles` doğrulanmış katalog için JSON payload + artan `revision` kullanır. `submissions`, doğrulanmamış topluluk/araştırma verisini ana katalogdan ayırır. Geçmiş yalnızca özet alanları saklamak üzere tasarlanmıştır.
 
-Bu repoda sürümlü `migrations/` dizini henüz yoktur; şema doğrudan çalıştırılacak biçimdedir. Bu nedenle üretim şemasına dokunulmadı.
+Sürümlü başlangıç şeması [`server/d1/migrations/0001_initial_schema.sql`](../server/d1/migrations/0001_initial_schema.sql) olarak eklendi ve kök `wrangler.jsonc` bu dizine yönlendirildi. Dosya yalnızca `CREATE ... IF NOT EXISTS` ifadeleri içerir; bu turda local veya remote D1'e migration uygulanmadı.
 
 ## Hedef
 
@@ -28,4 +28,4 @@ Ardından şema, tablo sayıları ve kritik örnek sorgular doğrulanır. Yeni D
 
 ## Kalan iş
 
-İlk migration seti, erişim yetkileri, veri saklama/silme süreleri, katalog kaynak doğrulama alanları ve gerçek kullanıcı kimliği sonrası `accounts` geçişi tasarlanmalıdır.
+Erişim yetkileri, veri saklama/silme süreleri, katalog kaynak doğrulama alanları ve gerçek kullanıcı kimliği sonrası `accounts` geçişi tasarlanmalıdır.

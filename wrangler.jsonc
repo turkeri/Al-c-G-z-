@@ -6,7 +6,8 @@
     {
       "binding": "DB",
       "database_name": "arac-dedektifi",
-      "database_id": "07b6820f-33e6-4ba6-b4dc-b16c792c826f"
+      "database_id": "07b6820f-33e6-4ba6-b4dc-b16c792c826f",
+      "migrations_dir": "server/d1/migrations"
     }
   ]
 }
