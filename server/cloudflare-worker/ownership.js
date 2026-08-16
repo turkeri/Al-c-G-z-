@@ -15,7 +15,7 @@ function payloadRecord(record, fallbackId) {
   return { sourceId, payload: JSON.stringify(record).slice(0, 100000) }
 }
 
-async function ownerForSubject(env, auth) {
+export async function ensureUserForAuth(env, auth) {
   let user = await env.DB.prepare('SELECT id FROM users WHERE auth_subject = ?1').bind(auth.userId).first()
   if (user) return user.id
   const id = crypto.randomUUID()
@@ -39,7 +39,7 @@ function transferCounts(history, favorites, garage, expertiseNotes) {
 export async function linkDeviceData(env, auth, body) {
   const deviceId = validDeviceId(body?.device_id)
   if (!deviceId) return { ok: false, status: 400, error: 'Geçerli cihaz kimliği gerekli' }
-  const userId = await ownerForSubject(env, auth)
+  const userId = await ensureUserForAuth(env, auth)
   const active = await env.DB.prepare('SELECT user_id FROM device_links WHERE device_id = ?1 AND revoked_at IS NULL').bind(deviceId).first()
   if (active && active.user_id !== userId) return { ok: false, status: 409, error: 'Bu cihaz başka bir hesaba bağlı' }
 

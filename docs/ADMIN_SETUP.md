@@ -4,8 +4,10 @@ Roller D1 kaynaklıdır: `admin` tüm izinler, `editor` duyuru okuma/yazma/yayı
 `support` yalnız duyuru okuma, `user` ise yönetim izni olmayan varsayılan roldür.
 JWT yalnız subject doğrular; metadata, e-posta ve istemci rolü yetki vermez.
 
-İlk kullanıcı normal Supabase girişini tamamladıktan ve Worker uygulama `users.id`
-değeri doğrulandıktan sonra operatör tarafından atanır:
+İlk kullanıcı normal Supabase girişini tamamladıktan sonra `/auth/me` veya
+`/admin/me` Worker'ın `users.auth_subject = JWT sub` eşleşmesini kullanarak
+uygulama `users.id` kaydını oluşturur. Operatör rolü **bu dahili `users.id`**
+ile atar; Supabase UUID doğrudan role tablosuna yazılmaz:
 
 ```sql
 INSERT INTO user_roles (user_id, role, active, created_at, updated_at)

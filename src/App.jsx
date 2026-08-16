@@ -33,6 +33,7 @@ const SellerQuestionsPage = lazy(() => import('./pages/SellerQuestionsPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const AccountPage = lazy(() => import('./pages/AccountPage'))
 const AuthCallbackPage = lazy(() => import('./pages/AuthCallbackPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
 
 export default function App() {
   const location = useLocation()
@@ -95,6 +96,8 @@ export default function App() {
             <Route path="/giris" element={<LoginPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/hesap" element={<AuthGuard><AccountPage /></AuthGuard>} />
+            <Route path="/admin" element={<AuthGuard><AdminPage /></AuthGuard>} />
+            <Route path="/admin/*" element={<AuthGuard><AdminPage /></AuthGuard>} />
           </Routes>
           </Suspense>
         </div>

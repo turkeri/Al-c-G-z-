@@ -1,11 +1,11 @@
-import { findUserForAuth } from './ownership.js'
+import { ensureUserForAuth } from './ownership.js'
 
 const PERMISSIONS = { admin: ['admin:access','announcement:read','announcement:write','announcement:publish','settings:read','settings:write','audit:read','role:manage'], editor: ['admin:access','announcement:read','announcement:write','announcement:publish'], support: ['admin:access','announcement:read'] }
 const SETTINGS = new Set(['maintenance_mode','maintenance_message','minimum_web_version','minimum_android_version','free_analysis_limit','support_email'])
 const uuid = () => crypto.randomUUID()
 
 export async function adminActor(env, auth, permission) {
-  const userId = await findUserForAuth(env, auth)
+  const userId = await ensureUserForAuth(env, auth)
   if (!userId) return null
   const rows = await env.DB.prepare("SELECT role FROM user_roles WHERE user_id=?1 AND active=1 AND role IN ('admin','editor','support')").bind(userId).all()
   const roles = (rows.results || []).map((r) => r.role)
