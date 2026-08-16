@@ -26,8 +26,11 @@ Analysis, diagnosis, inspection, compare ekranlarının marka/model/motor seçic
 
 Reference value gözlemsel araç değeridir ve minor unit saklanır. Valuation factor genel katsayıdır, fiyat değildir. Canonical reference yoksa mevcut `referencePrice`/`valuate()` hesabı korunur. Kullanıcı arayüzü D1, revision veya SQL ayrıntısı göstermez.
 
+`catalogService.describePackageWithCatalog(vehicle)` aynı desende: `vehicle.variantId` varsa `getVehicleVariant`'ın zaten döndürdüğü `equipment` listesini (`catalog_package_equipment.availability`: standard/optional/unavailable/unknown) kategoriye göre gruplayıp `PackageExplorer`'ın beklediği `includesDetail`/`optionalDetail`/`excludesDetail` şekline çevirir; `unknown` availability AYRI bir `unknownDetail` grubunda durur — ne "var" ne "yok" listesine karıştırılmaz. Paket bağlı değilse/hata olursa yerel statik `describePackage`'a (`packages.js`/`matchPackage`) düşer.
+
 ## Hâlâ statik/legacy kalan tüketiciler
 
-- **Paket/donanım** (`PackageExplorer`, `packages.js`/`equipment.js`): canonical `listPackages`/`listVehicleVariants` katalog adaptöründe hazır ama bu bileşen hâlâ tamamen yerel statik veriden okuyor. Async canonical bağlantısı henüz yapılmadı.
+- **`PackageExplorer` bileşeni**: `describePackageWithCatalog` servis katmanında hazır ve test edilmiş, ama `PackageExplorer` hâlâ yalnız yerel statik `packages` prop'unu senkron `describePackage` ile açıyor — canonical veriyi kabul edecek şekilde henüz genişletilmedi.
 - **Compare'in donanım/kronik sorun kıyası** (`compareTwoVehicles`): marka/model/motor seçimi canonical-first oldu (yukarıda), ama karşılaştırma sonucundaki kronik sorun/özellik listesi hâlâ legacy `vehicleService`/`data/catalog` kaynaklı.
 - **ListingAnalysisPage'in değerleme ve kronik risk hesabı**: yukarıda açıklandığı gibi, serbest metinden canonical varyant eşleştirmesi olmadığı için legacy kalıyor.
+- **Ortak kök neden**: `assessChronicRiskWithCatalog`, `valuateWithCatalog` ve `describePackageWithCatalog`'ün üçü de hazır ve test edilmiştir ama hiçbiri canlı bir ekrandan tetiklenmiyor — çünkü bugün yalnız `VehiclePicker` kullanan ekranlar (`OwnershipCostPage`, `SellerQuestionsPage`) `variantId` üretiyor, ve o iki ekran bu üç özelliği göstermiyor. `AnalysisFormPage`/`ListingAnalysisPage` (bu üç özelliği gösteren ekranlar) kendi `variantId` çözümlemesi yapmıyor. Bu üçünü gerçekten aktive etmek, ya bu iki ekranın seçicisine aynı nesil/varyant eşleştirmesini eklemeyi ya da `<VehiclePicker>`'a geçmeyi gerektirir — ayrı, kapsamı net bir sonraki iş.

@@ -26,6 +26,7 @@ import {
   validateCatalog
 } from '../data/catalog'
 import { matchTransmissionInfo } from '../data/catalog/transmissions'
+import { getVehicleVariant } from './catalogAdapter'
 
 export { getCatalogStats, getPackagesFor, brandOwnershipScore, upcomingMaintenance, validateCatalog }
 
@@ -44,6 +45,62 @@ export function describePackage(pkg) {
     excludesDetail: expandEquipment(pkg.excludes),
     optionalDetail: expandEquipment(pkg.optional)
   }
+}
+
+/** Canonical donanım satırlarını (display_name/category) kategoriye göre gruplar. */
+function groupCanonicalEquipment(rows) {
+  const groups = new Map()
+  rows.forEach((row) => {
+    const key = row.category || 'Diğer'
+    if (!groups.has(key)) groups.set(key, { id: key, label: key, items: [] })
+    groups.get(key).items.push({ id: row.id, label: row.display_name })
+  })
+  return [...groups.values()]
+}
+
+/**
+ * Bir aracın paket/donanım bilgisini canonical katalogdan çeker; yoksa/hata
+ * verirse/paket bağlı değilse yerel statik `describePackage`'a düşer.
+ *
+ * ============================================================================
+ * NEDEN AYRI GRUPLAR
+ * ============================================================================
+ * `catalog_package_equipment.availability` dört değer alır: standard,
+ * optional, unavailable, unknown. `unknown` KESİNLİKLE "yok" ya da "var"
+ * sayılmaz — ayrı bir grupta durur ve ekran bunu "belirsiz, araçta doğrula"
+ * diye göstermelidir. Yerel statik paketlerde bu belirsizlik kategorisi
+ * yoktur (`confidence: kismi` tüm listeye uygulanır); canonical veri daha
+ * ayrıntılı olduğu için doğruluğu daha iyi yansıtır.
+ *
+ * @param {object} vehicle { variantId, brand, model, year, packageName, bodyType }
+ */
+export async function describePackageWithCatalog(vehicle) {
+  if (vehicle?.variantId) {
+    try {
+      const variant = await getVehicleVariant(vehicle.variantId)
+      if (variant?.package_id) {
+        const rows = variant.equipment || []
+        const byAvailability = (value) => rows.filter((r) => r.availability === value)
+        return {
+          name: variant.package_name || '',
+          tier: null,
+          confidence: null,
+          includesDetail: groupCanonicalEquipment(byAvailability('standard')),
+          optionalDetail: byAvailability('optional').map((r) => ({ id: r.id, label: r.display_name })),
+          excludesDetail: byAvailability('unavailable').map((r) => ({ id: r.id, label: r.display_name })),
+          unknownDetail: byAvailability('unknown').map((r) => ({ id: r.id, label: r.display_name })),
+          extras: [],
+          source: 'canonical'
+        }
+      }
+    } catch {
+      // Ağ hatası ya da beklenmeyen yanıt — aşağıda legacy pakete düşülür.
+    }
+  }
+
+  const pkg = matchPackage(vehicle?.brand, vehicle?.model, vehicle?.year, vehicle?.packageName, vehicle?.bodyType)
+  const legacy = describePackage(pkg)
+  return legacy ? { ...legacy, source: 'legacy' } : null
 }
 
 /**
