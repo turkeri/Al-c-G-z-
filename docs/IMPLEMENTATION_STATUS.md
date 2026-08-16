@@ -64,3 +64,12 @@
 - Supabase projesi, AB bölgesi, Google callback URL'leri, Android deep-link,
   service-role key ve deploy henüz yapılmadı.
 - Favori/garaj/not/geçmiş bulut senkronizasyonu Aşama 2B-2 kapsamındadır.
+
+## Aşama 2B-2 — cihaz sahipliği ve ilk aktarım: tamamlandı (migration uygulanmadı)
+
+- Korumalı `POST /auth/link-device`, JWT subject'inden dahili kullanıcıyı
+  bulur/oluşturur ve bir cihazı yalnız bir aktif hesaba bağlar.
+- Mevcut D1 analiz geçmişi ile cihazdaki favori, devam eden garaj kontrolü ve
+  ekspertiz notları bir kez, idempotent olarak sahipliğe bağlanır.
+- Başka kullanıcıya bağlı cihaz 409 ile reddedilir; istemci `user_id`si kabul
+  edilmez. Remote migration, deploy ve push yapılmadı.

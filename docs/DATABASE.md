@@ -74,3 +74,10 @@ oluşturuldu ancak local veya remote D1'e uygulanmadı. `users`,
 temelli `accounts` ve `analysis_history` tablolarını değiştirmez. Supabase
 JWT/session/refresh tokenları D1'e kopyalanmaz. Aktif cihaz linki için partial
 unique index vardır; veri claim'i sonraki aşamadadır.
+
+## Aşama 2B-2 migration notu
+
+[`0003_user_data_ownership.sql`](../server/d1/migrations/0003_user_data_ownership.sql)
+mevcut anonim tabloları değiştirmeden `history_owners`, kullanıcıya bağlı
+favori/garaj/ekspertiz kayıtları ve idempotent `device_link_transfers` ekler.
+Dosya mevcut `migrations_dir` altında yer alır; **remote D1'e uygulanmadı**.

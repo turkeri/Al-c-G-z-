@@ -21,6 +21,7 @@
 
 import { PROXY_BASE_URL } from './aiService'
 import { accountHeaders } from './accountService'
+import { getAccessToken } from './authService'
 
 const LOCAL_KEY = 'arac-dedektifi:history'
 const LOCAL_LIMIT = 50
@@ -117,8 +118,9 @@ export async function getHistory() {
   if (!PROXY_BASE_URL) return local
 
   try {
+    const token = await getAccessToken()
     const response = await fetch(PROXY_BASE_URL.replace(/\/$/, '') + '/history', {
-      headers: accountHeaders()
+      headers: { ...accountHeaders(), ...(token ? { Authorization: `Bearer ${token}` } : {}) }
     })
     if (!response.ok) return local
     const data = await response.json()

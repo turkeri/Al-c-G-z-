@@ -25,3 +25,12 @@ test('auth identity migration is additive and contains required ownership constr
   const executableSql = migration.replace(/^--.*$/gm, '')
   assert.doesNotMatch(executableSql, /\bDROP\b|\bDELETE\s+FROM\b|\bUPDATE\b|\bINSERT\s+INTO\b/i)
 })
+
+test('ownership migration is additive and includes all transferred data types', async () => {
+  const migration = await readFile(new URL('../server/d1/migrations/0003_user_data_ownership.sql', import.meta.url), 'utf8')
+  for (const table of ['history_owners', 'user_favorites', 'user_garage_records', 'user_expertise_notes', 'device_link_transfers']) {
+    assert.match(migration, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`, 'i'))
+  }
+  const executableSql = migration.replace(/^--.*$/gm, '')
+  assert.doesNotMatch(executableSql, /\bDROP\b|\bDELETE\s+FROM\b/i)
+})

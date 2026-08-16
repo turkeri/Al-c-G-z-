@@ -11,6 +11,7 @@
 import { fetchListing, listPlatforms } from './listing/fetcher.js'
 import { constantTimeEqual, hasAcceptableBodySize } from './security.js'
 import { authenticateRequest } from './auth.js'
+import { findUserForAuth, linkDeviceData } from './ownership.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -621,12 +622,22 @@ async function handleHistoryList(env, deviceId, cors) {
     `SELECT id, created_at, brand, model, year, km, price, score, trust_score, verdict, source
        FROM analysis_history
       WHERE account_id = ?1
+        AND NOT EXISTS (SELECT 1 FROM history_owners ho WHERE ho.history_id = analysis_history.id)
       ORDER BY created_at DESC
       LIMIT ?2`
   )
     .bind(deviceId, HISTORY_LIMIT)
     .all()
 
+  return json({ items: result.results || [] }, 200, cors)
+}
+
+async function handleUserHistoryList(env, userId, cors) {
+  const result = await env.DB.prepare(
+    `SELECT h.id, h.created_at, h.brand, h.model, h.year, h.km, h.price, h.score, h.trust_score, h.verdict, h.source
+       FROM analysis_history h JOIN history_owners ho ON ho.history_id = h.id
+      WHERE ho.user_id = ?1 ORDER BY h.created_at DESC LIMIT ?2`
+  ).bind(userId, HISTORY_LIMIT).all()
   return json({ items: result.results || [] }, 200, cors)
 }
 
@@ -937,6 +948,26 @@ export default {
       )
     }
 
+    if (url.pathname === '/auth/link-device') {
+      if (request.method !== 'POST') return json({ error: 'Sadece POST destekleniyor' }, 405, { ...cors, 'Cache-Control': 'no-store' })
+      if (!env.DB) return json({ error: 'Veritabani baglanmamis' }, 503, { ...cors, 'Cache-Control': 'no-store' })
+      const auth = await requireAuth(request, env, cors)
+      if (auth instanceof Response) return auth
+      let body
+      try {
+        body = await request.json()
+      } catch {
+        return json({ error: 'Geçersiz istek' }, 400, { ...cors, 'Cache-Control': 'no-store' })
+      }
+      try {
+        const outcome = await linkDeviceData(env, auth, body)
+        if (!outcome.ok) return json({ error: outcome.error }, outcome.status, { ...cors, 'Cache-Control': 'no-store' })
+        return json({ linked: outcome.linked, idempotent: outcome.idempotent, counts: outcome.counts }, 200, { ...cors, 'Cache-Control': 'no-store' })
+      } catch {
+        return json({ error: 'Cihaz verileri eşleştirilemedi' }, 500, { ...cors, 'Cache-Control': 'no-store' })
+      }
+    }
+
     // Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalıyken de
     // veritabanı güncellemesi çalışmalıdır.
     if (request.method === 'GET' && url.pathname.startsWith('/data/')) {
@@ -1026,6 +1057,14 @@ export default {
       if (!env.DB) return json({ items: [], enabled: false }, 200, cors)
 
       try {
+        const hasAuthorization = request.headers.has('Authorization')
+        if (hasAuthorization) {
+          const auth = await requireAuth(request, env, cors)
+          if (auth instanceof Response) return auth
+          const userId = await findUserForAuth(env, auth)
+          if (!userId) return json({ items: [] }, 200, { ...cors, 'Cache-Control': 'no-store' })
+          if (request.method === 'GET') return await handleUserHistoryList(env, userId, cors)
+        }
         if (request.method === 'GET') return await handleHistoryList(env, deviceId, cors)
         if (request.method === 'POST') {
           const body = await request.json().catch(() => null)
