@@ -37,6 +37,7 @@ const AdminPage = lazy(() => import('./pages/AdminPage'))
 const AdminSettingsPage = lazy(() => import('./pages/AdminSettingsPage'))
 const AdminAuditPage = lazy(() => import('./pages/AdminAuditPage'))
 const AdminAnnouncementFormPage = lazy(() => import('./pages/AdminAnnouncementFormPage'))
+const AdminCatalogPage = lazy(() => import('./pages/AdminCatalogPage'))
 
 export default function App() {
   const location = useLocation()
@@ -105,6 +106,10 @@ export default function App() {
             <Route path="/admin/duyurular" element={<AuthGuard><AdminPage /></AuthGuard>} />
             <Route path="/admin/duyurular/yeni" element={<AuthGuard><AdminAnnouncementFormPage /></AuthGuard>} />
             <Route path="/admin/duyurular/:id" element={<AuthGuard><AdminAnnouncementFormPage /></AuthGuard>} />
+            <Route path="/admin/katalog" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
+            <Route path="/admin/katalog/revizyonlar" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
+            <Route path="/admin/katalog/revizyonlar/:revisionId" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
+            <Route path="/admin/katalog/revizyonlar/:revisionId/:section" element={<AuthGuard><AdminCatalogPage /></AuthGuard>} />
             <Route path="/admin/*" element={<AuthGuard><AdminPage /></AuthGuard>} />
           </Routes>
           </Suspense>

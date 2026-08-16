@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ChipSelect from './ChipSelect'
 import {
   getBrands,
@@ -7,6 +7,7 @@ import {
   getVehicleEntry
 } from '../services/vehicleService'
 import { KM_BANDS, bandForKm, yearOptions } from '../utils/vehicleOptions'
+import { getPublishedBrands, getPublishedEngines, getPublishedGenerations, getPublishedModels } from '../services/publicCatalogService'
 
 /**
  * Marka / model / motor / yıl / kilometre seçimini tek yerde toplayan bileşen.
@@ -15,11 +16,19 @@ import { KM_BANDS, bandForKm, yearOptions } from '../utils/vehicleOptions'
 export default function VehiclePicker({ value, onChange, showKm = true, showYear = true }) {
   // Listede olmayan araçlar için serbest giriş; analiz formundaki mantığın aynısı.
   const [manual, setManual] = useState(false)
-  const brands = useMemo(() => getBrands(), [])
-  const models = useMemo(() => (value.brand ? getModelsByBrand(value.brand) : []), [value.brand])
+  const [remote,setRemote]=useState({brands:null,models:null,generations:null,engines:null})
+  useEffect(()=>{let active=true;getPublishedBrands().then(items=>active&&items&&setRemote(r=>({...r,brands:items})));return()=>{active=false}},[])
+  const remoteBrand=remote.brands?.find(item=>item.display_name===value.brand)
+  useEffect(()=>{let active=true;if(!remoteBrand){setRemote(r=>({...r,models:null,generations:null,engines:null}));return()=>{active=false}}getPublishedModels(remoteBrand.id).then(items=>active&&setRemote(r=>({...r,models:items,generations:null,engines:null})));return()=>{active=false}},[remoteBrand?.id])
+  const remoteModel=remote.models?.find(item=>item.display_name===value.model)
+  useEffect(()=>{let active=true;if(!remoteModel)return;getPublishedGenerations(remoteModel.id).then(items=>active&&setRemote(r=>({...r,generations:items})));return()=>{active=false}},[remoteModel?.id])
+  const remoteGeneration=remote.generations?.find(item=>item.id===value.generationId)||remote.generations?.[0]
+  useEffect(()=>{let active=true;if(!remoteGeneration)return;getPublishedEngines(remoteGeneration.id).then(items=>active&&setRemote(r=>({...r,engines:items})));return()=>{active=false}},[remoteGeneration?.id])
+  const brands = useMemo(() => remote.brands?.map(item=>item.display_name)||getBrands(), [remote.brands])
+  const models = useMemo(() => remote.models?.map(item=>item.display_name)||(value.brand ? getModelsByBrand(value.brand) : []), [remote.models,value.brand])
   const engines = useMemo(
-    () => (value.brand && value.model ? getEngineNames(value.brand, value.model) : []),
-    [value.brand, value.model]
+    () => remote.engines?.map(item=>item.display_name)||(value.brand && value.model ? getEngineNames(value.brand, value.model) : []),
+    [remote.engines,value.brand, value.model]
   )
   const entry = useMemo(
     () => (value.brand && value.model ? getVehicleEntry(value.brand, value.model) : null),
@@ -63,7 +72,7 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
           ) : (
             <select
               value={value.brand || ''}
-              onChange={(e) => update({ brand: e.target.value, model: '', engine: '' })}
+              onChange={(e) => update({ brand: e.target.value, model: '', generationId: '', engine: '' })}
             >
               <option value="">Seçiniz</option>
               {brands.map((brand) => (
@@ -87,7 +96,7 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
           ) : (
             <select
               value={value.model || ''}
-              onChange={(e) => update({ model: e.target.value, engine: '' })}
+              onChange={(e) => update({ model: e.target.value, generationId: '', engine: '' })}
               disabled={!value.brand}
             >
               <option value="">Seçiniz</option>
@@ -100,6 +109,10 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
           )}
         </label>
       </div>
+
+      {!manual && remote.generations?.length > 0 && (
+        <div className="field-block"><label>Nesil<select value={value.generationId || remoteGeneration?.id || ''} onChange={(e)=>update({generationId:e.target.value,engine:''})}>{remote.generations.map((generation)=><option key={generation.id} value={generation.id}>{generation.display_name} ({generation.year_start}–{generation.year_end || '…'})</option>)}</select></label></div>
+      )}
 
       <div className="form-row">
         <label>

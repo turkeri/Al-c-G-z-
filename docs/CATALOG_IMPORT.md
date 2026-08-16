@@ -26,4 +26,6 @@ Bu plan 20 problem arketipini, `vehicles.json` içindeki 740 problem applicabili
 
 `catalog:plan`, tüm dry-run çıktılarından tek deterministik plan hash'i ve buna bağlı tek `draft` revision üretir. Review kayıtları plan raporunda kalır; canonical kayıt listelerine girmez. Local apply sonraki aşamadır; bu aşamada D1'e yazım yapılmaz.
 
+Kod tarafındaki yayın akışı tamamlandığında bile local apply otomatik publish etmez. İlk remote işlemden önce yedek alınmalı; migration, import, validate ve publish ayrı onaylı adımlar olarak yürütülmelidir. Bu geliştirme sırasında remote D1'e migration/import uygulanmamış ve gerçek revision yayınlanmamıştır.
+
 946 warning/review olayı; 739 eşleşmeyen arketip, 193 güvenli canonical scope bulamayan reference price ve 14 applicability kanıtı olmayan bakım itemından oluşur. Bakım için global kapsam uydurulmaz. Güvenli 20 reference value TRY minor unit ile saklanır (`1.550.000 TL = 155000000`); bu değerler 8 genel valuation factor ile karıştırılmaz. Henüz D1'e yazım yapılmamıştır. Sonraki aşama birleşik plan ve izole local D1 apply doğrulamasıdır.
