@@ -116,8 +116,20 @@ export default function HomePage() {
             <span className="info-strip-label">Model</span>
           </div>
           <div className="info-strip-item">
+            <span className="info-strip-value">{stats.engineCount}</span>
+            <span className="info-strip-label">Motor kaydı</span>
+          </div>
+          <div className="info-strip-item">
             <span className="info-strip-value">{stats.problemCount}</span>
             <span className="info-strip-label">Arıza kaydı</span>
+          </div>
+          <div className="info-strip-item">
+            <span className="info-strip-value">{stats.generationCount}</span>
+            <span className="info-strip-label">Nesil tanımı</span>
+          </div>
+          <div className="info-strip-item">
+            <span className="info-strip-value">{stats.transmissionCount}</span>
+            <span className="info-strip-label">Şanzıman tanımı</span>
           </div>
         </section>
       </PageContainer>

@@ -303,6 +303,14 @@ button {
   border-right: none;
 }
 
+.info-strip-item:nth-child(3n) {
+  border-right: none;
+}
+
+.info-strip-item:nth-child(n + 4) {
+  border-top: 1px solid var(--color-border);
+}
+
 .info-strip-value {
   font-size: 1.2rem;
   font-weight: 800;

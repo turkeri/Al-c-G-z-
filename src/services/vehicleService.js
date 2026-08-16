@@ -1,4 +1,5 @@
 import { archetypeFor } from '../data/problemArchetypes'
+import { getCatalogStats } from '../data/catalog'
 import { getDataset } from './vehicleDataStore'
 
 /**
@@ -81,6 +82,7 @@ export function findMatchingEngine(brand, model, fuelType, transmission) {
 }
 
 export function getDatabaseStats() {
+  const catalog = getCatalogStats()
   return {
     brandCount: getBrands().length,
     modelCount: getDataset().length,
@@ -88,6 +90,10 @@ export function getDatabaseStats() {
     problemCount: getDataset().reduce(
       (sum, v) => sum + v.engines.reduce((s, e) => s + e.knownProblems.length, 0),
       0
-    )
+    ),
+    generationCount: catalog.generationCount,
+    transmissionCount: catalog.transmissionCount,
+    packageCount: catalog.packageCount,
+    equipmentCount: catalog.equipmentCount
   }
 }
