@@ -17,3 +17,9 @@ Jenerasyon eşleştirme sırası açık ID (high), tekil marka+model+jenerasyon 
 ## Araç varyantı dry-run
 
 `catalog:import:variants:dry-run`, `vehicles.json` içindeki 213 üst kayıt ve 335 motor girdisini core/paket planlarına karşı salt-okunur değerlendirir. `legacy_vehicle_key`, marka-model-yıl-kasa fingerprintinden türetilir; fiyat ve problem listeleri anahtarı değiştirmez. Jenerasyon zorunludur; motor, şanzıman ve paket kanıt yoksa nullable kalır ve review kaydı oluşur. Genel `DSG` ifadeleri DQ koduna tahmin edilmez. Audi A3 için yalnız 2013-2020/8V kanıtı kullanılır; 8P ve 8Y için vehicles eşleşmesi üretilmez. Problem ve fiyat importu bu aşamanın dışındadır.
+
+## Sorun, bakım ve değer dry-run
+
+Bu plan 20 problem arketipini, `vehicles.json` içindeki 740 problem applicability girdisini ve 137 farklı normalize edilmiş başlığı ayrı kavramlar olarak tutar. Başlık benzerliği arketip eşleştirmesi için tek başına yeterli değildir: kanıt yoksa `archetype_id` nullable kalır, `legacy_vehicle_key` ve mevcut filtrelerle review kaydı korunur. `canImport: true`, tüm kaydın eşleştiği anlamına gelmez.
+
+946 warning/review olayı; 739 eşleşmeyen arketip, 193 güvenli canonical scope bulamayan reference price ve 14 applicability kanıtı olmayan bakım itemından oluşur. Bakım için global kapsam uydurulmaz. Güvenli 20 reference value TRY minor unit ile saklanır (`1.550.000 TL = 155000000`); bu değerler 8 genel valuation factor ile karıştırılmaz. Henüz D1'e yazım yapılmamıştır. Sonraki aşama birleşik plan ve izole local D1 apply doğrulamasıdır.
