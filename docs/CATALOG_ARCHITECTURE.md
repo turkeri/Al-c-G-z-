@@ -27,3 +27,5 @@ Worker mantığı `server/cloudflare-worker/catalog` altında public, admin, rep
 Frontend `publicCatalogService` ile API-first çalışır. Published meta yoksa, 404 veya ağ hatasında mevcut statik/legacy kaynaklar korunur. Bellek cache’i revision değişince temizlenir ve auth verisinden bağımsızdır. `VehiclePicker` marka → model → nesil → motor modeline normalize olur.
 
 Admin ekranları `/admin/katalog` ve `/admin/katalog/revizyonlar/:revisionId/...` rotalarındadır. Review yalnız DB’den türetilebilen coverage’ı gösterir; persist edilmemiş import review ayrıntısı uydurulmaz.
+
+Migration zinciri 0001–0009’dur. 0009 yalnız additive review workflow tablosu ve indeksini ekler; canonical veya legacy vehicle verisini değiştirmez.

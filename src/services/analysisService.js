@@ -1,6 +1,6 @@
 import { SCORE_BANDS } from '../utils/constants'
 import { vehicleAge } from '../utils/formatters'
-import { findMatchingEngine, getEngineData } from './vehicleService'
+import { findMatchingEngine, getEngineData } from './catalogAdapter'
 
 const RISK_WEIGHT = {
   Yüksek: 7,

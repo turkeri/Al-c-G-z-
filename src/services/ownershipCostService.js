@@ -10,7 +10,7 @@
  * yakıt fiyatı ise kullanıcı tarafından ekrandan değiştirilebilir.
  */
 
-import { getEngineData, getVehicleEntry } from './vehicleService'
+import { getEngineData, getVehicleEntry } from './catalogAdapter'
 
 /** Aşağıdaki tahmini tutarların dayandığı dönem. */
 export const COST_BASELINE_LABEL = 'Ağustos 2026'

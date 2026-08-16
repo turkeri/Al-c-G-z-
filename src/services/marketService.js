@@ -1,4 +1,4 @@
-import { getVehicleEntry } from './vehicleService'
+import { getVehicleEntry } from './catalogAdapter'
 
 /**
  * Fiyat çıpası.

@@ -6,7 +6,7 @@ import EmptyState from '../components/EmptyState'
 import RiskBadge from '../components/RiskBadge'
 import HeadlightLoader from '../components/HeadlightLoader'
 import QuotaNote, { useAccount } from '../components/QuotaNote'
-import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/vehicleService'
+import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/catalogAdapter'
 import { diagnose } from '../services/diagnosisService'
 import { fetchAiAnalysis, isAiConfigured } from '../services/aiService'
 

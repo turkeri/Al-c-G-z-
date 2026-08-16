@@ -1,5 +1,5 @@
 import { FUEL_TYPES } from '../utils/constants'
-import { getBrands, getModelsByBrand, getEngineNames } from './vehicleService'
+import { getBrands, getModelsByBrand, getEngineNames } from './catalogAdapter'
 import { getPackagesFor } from '../data/catalog'
 
 /**

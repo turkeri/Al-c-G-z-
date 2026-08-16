@@ -6,7 +6,7 @@
  * kaç kilometrede değişti?" diye soran alıcıya satıcı aynı cevabı vermez.
  */
 
-import { getEnrichedProblems, getVehicleEntry } from './vehicleService'
+import { getEnrichedProblems, getVehicleEntry } from './catalogAdapter'
 import { CURRENT_YEAR } from '../utils/vehicleOptions'
 
 const RISK_ORDER = { Yüksek: 0, Orta: 1, Düşük: 2 }

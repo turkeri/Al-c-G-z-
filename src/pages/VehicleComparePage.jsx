@@ -9,7 +9,7 @@ import {
   getEngineNames,
   getEngineData,
   getVehicleEntry
-} from '../services/vehicleService'
+} from '../services/catalogAdapter'
 import { compareTwoVehicles } from '../services/vehicleCompareService'
 import { formatKm, formatPrice } from '../utils/formatters'
 import AiPanel from '../components/AiPanel'

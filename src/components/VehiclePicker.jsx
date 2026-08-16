@@ -5,7 +5,7 @@ import {
   getModelsByBrand,
   getEngineNames,
   getVehicleEntry
-} from '../services/vehicleService'
+} from '../services/catalogAdapter'
 import { KM_BANDS, bandForKm, yearOptions } from '../utils/vehicleOptions'
 import { getPublishedBrands, getPublishedEngines, getPublishedGenerations, getPublishedModels } from '../services/publicCatalogService'
 

@@ -37,7 +37,7 @@
 
 import { matchEngine, matchArchetypes } from '../data/catalog'
 import { matchTransmissionInfo } from '../data/catalog/transmissions'
-import { getEnrichedProblems } from './vehicleService'
+import { getEnrichedProblems } from './catalogAdapter'
 
 const RISK_WEIGHT = { 'Yüksek': 22, Orta: 11, 'Düşük': 4 }
 

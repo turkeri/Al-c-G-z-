@@ -24,7 +24,7 @@
  * aynı araç için her zaman aynı sonuç çıkar ve internetsiz de çalışır.
  */
 
-import { getVehicleEntry } from './vehicleService'
+import { getVehicleEntry, getVehicleVariant } from './catalogAdapter'
 import {
   PRICE_INDEX,
   MARKET_BASELINE_LABEL,
@@ -216,6 +216,18 @@ export function valuate(vehicle) {
         : 'Piyasa aralığında'
 
   return result
+}
+
+export async function valuateWithCatalog(vehicle) {
+  if (vehicle?.variantId) {
+    try {
+      const variant = await getVehicleVariant(vehicle.variantId), now = Date.now(), km = Number(vehicle.km)||null
+      const reference = variant?.referenceValues?.find(value => value.currency === 'TRY' && Number.isSafeInteger(value.amount_minor) && value.amount_minor > 0 && Number(value.effective_at) <= now && (!value.valid_until || Number(value.valid_until) >= now) && (!value.mileage_min || km == null || km >= value.mileage_min) && (!value.mileage_max || km == null || km <= value.mileage_max))
+      if (reference) return { min:Math.round(reference.amount_minor/100),avg:Math.round(reference.amount_minor/100),max:Math.round(reference.amount_minor/100),listed:null,factors:[{id:'referans',label:'Gözlemsel katalog referans değeri',detail:'Kesin satış veya ekspertiz fiyatı değildir',effect:'—',value:reference.amount_minor/100}],confidence:reference.confidence||'zayif',baseline:'Yayınlanmış katalog referansı',source:'canonical-reference' }
+    } catch { /* legacy hesap aşağıda güvenli fallback'tir */ }
+  }
+  const result=valuate(vehicle)
+  return result?{...result,source:'legacy-reference'}:null
 }
 
 /**

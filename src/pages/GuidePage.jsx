@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
-import { getDatabaseStats } from '../services/vehicleService'
+import { getDatabaseStats } from '../services/catalogAdapter'
 import { getAllCodes } from '../services/obdService'
 
 const CARDS = [

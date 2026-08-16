@@ -11,3 +11,5 @@ Entity registry: brands, models, generations, engines, transmissions, packages, 
 | admin | Evet | Evet | Evet | Evet |
 
 Yetki JWT metadata'sından değil D1 internal user/role zincirinden gelir. Admin yanıtları `no-store`'dur. Güncelleme `expectedUpdatedAt` ile optimistic concurrency uygular; fiziksel silme yerine `active=0` arşivi kullanılır. Her write audit üretir.
+
+Entity listeleri `q`, allowlist filtreler, `sort`, `direction`, en fazla 100 limit ve opaque base64url cursor kabul eder. Sorgu değerleri bind edilir; sıralama kolonları entity registry allowlist’indedir ve `id` tie-breaker kullanılır. Relation attach/detach yalnız draft üzerinde idempotenttir, audit üretir ve validation’ı stale yapar.

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import { GENERAL_INSPECTION_CATEGORIES } from '../utils/constants'
-import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/vehicleService'
+import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/catalogAdapter'
 import { addExpertiseNote } from '../services/expertiseNotesService'
 import { updateSession, setSessionVehicle } from '../services/inspectionSessionService'
 

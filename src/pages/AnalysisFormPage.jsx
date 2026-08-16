@@ -10,7 +10,7 @@ import {
   getEngineNames,
   getEngineData,
   getVehicleEntry
-} from '../services/vehicleService'
+} from '../services/catalogAdapter'
 import { analyzeVehicle } from '../services/analysisService'
 import { parseListingText } from '../services/listingParserService'
 import { setSessionVehicle } from '../services/inspectionSessionService'
