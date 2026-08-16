@@ -1,14 +1,14 @@
 # Kimlik Doğrulama ve Yetkilendirme
 
-## Aşama 2A sonucu — karar bekliyor
+## Aşama 2A/2B kararı — Supabase Auth seçildi
 
 Bu tur yalnız mimari değerlendirmedir: auth paketi, sağlayıcı hesabı/secret'ı,
 auth ekranı, D1 migration, deploy ve uygulama kodu eklenmedi. Uygulama hâlâ
 anonim cihaz UUID'si ile çalışır.
 
-Birinci öneri **Supabase Auth (yalnız Auth) + Cloudflare Worker/D1 uygulama
-verisi**; yedek öneri **Better Auth + Cloudflare Workers/D1** modelidir.
-Kesin karar kullanıcı onayı bekler. Ayrıntı: [ADR-0001](adr/0001-auth-provider.md).
+**Supabase Auth (yalnız Auth) + Cloudflare Worker/D1 uygulama verisi**
+seçildi. Better Auth + Cloudflare Workers/D1, yalnız veri yerleşimi/operasyon
+öncelikleri değişirse yedek seçenektir. Ayrıntı: [ADR-0001](adr/0001-auth-provider.md).
 
 ## Mevcut geçiş sınırı
 
@@ -86,9 +86,22 @@ operasyon yüküdür.
 - [Clerk giriş seçenekleri](https://clerk.com/docs/guides/configure/auth-strategies/sign-up-sign-in-options), [edge doğrulama](https://clerk.com/docs/reference/backend/authenticate-request), [fiyat](https://clerk.com/pricing)
 - [Auth0 passwordless](https://auth0.com/docs/authenticate/passwordless), [token doğrulama](https://auth0.com/docs/secure/tokens/access-tokens/validate-access-tokens), [JWKS](https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-key-sets)
 
-## Bekleyen kullanıcı kararı
+## Bekleyen production kurulum kararları
 
-Supabase Auth birinci önerisi mi, Better Auth + D1 yedek mimarisi mi
-uygulanacak? Seçimden sonra Aşama 2B'de provider config/secret, middleware,
-migration, anonim veri devri, web/Android session, silme/export ve testler
-hazırlanacaktır.
+Supabase AB projesi, DPA/alt işleyen değerlendirmesi, transactional e-posta
+sağlayıcısı ve Google OAuth callback alanları henüz kullanıcı/işletme onayı
+bekler. Sonraki adım provider config/secret, migration uygulama, anonim veri
+devri, web/Android session, silme/export ve testlerdir.
+
+## Aşama 2B-1 uygulama durumu
+
+Supabase Auth temel düzeyde uygulandı: frontend yalnız `VITE_SUPABASE_URL` ve
+`VITE_SUPABASE_ANON_KEY` ile istemci oluşturur; eksikse anonim kullanım devam
+eder. Google ve e-posta magic-link başlatma, PKCE callback ve logout arayüzü
+vardır. Supabase auth/session verisi Supabase'de, uygulama verisi D1'de kalır.
+Service-role key kullanılmaz.
+
+Worker `jose` ile güncel asimetrik signing key/JWKS yaklaşımını kullanır;
+legacy JWT secret yoktur. Supabase projesi, gerçek Google callback URL'leri ve
+Android deep-link henüz yapılandırılmadı. Veri claim'i ile favori/garaj/not/
+geçmiş senkronizasyonu Aşama 2B-2 kapsamındadır.

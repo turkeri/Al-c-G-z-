@@ -65,3 +65,12 @@ görüntüsü ve tam ilan metni bu modelde saklanmaz.
    bağlanamaz. İkinci claim reddedilir/audit edilir.
 4. `ip_quota` kimlikten bağımsız abuse sınırı olarak kalabilir; ham IP yerine
    rotasyonlu sunucu-side hash Aşama 2B'de kararlaştırılır.
+
+## Aşama 2B-1 migration notu
+
+[`0002_auth_identity_foundation.sql`](../server/d1/migrations/0002_auth_identity_foundation.sql)
+oluşturuldu ancak local veya remote D1'e uygulanmadı. `users`,
+`user_identities`, `device_links` ve `consent_records` ekler; mevcut cihaz
+temelli `accounts` ve `analysis_history` tablolarını değiştirmez. Supabase
+JWT/session/refresh tokenları D1'e kopyalanmaz. Aktif cihaz linki için partial
+unique index vardır; veri claim'i sonraki aşamadadır.

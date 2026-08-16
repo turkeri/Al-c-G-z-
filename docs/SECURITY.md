@@ -38,3 +38,16 @@ etmek yasaktır. Better Auth seçilirse Worker API token/session sözleşmesi,
 key rotation ve native redirect tasarımı Aşama 2B öncesi yazılı onay ister.
 Ham token, OTP, OAuth callback code ve Gemini secret log/analytics/D1'e
 yazılmaz.
+
+## Aşama 2B-1 uygulama notu
+
+Worker'ın `/auth/me` endpointi `Authorization: Bearer` tokenını `jose` ile
+Supabase JWKS endpointine karşı doğrular. İmza, algoritma allowlist'i, issuer,
+audience, expiry ve subject zorunludur; hata yanıtı kriptografik ayrıntı
+içermez ve `no-store` olur. JWKS sonucu en fazla 10 dakika cache'lenir;
+network/JWKS hatası kontrollü 503 olur. CORS helper header listesine
+`Authorization` eklendi; CORS bir yetkilendirme sınırı değildir.
+
+Service-role key, legacy JWT secret ve ham token D1/source/frontend'e
+eklenmedi. Gerçek Worker vars'ları, Supabase project ve Google callback URL'leri
+henüz yoktur.

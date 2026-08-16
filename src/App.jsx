@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import BottomNav from './components/Layout/BottomNav'
 import SplashScreen from './components/SplashScreen'
 import { hydrateVehicleData, subscribeDataset } from './services/vehicleDataStore'
+import AuthGuard from './components/AuthGuard'
 
 // Her araç ekranını ilk açılışta indirmek, mobil bağlantıda ilan analizine
 // ulaşmadan 1 MB'ın üzerinde JavaScript bekletiyordu. Sayfalar ihtiyaç
@@ -29,6 +30,9 @@ const OwnershipCostPage = lazy(() => import('./pages/OwnershipCostPage'))
 const ObdCodePage = lazy(() => import('./pages/ObdCodePage'))
 const SafePurchasePage = lazy(() => import('./pages/SafePurchasePage'))
 const SellerQuestionsPage = lazy(() => import('./pages/SellerQuestionsPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const AccountPage = lazy(() => import('./pages/AccountPage'))
+const AuthCallbackPage = lazy(() => import('./pages/AuthCallbackPage'))
 
 export default function App() {
   const location = useLocation()
@@ -88,6 +92,9 @@ export default function App() {
 
             {/* Eski adres, yeni yerine yönlendirilir */}
             <Route path="/favoriler" element={<Navigate to="/garaj" replace />} />
+            <Route path="/giris" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route path="/hesap" element={<AuthGuard><AccountPage /></AuthGuard>} />
           </Routes>
           </Suspense>
         </div>

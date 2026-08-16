@@ -10,6 +10,19 @@ Worker; `GET /data/version`, `GET /data/vehicles?since=`, `POST /data/import`, `
 
 Tüm uçlar için sürümlü JSON şeması, istek/yanıt boyut limitleri, hata kodları, kimlik doğrulama ve idempotency kuralları belgelenecek. Android in-app browser'dan gelen onaylı alanlar, ham HTML/çerez yerine açık alan listesi olarak gönderilecek.
 
+## `GET /auth/me`
+
+Supabase access JWT'siyle korunan temel doğrulama endpointidir.
+`Authorization: Bearer <access-token>` gerektirir. Worker tokenı Supabase
+JWKS'iyle imza, issuer, audience, expiration ve `sub` açısından doğrular;
+tokenın kendisi veya tüm claim'ler dönülmez. Başarılı yanıtta yalnız `user.id`,
+`email` ve `provider` özeti vardır; yanıt `Cache-Control: no-store` taşır.
+İstemci gövdesindeki `user_id`, `plan`, `role` veya premium alanları yok sayılır.
+
+Supabase projesi henüz oluşturulmadı. `SUPABASE_URL`,
+`SUPABASE_JWT_ISSUER` ve `SUPABASE_JWT_AUDIENCE` Worker ortamında tanımlanana
+kadar endpoint 401 döner. Service-role key kullanılmaz.
+
 ## Kabul ölçütleri
 
 - Her endpoint için olumlu, doğrulama, yetki, kota ve bağımlılık-hatası test edilir.

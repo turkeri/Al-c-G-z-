@@ -10,6 +10,7 @@
 
 import { fetchListing, listPlatforms } from './listing/fetcher.js'
 import { constantTimeEqual, hasAcceptableBodySize } from './security.js'
+import { authenticateRequest } from './auth.js'
 
 /**
  * Google zaman zaman model adlarını değiştirip eskilerini kapatıyor.
@@ -388,7 +389,7 @@ function corsHeaders(origin, allowedOrigins) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     // X-Device-Id frontend'in kota/geçmiş için gönderdiği zorunlu başlıktır.
-    'Access-Control-Allow-Headers': 'Content-Type, X-Device-Id',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Device-Id, Authorization',
     'Access-Control-Max-Age': '86400'
   }
   if (allow) headers['Access-Control-Allow-Origin'] = allow
@@ -627,6 +628,16 @@ async function handleHistoryList(env, deviceId, cors) {
     .all()
 
   return json({ items: result.results || [] }, 200, cors)
+}
+
+async function requireAuth(request, env, cors) {
+  const result = await authenticateRequest(request, env)
+  if (result.ok) return result.auth
+  return json(
+    { error: result.status === 503 ? 'Kimlik doğrulama servisi geçici olarak kullanılamıyor' : 'Kimlik doğrulaması gerekli' },
+    result.status,
+    { ...cors, 'Cache-Control': 'no-store' }
+  )
 }
 
 /** Kullanıcının yalnızca kendi cihaz kimliğine bağlı sunucu geçmişini siler. */
@@ -911,6 +922,19 @@ export default {
 
     if (request.method === 'POST' && !hasAcceptableBodySize(request)) {
       return json({ error: 'İstek gövdesi işleme sınırını aşıyor' }, 413, cors)
+    }
+
+    // Bu endpoint sadece JWKS ile doğrulanmış Supabase tokenındaki güvenli
+    // özet bilgiyi döndürür. İstek gövdesindeki user/plan/role alanları yok sayılır.
+    if (url.pathname === '/auth/me') {
+      if (request.method !== 'GET') return json({ error: 'Sadece GET destekleniyor' }, 405, { ...cors, 'Cache-Control': 'no-store' })
+      const auth = await requireAuth(request, env, cors)
+      if (auth instanceof Response) return auth
+      return json(
+        { user: { id: auth.userId, email: auth.email, provider: auth.provider } },
+        200,
+        { ...cors, 'Cache-Control': 'no-store' }
+      )
     }
 
     // Veri uçları API anahtarından bağımsızdır: yapay zekâ kapalıyken de

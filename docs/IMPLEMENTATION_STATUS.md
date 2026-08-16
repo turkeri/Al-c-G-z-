@@ -53,3 +53,14 @@
 4. Anonim veri devri/kota geçişi, web+Capacitor PKCE/deep-link, logout/revoke,
    silme/export.
 5. Rate limit/Turnstile/CSP/log redaksiyonu/auth negatif testleri ve verify.
+
+## Aşama 2B-1 — Supabase Auth temeli: tamamlandı (haricî kurulum yok)
+
+- Supabase frontend istemcisi, auth context, giriş/hesap/callback rotaları ve
+  yapılandırılmamış durum eklendi; anonim kullanım korunur.
+- Worker JWKS doğrulama modülü ve korumalı `GET /auth/me` eklendi.
+- Tahribatsız `0002_auth_identity_foundation.sql` migration'ı kaynakta durur;
+  local/remote D1'e uygulanmadı.
+- Supabase projesi, AB bölgesi, Google callback URL'leri, Android deep-link,
+  service-role key ve deploy henüz yapılmadı.
+- Favori/garaj/not/geçmiş bulut senkronizasyonu Aşama 2B-2 kapsamındadır.

@@ -1,6 +1,6 @@
 # ADR-0001 — Kimlik doğrulama sağlayıcısı seçimi
 
-- Durum: **Karar bekliyor**
+- Durum: **Kabul edildi — Aşama 2B-1 temel uygulaması tamamlandı**
 - Tarih: 2026-08-16
 - Kapsam: React/Vite PWA, gelecek Capacitor Android, Cloudflare Worker ve D1
 
@@ -12,7 +12,7 @@ oturumsuz sınırlı analiz, Google, e-posta OTP/magic link, anonim verinin
 hesaba aktarılması, silme/dışa aktarma ve Worker tarafında token doğrulaması
 ister. Kendi parola saklama sistemi yazılmayacaktır.
 
-## Önerilen karar (henüz kabul edilmedi)
+## Kabul edilen karar
 
 **Supabase Auth seçilsin; D1 ürün verisinin sahibi Cloudflare Worker kalsın.**
 İstemci sağlayıcıyla oturum açar; Worker JWT'yi JWKS, issuer, audience ve

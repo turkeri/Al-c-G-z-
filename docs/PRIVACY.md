@@ -1,5 +1,11 @@
 # Gizlilik ve Veri Minimizationu
 
+> Aşama 2B-1 notu: Supabase yalnız auth/session üretimi için planlanır; D1
+> kullanıcı uygulama verisinin kaynağı olmaya devam eder. Bu turda Supabase
+> projesi oluşturulmadı, gerçek e-posta/kullanıcı kaydı işlenmedi ve D1
+> migration uygulanmadı. Favori, garaj, not ve geçmiş senkronizasyonu Aşama
+> 2B-2'ye bırakıldı.
+
 ## Mevcut
 
 Favoriler, notlar, analiz geçmişi ve bazı önbellekler cihazın `localStorage`/IndexedDB alanında tutulur. D1 geçmiş şeması ilan metni ve fotoğraf saklamamayı hedefler; yalnızca araç özeti ve skor alanları bulunur. AI etkinse seçilmiş araç/şikayet veya görsel, Worker üzerinden sağlayıcıya gönderilir.
