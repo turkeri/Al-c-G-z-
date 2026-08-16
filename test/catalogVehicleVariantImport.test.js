@@ -1,0 +1,12 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+import { readFile } from 'node:fs/promises'
+import { buildVehicleVariantsDryRun, createLegacyVehicleKey, matchTransmission } from '../scripts/catalog/import-vehicle-variants.js'
+import { validateVehicleVariants } from '../scripts/catalog/lib/validate-vehicle-variants.js'
+const exec = promisify(execFile)
+test('baseline and legacy key are deterministic and ignore price/problems', async () => { const r=await buildVehicleVariantsDryRun();assert.deepEqual([r.source.topLevelRecords,r.source.engineVariants],[213,335]);const a={brand:'Audi',model:'A3',yearRange:'2013-2020',referencePrice:1,engines:[{knownProblems:[]}]},b={...a,referencePrice:2,engines:[{knownProblems:['x']}]};assert.equal(createLegacyVehicleKey(a),createLegacyVehicleKey(b));assert.equal(r.canImport,true) })
+test('general DSG remains ambiguous', () => { const g={id:'g'},c={generationTransmissions:[{generation_id:'g',target_id:'a'},{generation_id:'g',target_id:'b'}],transmissions:[{id:'a',display_name:'DSG 7 (DQ200)'},{id:'b',display_name:'DSG 7 (DQ381/DQ500)'}]};assert.equal(matchTransmission({transmission:'DSG'},g,c).id,null) })
+test('validator blocks orphan and low confidence', () => { const p={revisionId:'r',sourceManifestStable:true,coreGenerations:[{id:'g'}],coreEngines:[],coreTransmissions:[],corePackages:[],reviewCandidates:[],variants:[{id:'v',revision_id:'r',generation_id:'g',engine_id:'bad',legacy_vehicle_key:'l',source_fingerprint:'x',source_confidence:'low'}]};const c=validateVehicleVariants(p).blockingErrors.map(x=>x.code);assert.ok(c.includes('ORPHAN_ENGINE'));assert.ok(c.includes('LOW_CONFIDENCE_RELATION')) })
+test('A3 only has 8V evidence and CLI stays offline', async () => { const r=await buildVehicleVariantsDryRun();const a=r.records.variants.filter(x=>x.display_name.startsWith('Audi A3'));assert.equal(a.length,4);assert.ok(a.every(x=>x.year_start===2013&&x.year_end===2020));const s=await readFile(new URL('../scripts/catalog/import-vehicle-variants.js',import.meta.url),'utf8');assert.doesNotMatch(s,/fetch\s*\(|wrangler|writeFile|D1\.(prepare|batch|exec)/i);const {stdout}=await exec(process.execPath,['scripts/catalog/import-vehicle-variants.js','--json']);assert.equal(JSON.parse(stdout).remoteAccess,false);await assert.rejects(exec(process.execPath,['scripts/catalog/import-vehicle-variants.js','--remote'])) })
