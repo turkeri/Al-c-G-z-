@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import { GENERAL_INSPECTION_CATEGORIES } from '../utils/constants'
-import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/catalogAdapter'
+import { getEngineData } from '../services/catalogAdapter'
+import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
 import { addExpertiseNote } from '../services/expertiseNotesService'
 import { updateSession, setSessionVehicle } from '../services/inspectionSessionService'
 
@@ -12,15 +13,14 @@ const STATUS = { OK: 'ok', PROBLEM: 'problem' }
 export default function InspectionChecklistPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const brands = useMemo(() => getBrands(), [])
   const [brand, setBrand] = useState(location.state?.brand || '')
   const [model, setModel] = useState(location.state?.model || '')
   const [engineName, setEngineName] = useState(location.state?.engine || '')
   const [statuses, setStatuses] = useState({})
   const [saveMessage, setSaveMessage] = useState('')
 
-  const models = useMemo(() => (brand ? getModelsByBrand(brand) : []), [brand])
-  const engines = useMemo(() => (brand && model ? getEngineNames(brand, model) : []), [brand, model])
+  const { brands, models, engines, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
+    useVehiclePickerChain(brand, model)
   const engineData = useMemo(
     () => (brand && model && engineName ? getEngineData(brand, model, engineName) : null),
     [brand, model, engineName]
@@ -109,6 +109,15 @@ export default function InspectionChecklistPage() {
         showBack
       />
       <PageContainer>
+        {catalogLoading && <p className="field-hint">Marka/model/motor listesi güncelleniyor…</p>}
+        {!catalogLoading && catalogError && (
+          <p className="field-hint field-hint-warning">
+            Liste güncellenemedi, kayıtlı listeyle devam ediliyor.{' '}
+            <button type="button" className="link-button" onClick={retryCatalog}>
+              Tekrar dene
+            </button>
+          </p>
+        )}
         <div className="filter-row">
           <label>
             Marka

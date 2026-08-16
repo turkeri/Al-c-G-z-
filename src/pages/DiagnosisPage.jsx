@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
@@ -6,7 +6,8 @@ import EmptyState from '../components/EmptyState'
 import RiskBadge from '../components/RiskBadge'
 import HeadlightLoader from '../components/HeadlightLoader'
 import QuotaNote, { useAccount } from '../components/QuotaNote'
-import { getBrands, getModelsByBrand, getEngineNames, getEngineData } from '../services/catalogAdapter'
+import { getEngineData } from '../services/catalogAdapter'
+import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
 import { diagnose } from '../services/diagnosisService'
 import { fetchAiAnalysis, isAiConfigured } from '../services/aiService'
 
@@ -29,7 +30,6 @@ export default function DiagnosisPage() {
   const account = useAccount()
   const quotaExhausted = Boolean(account && account.remaining <= 0)
 
-  const brands = useMemo(() => getBrands(), [])
   const [brand, setBrand] = useState(incoming?.brand || '')
   const [model, setModel] = useState(incoming?.model || '')
   const [engine, setEngine] = useState(incoming?.engine || '')
@@ -37,8 +37,8 @@ export default function DiagnosisPage() {
   const [result, setResult] = useState(null)
   const [aiState, setAiState] = useState({ status: 'idle', data: null, message: '' })
 
-  const models = useMemo(() => (brand ? getModelsByBrand(brand) : []), [brand])
-  const engines = useMemo(() => (brand && model ? getEngineNames(brand, model) : []), [brand, model])
+  const { brands, models, engines, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
+    useVehiclePickerChain(brand, model)
 
   async function handleDiagnose(text) {
     const query = typeof text === 'string' ? text : complaint
@@ -94,6 +94,15 @@ export default function DiagnosisPage() {
           <p className="market-disclaimer" style={{ marginTop: 0 }}>
             Aracını seçersen, o motora ait bilinen kronik sorunlar sonuçlarda öne çıkarılır.
           </p>
+          {catalogLoading && <p className="field-hint">Marka/model/motor listesi güncelleniyor…</p>}
+          {!catalogLoading && catalogError && (
+            <p className="field-hint field-hint-warning">
+              Liste güncellenemedi, kayıtlı listeyle devam ediliyor.{' '}
+              <button type="button" className="link-button" onClick={retryCatalog}>
+                Tekrar dene
+              </button>
+            </p>
+          )}
           <div className="form-row" style={{ marginTop: 10 }}>
             <label>
               Marka

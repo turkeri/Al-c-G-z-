@@ -37,7 +37,12 @@
 
 import { matchEngine, matchArchetypes } from '../data/catalog'
 import { matchTransmissionInfo } from '../data/catalog/transmissions'
-import { getEnrichedProblems } from './catalogAdapter'
+import { getEnrichedProblems, listProblems } from './catalogAdapter'
+
+// Canonical severity (unknown/low/medium/high/critical) bu servisin üç
+// seviyeli risk diline çevrilir. 'unknown' bilinmiyor demektir, düşük risk
+// DEĞİL — nötr orta seviyeye düşer, güvenli tarafta kalınır.
+const SEVERITY_TO_RISK = { critical: 'Yüksek', high: 'Yüksek', medium: 'Orta', low: 'Düşük', unknown: 'Orta' }
 
 const RISK_WEIGHT = { 'Yüksek': 22, Orta: 11, 'Düşük': 4 }
 
@@ -190,6 +195,17 @@ export function assessChronicRisk(formData, context = {}) {
   })
   if (matchArchetypes(formData).length) sources.push('Sistem bazlı genel kontroller')
 
+  return finalizeRisk(items, sources)
+}
+
+/**
+ * Ham kalem listesinden puan/maliyet/sıralama üretir.
+ *
+ * `assessChronicRisk` (legacy) ve `assessChronicRiskWithCatalog` (canonical)
+ * aynı deterministik puanlama mantığını paylaşır — kaynak farklı olsa da
+ * kullanıcı aynı skor mantığını görür.
+ */
+function finalizeRisk(items, sources) {
   if (!items.length) return null
 
   // Aynı arıza hem motor hem araç kaydından gelebilir; başlığa göre tekilleştirilir.
@@ -284,4 +300,68 @@ export function assessChronicRisk(formData, context = {}) {
     dueCount,
     sources
   }
+}
+
+/**
+ * Kronik risk değerlendirmesini canonical katalogdan üretir; canonical
+ * yoksa/boşsa/hata verirse sessizce `assessChronicRisk`'e (legacy) düşer.
+ *
+ * ============================================================================
+ * NEDEN AYRI BİR YOL
+ * ============================================================================
+ * Canonical `catalog_problem_applicability` tablosunda maliyet ve kilometre
+ * penceresi alanları YOKTUR (bkz. migration 0008) — yalnız başlık, açıklama,
+ * şiddet, confidence ve kanıt durumu tutulur. Bu, veri eksikliği değil kasıtlı
+ * bir tasarımdır: import script'leri kanıtsız maliyet/km rakamı üretmez (bkz.
+ * CATALOG_REVIEW.md). Bu yüzden canonical kalemlerde `costRange` boş kalır ve
+ * `timing` her zaman 'yakin' (bilinmiyor) olur — uydurma bir pencere yerine.
+ *
+ * Worker `/catalog/problems` uç noktası zaten "Bunlar kesin arıza iddiası
+ * değil, kontrol edilmesi gereken olası durumlardır" notunu döner; bu servis
+ * onu ayrıca `notice` alanında taşır.
+ *
+ * @param {object} formData     assessChronicRisk ile aynı
+ * @param {object} context      { variantId, generationId, ...assessChronicRisk context'i }
+ */
+export async function assessChronicRiskWithCatalog(formData, context = {}) {
+  const scope = context.variantId
+    ? { variant_id: context.variantId }
+    : context.generationId
+      ? { generation_id: context.generationId }
+      : null
+
+  if (scope) {
+    try {
+      const rows = await listProblems(scope)
+      if (rows && rows.length) {
+        const km = Number(formData?.km) || null
+        const items = rows.map((row) =>
+          toItem(
+            {
+              title: row.title,
+              risk: SEVERITY_TO_RISK[row.severity] || 'Orta',
+              cost: '',
+              note: row.description || '',
+              checkKm: '',
+              source: 'Yayınlanmış katalog'
+            },
+            km
+          )
+        )
+        const result = finalizeRisk(items, ['Yayınlanmış katalog'])
+        if (result) {
+          return {
+            ...result,
+            source: 'canonical',
+            notice: 'Bunlar kesin arıza iddiası değil, kontrol edilmesi gereken olası durumlardır.'
+          }
+        }
+      }
+    } catch {
+      // Ağ hatası ya da beklenmeyen yanıt — aşağıda legacy hesaba düşülür.
+    }
+  }
+
+  const result = assessChronicRisk(formData, context)
+  return result ? { ...result, source: 'legacy' } : null
 }

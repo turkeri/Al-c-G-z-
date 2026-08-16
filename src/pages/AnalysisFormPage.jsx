@@ -4,13 +4,8 @@ import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ChipSelect from '../components/ChipSelect'
 import { FUEL_TYPES } from '../utils/constants'
-import {
-  getBrands,
-  getModelsByBrand,
-  getEngineNames,
-  getEngineData,
-  getVehicleEntry
-} from '../services/catalogAdapter'
+import { getEngineData } from '../services/catalogAdapter'
+import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
 import { analyzeVehicle } from '../services/analysisService'
 import { parseListingText } from '../services/listingParserService'
 import { setSessionVehicle } from '../services/inspectionSessionService'
@@ -58,21 +53,13 @@ export default function AnalysisFormPage() {
    */
   const [manualEntry, setManualEntry] = useState(false)
 
-  const brands = useMemo(() => getBrands(), [])
-  const models = useMemo(() => (form.brand ? getModelsByBrand(form.brand) : []), [form.brand])
-  const engines = useMemo(
-    () => (form.brand && form.model ? getEngineNames(form.brand, form.model) : []),
-    [form.brand, form.model]
-  )
+  const { brands, models, engines, yearRange, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
+    useVehiclePickerChain(form.brand, form.model)
 
-  const entry = useMemo(
-    () => (form.brand && form.model ? getVehicleEntry(form.brand, form.model) : null),
-    [form.brand, form.model]
-  )
-  const years = useMemo(() => yearOptions(entry?.yearRange), [entry])
+  const years = useMemo(() => yearOptions(yearRange), [yearRange])
   const selectedKmBand = useMemo(() => bandForKm(form.km), [form.km])
   const usage = useMemo(() => usageNote(form.year, form.km), [form.year, form.km])
-  const yearWarning = isYearOutsideRange(form.year, entry?.yearRange)
+  const yearWarning = isYearOutsideRange(form.year, yearRange)
 
   function updateField(field, value) {
     setForm((prev) => {
@@ -214,6 +201,16 @@ export default function AnalysisFormPage() {
             </button>
           </div>
 
+          {!manualEntry && catalogLoading && <p className="field-hint">Marka/model listesi güncelleniyor…</p>}
+          {!manualEntry && !catalogLoading && catalogError && (
+            <p className="field-hint field-hint-warning">
+              Marka/model listesi güncellenemedi, kayıtlı listeyle devam ediliyor.{' '}
+              <button type="button" className="link-button" onClick={retryCatalog}>
+                Tekrar dene
+              </button>
+            </p>
+          )}
+
           <div className="form-row">
             <label>
               Marka
@@ -294,7 +291,7 @@ export default function AnalysisFormPage() {
               {errors.year && <span className="field-error">{errors.year}</span>}
               {!errors.year && yearWarning && (
                 <span className="field-hint field-hint-warning">
-                  Bu model {entry.yearRange} arasında üretildi. Seçtiğin yılı ilan üzerinden doğrula.
+                  Bu model {yearRange} arasında üretildi. Seçtiğin yılı ilan üzerinden doğrula.
                 </span>
               )}
             </label>

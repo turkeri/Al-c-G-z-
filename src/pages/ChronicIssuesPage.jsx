@@ -4,7 +4,8 @@ import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import ProblemCard from '../components/ProblemCard'
 import EmptyState from '../components/EmptyState'
-import { getBrands, getModelsByBrand, getVehicleEntry } from '../services/catalogAdapter'
+import { getVehicleEntry } from '../services/catalogAdapter'
+import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
 import { getNotes, addNote, removeNote } from '../services/communityNotesService'
 import AiPanel from '../components/AiPanel'
 import RiskBadge from '../components/RiskBadge'
@@ -221,11 +222,11 @@ function EngineCommunityNotes({ brand, model, engine }) {
 
 export default function ChronicIssuesPage() {
   const location = useLocation()
-  const brands = useMemo(() => getBrands(), [])
   const [brand, setBrand] = useState(location.state?.brand || '')
   const [model, setModel] = useState(location.state?.model || '')
 
-  const models = useMemo(() => (brand ? getModelsByBrand(brand) : []), [brand])
+  const { brands, models, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
+    useVehiclePickerChain(brand, model)
   const entry = useMemo(() => (brand && model ? getVehicleEntry(brand, model) : null), [brand, model])
 
   return (
@@ -262,6 +263,16 @@ export default function ChronicIssuesPage() {
             </select>
           </label>
         </div>
+
+        {catalogLoading && <p className="field-hint">Marka/model listesi güncelleniyor…</p>}
+        {!catalogLoading && catalogError && (
+          <p className="field-hint field-hint-warning">
+            Marka/model listesi güncellenemedi, kayıtlı listeyle devam ediliyor.{' '}
+            <button type="button" className="link-button" onClick={retryCatalog}>
+              Tekrar dene
+            </button>
+          </p>
+        )}
 
         {!entry && (
           <EmptyState

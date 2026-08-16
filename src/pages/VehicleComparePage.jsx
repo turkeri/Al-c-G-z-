@@ -3,13 +3,8 @@ import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import RiskBadge from '../components/RiskBadge'
 import Icon from '../components/icons/Icon'
-import {
-  getBrands,
-  getModelsByBrand,
-  getEngineNames,
-  getEngineData,
-  getVehicleEntry
-} from '../services/catalogAdapter'
+import { getEngineData, getVehicleEntry } from '../services/catalogAdapter'
+import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
 import { compareTwoVehicles } from '../services/vehicleCompareService'
 import { formatKm, formatPrice } from '../utils/formatters'
 import AiPanel from '../components/AiPanel'
@@ -27,12 +22,8 @@ const EMPTY_SIDE = {
 }
 
 function VehicleSelector({ label, badge, side, onChange }) {
-  const brands = useMemo(() => getBrands(), [])
-  const models = useMemo(() => (side.brand ? getModelsByBrand(side.brand) : []), [side.brand])
-  const engines = useMemo(
-    () => (side.brand && side.model ? getEngineNames(side.brand, side.model) : []),
-    [side.brand, side.model]
-  )
+  const { brands, models, engines, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
+    useVehiclePickerChain(side.brand, side.model)
   const entry = useMemo(
     () => (side.brand && side.model ? getVehicleEntry(side.brand, side.model) : null),
     [side.brand, side.model]
@@ -72,6 +63,15 @@ function VehicleSelector({ label, badge, side, onChange }) {
         {isComplete && <Icon name="car" size={20} className="selector-check" />}
       </div>
 
+      {catalogLoading && <p className="field-hint">Liste güncelleniyor…</p>}
+      {!catalogLoading && catalogError && (
+        <p className="field-hint field-hint-warning">
+          Liste güncellenemedi, kayıtlı listeyle devam ediliyor.{' '}
+          <button type="button" className="link-button" onClick={retryCatalog}>
+            Tekrar dene
+          </button>
+        </p>
+      )}
       <div className="selector-fields">
         <label className="field">
           <span className="field-label">Marka</span>

@@ -1,40 +1,77 @@
 import { useEffect, useMemo, useState } from 'react'
 import ChipSelect from './ChipSelect'
-import {
-  getBrands,
-  getModelsByBrand,
-  getEngineNames,
-  getVehicleEntry
-} from '../services/catalogAdapter'
+import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
+import { useCatalogList } from '../hooks/useCatalogList'
+import { listGenerations, listVehicleVariants } from '../services/catalogAdapter'
 import { KM_BANDS, bandForKm, yearOptions } from '../utils/vehicleOptions'
-import { getPublishedBrands, getPublishedEngines, getPublishedGenerations, getPublishedModels } from '../services/publicCatalogService'
+
+const isLegacyId = (id) => !id || String(id).startsWith('legacy:')
 
 /**
  * Marka / model / motor / yıl / kilometre seçimini tek yerde toplayan bileşen.
  * Birden fazla ekran aynı seçimi istediği için tekrar yazılmaz.
+ *
+ * Canonical-first: marka/model/motor `useVehiclePickerChain` (yayınlanmış
+ * katalog önce, yoksa/hata olursa legacy veri kümesi) üzerinden gelir. Marka
+ * ve model canonical ise nesil listesi de çekilir; nesil bulunursa yıl
+ * aralığı o neslin gerçek üretim yıllarından hesaplanır (legacy referans
+ * kaydının GENEL aralığı yerine). Motor de canonical ise, aynı neslin araç
+ * varyantları içinde eşleşen bir kayıt varsa `value.variantId` set edilir —
+ * bu, değerleme/kronik sorun gibi servislerin canonical veriye bağlanmasını
+ * sağlar; eşleşme yoksa `variantId` boş kalır ve akış legacy metin tabanlı
+ * yoldan devam eder.
  */
 export default function VehiclePicker({ value, onChange, showKm = true, showYear = true }) {
   // Listede olmayan araçlar için serbest giriş; analiz formundaki mantığın aynısı.
   const [manual, setManual] = useState(false)
-  const [remote,setRemote]=useState({brands:null,models:null,generations:null,engines:null})
-  useEffect(()=>{let active=true;getPublishedBrands().then(items=>active&&items&&setRemote(r=>({...r,brands:items})));return()=>{active=false}},[])
-  const remoteBrand=remote.brands?.find(item=>item.display_name===value.brand)
-  useEffect(()=>{let active=true;if(!remoteBrand){setRemote(r=>({...r,models:null,generations:null,engines:null}));return()=>{active=false}}getPublishedModels(remoteBrand.id).then(items=>active&&setRemote(r=>({...r,models:items,generations:null,engines:null})));return()=>{active=false}},[remoteBrand?.id])
-  const remoteModel=remote.models?.find(item=>item.display_name===value.model)
-  useEffect(()=>{let active=true;if(!remoteModel)return;getPublishedGenerations(remoteModel.id).then(items=>active&&setRemote(r=>({...r,generations:items})));return()=>{active=false}},[remoteModel?.id])
-  const remoteGeneration=remote.generations?.find(item=>item.id===value.generationId)||remote.generations?.[0]
-  useEffect(()=>{let active=true;if(!remoteGeneration)return;getPublishedEngines(remoteGeneration.id).then(items=>active&&setRemote(r=>({...r,engines:items})));return()=>{active=false}},[remoteGeneration?.id])
-  const brands = useMemo(() => remote.brands?.map(item=>item.display_name)||getBrands(), [remote.brands])
-  const models = useMemo(() => remote.models?.map(item=>item.display_name)||(value.brand ? getModelsByBrand(value.brand) : []), [remote.models,value.brand])
-  const engines = useMemo(
-    () => remote.engines?.map(item=>item.display_name)||(value.brand && value.model ? getEngineNames(value.brand, value.model) : []),
-    [remote.engines,value.brand, value.model]
+
+  const {
+    brands,
+    models,
+    modelRows,
+    engines,
+    engineRows,
+    yearRange,
+    loading: chainLoading,
+    error: chainError,
+    retry: retryChain
+  } = useVehiclePickerChain(value.brand, value.model)
+
+  const selectedModel = modelRows.find((m) => m.displayName === value.model) || null
+  const modelIsCanonical = selectedModel && !isLegacyId(selectedModel.id)
+
+  const generationsList = useCatalogList(
+    () => (modelIsCanonical ? listGenerations(selectedModel) : Promise.resolve([])),
+    [selectedModel?.id],
+    Boolean(modelIsCanonical)
   )
-  const entry = useMemo(
-    () => (value.brand && value.model ? getVehicleEntry(value.brand, value.model) : null),
-    [value.brand, value.model]
+  const generations = generationsList.data || []
+  const selectedGeneration =
+    generations.find((g) => g.id === value.generationId) || (generations.length === 1 ? generations[0] : null)
+
+  const selectedEngine = engineRows.find((e) => e.displayName === value.engine) || null
+  const engineIsCanonical = Boolean(selectedEngine && !isLegacyId(selectedEngine.id) && selectedGeneration)
+
+  const variantsList = useCatalogList(
+    () => (engineIsCanonical ? listVehicleVariants(selectedGeneration) : Promise.resolve([])),
+    [selectedGeneration?.id, selectedEngine?.id],
+    engineIsCanonical
   )
-  const years = useMemo(() => yearOptions(entry?.yearRange), [entry])
+
+  // Motor canonical ve aynı neslin varyantları arasında eşleşen bir kayıt
+  // varsa variantId parent state'ine yazılır; üst seçim değişip eşleşme
+  // kaybolursa aynı yoldan temizlenir. `value` dışarıdan kontrol edildiği
+  // için doğrudan mutasyon yerine yalnız fark varsa onChange çağrılır.
+  useEffect(() => {
+    const variant = engineIsCanonical
+      ? (variantsList.data || []).find((v) => v.engine_id === selectedEngine.id) || null
+      : null
+    const nextId = variant?.id || ''
+    if (nextId !== (value.variantId || '')) onChange({ ...value, variantId: nextId })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engineIsCanonical, selectedEngine?.id, variantsList.data])
+
+  const years = useMemo(() => yearOptions(yearRange), [yearRange])
   const selectedBand = useMemo(() => bandForKm(value.km), [value.km])
 
   function update(patch) {
@@ -52,12 +89,22 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
           className="link-button"
           onClick={() => {
             setManual((prev) => !prev)
-            onChange({ ...value, brand: '', model: '', engine: '' })
+            onChange({ ...value, brand: '', model: '', engine: '', generationId: '', variantId: '' })
           }}
         >
           {manual ? 'Listeden seç' : 'Elle yaz'}
         </button>
       </div>
+
+      {!manual && chainLoading && <p className="field-hint">Katalog listesi güncelleniyor…</p>}
+      {!manual && !chainLoading && chainError && (
+        <p className="field-hint field-hint-warning">
+          Liste güncellenemedi, kayıtlı listeyle devam ediliyor.{' '}
+          <button type="button" className="link-button" onClick={retryChain}>
+            Tekrar dene
+          </button>
+        </p>
+      )}
 
       <div className="form-row">
         <label>
@@ -72,7 +119,9 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
           ) : (
             <select
               value={value.brand || ''}
-              onChange={(e) => update({ brand: e.target.value, model: '', generationId: '', engine: '' })}
+              onChange={(e) =>
+                update({ brand: e.target.value, model: '', generationId: '', engine: '', variantId: '' })
+              }
             >
               <option value="">Seçiniz</option>
               {brands.map((brand) => (
@@ -96,7 +145,7 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
           ) : (
             <select
               value={value.model || ''}
-              onChange={(e) => update({ model: e.target.value, generationId: '', engine: '' })}
+              onChange={(e) => update({ model: e.target.value, generationId: '', engine: '', variantId: '' })}
               disabled={!value.brand}
             >
               <option value="">Seçiniz</option>
@@ -110,8 +159,23 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
         </label>
       </div>
 
-      {!manual && remote.generations?.length > 0 && (
-        <div className="field-block"><label>Nesil<select value={value.generationId || remoteGeneration?.id || ''} onChange={(e)=>update({generationId:e.target.value,engine:''})}>{remote.generations.map((generation)=><option key={generation.id} value={generation.id}>{generation.display_name} ({generation.year_start}–{generation.year_end || '…'})</option>)}</select></label></div>
+      {!manual && generations.length > 1 && (
+        <div className="field-block">
+          <label>
+            Nesil
+            <select
+              value={value.generationId || ''}
+              onChange={(e) => update({ generationId: e.target.value, engine: '', variantId: '' })}
+            >
+              <option value="">Seçiniz</option>
+              {generations.map((generation) => (
+                <option key={generation.id} value={generation.id}>
+                  {generation.displayName} ({generation.yearStart}–{generation.yearEnd || '…'})
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       )}
 
       <div className="form-row">
@@ -122,12 +186,12 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
               type="text"
               placeholder="Örn. 2.0 D5"
               value={value.engine || ''}
-              onChange={(e) => update({ engine: e.target.value })}
+              onChange={(e) => update({ engine: e.target.value, variantId: '' })}
             />
           ) : (
             <select
               value={value.engine || ''}
-              onChange={(e) => update({ engine: e.target.value })}
+              onChange={(e) => update({ engine: e.target.value, variantId: '' })}
               disabled={!engines.length}
             >
               <option value="">{engines.length ? 'Seçiniz' : 'Önce model seçin'}</option>
