@@ -29,3 +29,27 @@
 - Analiz geçmişi için cihaz ve D1 özetlerini silen, kullanıcı onaylı `DELETE /history` akışı eklendi.
 - Sürümlü, tahribatsız başlangıç D1 migration dosyası ve migration dizini yapılandırması eklendi; hiçbir D1 migration'ı uygulanmadı.
 - CORS üretim allowlist'i, kalıcı rate-limit binding'i ve gerçek kullanıcı kimliği hâlâ karar/binding gerektiriyor.
+
+## Aşama 2A — Auth kararı ve kullanıcı veri mimarisi: tamamlandı (uygulama yok)
+
+- Cihaz UUID, `accounts`, `ip_quota`, `analysis_history` ve localStorage
+  akışı incelendi.
+- Supabase Auth, Better Auth+D1, Firebase, Clerk ve Auth0 yalnız resmî
+  belgelerle karşılaştırıldı: [AUTH](AUTH.md), [ADR-0001](adr/0001-auth-provider.md).
+- Birinci öneri Supabase Auth+Worker/D1; yedek Better Auth+D1 olarak
+  belgelendi. **Sağlayıcı kararı kullanıcı onayı bekliyor.**
+- Taslak kullanıcı veri modeli [DATABASE](DATABASE.md), gizlilik akışları
+  [PRIVACY](PRIVACY.md), token/session tehdit modeli [SECURITY](SECURITY.md)
+  içine eklendi.
+- Auth paketi, provider hesabı/secret, UI, migration, deploy veya uygulama
+  davranış değişikliği yapılmadı.
+
+## Aşama 2B — seçim sonrasında
+
+1. AB bölgesi, DPA/alt işleyen, transactional e-posta ve provider kararını
+   kaydetmek.
+2. Secret/public config ayrımı; Gemini secret'ını yalnız Worker'da bırakmak.
+3. Worker JWT middleware'i, user-scoped yetki ve sürümlü D1 migration'ları.
+4. Anonim veri devri/kota geçişi, web+Capacitor PKCE/deep-link, logout/revoke,
+   silme/export.
+5. Rate limit/Turnstile/CSP/log redaksiyonu/auth negatif testleri ve verify.

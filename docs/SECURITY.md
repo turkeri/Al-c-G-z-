@@ -19,3 +19,22 @@ Riskler: `wrangler.toml` yorumlarında boş origin izinli geliştirme varsayım�
 ## Kalan iş
 
 Threat model, penetration test, WAF/Turnstile kararı, log saklama politikası, CSP ve güvenlik otomasyonu eklenmelidir.
+
+## Aşama 2A token ve session tehdit modeli — taslak
+
+| Tehdit | Zorunlu kontrol |
+| --- | --- |
+| İstemcinin user/plan/premium/kredi taklidi | Worker gövdeyi yetki kaynağı kabul etmez; doğrulanmış `sub` ile D1 owner/planı kendi bulur. |
+| Sahte veya başka issuer JWT | JWKS imzası, sabit issuer/audience, `exp`/`nbf`, `sub`, algoritma allowlist ve güvenli `kid` cache/rotasyonu. |
+| Çalınmış token | Kısa access-token, provider revoke/logout, `sessions.revoked_at`, loglarda token yok; riskli işlemde re-auth. |
+| CSRF/XSS/token sızıntısı | Cookie ise HttpOnly/Secure/SameSite+CSRF; kendi kodumuz tokenı localStorage'a yazmaz; CSP/escape/dependency denetimi gerekir. |
+| Android OAuth yönlendirme saldırısı | Sistem tarayıcısı + PKCE, izinli redirect URI/deep-link, state/nonce; WebView çerezi Worker'a taşınmaz. |
+| Anonim verinin iki hesaba bağlanması | `device_links.device_id_hash` unique; doğrulanmış session içinde atomik tek claim; ikinci istek reddedilir/audit edilir. |
+| Yetkisiz silme/export | Güncel session/re-auth, idempotency, owner-only kısa ömürlü export, silme sonrası revoke. |
+| AI maliyet kötüye kullanımı | User planı D1'den; anonim IP+cihaz limiti, rate limit/Turnstile/WAF; Gemini key yalnız Worker secret. |
+
+Supabase seçilirse Worker her korunan istekte JWT'yi doğrular; sadece decode
+etmek yasaktır. Better Auth seçilirse Worker API token/session sözleşmesi,
+key rotation ve native redirect tasarımı Aşama 2B öncesi yazılı onay ister.
+Ham token, OTP, OAuth callback code ve Gemini secret log/analytics/D1'e
+yazılmaz.
