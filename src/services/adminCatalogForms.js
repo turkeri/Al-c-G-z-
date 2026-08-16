@@ -1,3 +1,6 @@
+// Formlar ve filtre kutuları aynı sabit değer kümesini paylaşır — DB CHECK
+// kısıtlarıyla birebir eşleşir (0008_catalog_issues_maintenance_values.sql).
+export const FIELD_OPTIONS={confidence:['unknown','low','medium','high'],severity:['unknown','low','medium','high','critical'],evidence:['unverified','reviewed','verified','rejected'],scope:['global','filtered','vehicle'],valueType:['reference','asking_median','transaction_estimate','manual','imported_legacy']}
 export const ENTITY_FORMS={
 brands:{label:'Marka',fields:[['display_name','Görünen ad','text',true],['slug','Slug','text',true],['normalized_name','Normalize ad','text',true],['country_code','Ülke kodu','text'],['sort_order','Sıra','number'],['active','Aktif','boolean'],['source_confidence','Confidence','confidence']]},
 models:{label:'Model',fields:[['brand_id','Marka','parent:brands',true],['display_name','Görünen ad','text',true],['slug','Slug','text',true],['normalized_name','Normalize ad','text',true],['sort_order','Sıra','number'],['active','Aktif','boolean'],['source_confidence','Confidence','confidence']]},

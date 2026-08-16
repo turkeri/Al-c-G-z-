@@ -4250,3 +4250,20 @@ button {
   font-size: 0.72rem;
   color: var(--color-text-muted);
 }
+
+/* ============================================================================
+   ADMIN KATALOG FİLTRE SATIRI (review + entity list ortak)
+   ============================================================================
+   Bazı entity'lerde (örn. problemApplicability) 9 filtre alanına kadar
+   çıkar. Sabit 2 kolonlu .form-row grid'i dar ekranda taşma yapıyordu —
+   select/input'ların içerik genişliği grid hücresinden büyük olabiliyor.
+   auto-fit + min-width:0 hem taşmayı önler hem dar ekranda tek kolona iner. */
+.entity-list-panel .form-row,
+.review-panel .form-row {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.entity-list-panel .form-row > *,
+.review-panel .form-row > * {
+  min-width: 0;
+}
