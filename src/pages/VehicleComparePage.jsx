@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Header from '../components/Layout/Header'
 import PageContainer from '../components/Layout/PageContainer'
 import RiskBadge from '../components/RiskBadge'
@@ -6,6 +6,8 @@ import Icon from '../components/icons/Icon'
 import { getEngineData, getVehicleEntry } from '../services/catalogAdapter'
 import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
 import { compareTwoVehicles } from '../services/vehicleCompareService'
+import { describePackageWithCatalog } from '../services/catalogService'
+import { assessChronicRiskWithCatalog } from '../services/chronicProblemService'
 import { formatKm, formatPrice } from '../utils/formatters'
 import AiPanel from '../components/AiPanel'
 import { fetchComparison, isAiConfigured } from '../services/aiService'
@@ -18,26 +20,38 @@ const EMPTY_SIDE = {
   km: '',
   price: '',
   fuelType: '',
-  transmission: ''
+  transmission: '',
+  variantId: ''
 }
 
 function VehicleSelector({ label, badge, side, onChange }) {
-  const { brands, models, engines, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
-    useVehiclePickerChain(side.brand, side.model)
+  const { brands, models, engines, variantId, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
+    useVehiclePickerChain(side.brand, side.model, side.engine, side.year, { resolveVariant: true })
   const entry = useMemo(
     () => (side.brand && side.model ? getVehicleEntry(side.brand, side.model) : null),
     [side.brand, side.model]
   )
 
+  // Zincirin çözdüğü variantId, karşılaştırma canonical paket/kronik risk
+  // kıyaslamasını besleyebilsin diye side state'ine yazılır (VehiclePicker'ın
+  // aynı deseni — bkz. src/components/VehiclePicker.jsx).
+  useEffect(() => {
+    if (variantId !== (side.variantId || '')) onChange({ ...side, variantId })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variantId])
+
   function update(field, value) {
     const next = { ...side, [field]: value }
     if (field === 'brand') {
-      Object.assign(next, { model: '', engine: '', fuelType: '', transmission: '', year: '', km: '', price: '' })
+      Object.assign(next, {
+        model: '', engine: '', fuelType: '', transmission: '', year: '', km: '', price: '', variantId: ''
+      })
     }
     if (field === 'model') {
-      Object.assign(next, { engine: '', fuelType: '', transmission: '', year: '', km: '', price: '' })
+      Object.assign(next, { engine: '', fuelType: '', transmission: '', year: '', km: '', price: '', variantId: '' })
     }
     if (field === 'engine') {
+      next.variantId = ''
       const engineData = getEngineData(next.brand, next.model, value)
       const vehicleEntry = getVehicleEntry(next.brand, next.model)
       if (engineData) {
@@ -184,6 +198,7 @@ export default function VehicleComparePage() {
   const [sideB, setSideB] = useState(EMPTY_SIDE)
   const [comparison, setComparison] = useState(null)
   const [ai, setAi] = useState({ status: 'idle', data: null, message: '' })
+  const [canonicalCompare, setCanonicalCompare] = useState({ a: null, b: null })
 
   const canCompare =
     sideA.brand && sideA.model && sideA.engine && sideB.brand && sideB.model && sideB.engine
@@ -197,10 +212,33 @@ export default function VehicleComparePage() {
     [sideB.brand, sideB.model]
   )
 
-  function handleCompare() {
+  /*
+   * Canonical donanım/kronik-risk kıyaslaması: her iki tarafın seçici
+   * zincirinden (VehicleSelector içindeki useVehiclePickerChain) çözülmüş
+   * `variantId`si varsa denenir. Legacy `compareTwoVehicles` sonucu ASLA
+   * değiştirilmez — bu ek, ayrı bir bölüm olarak eklenir; taraflardan biri
+   * ya da ikisi de çözülmezse/canonical veri boş veya hatalıysa o taraf
+   * (ya da bölümün tamamı) hiç görünmez.
+   */
+  async function resolveCanonicalSide(side) {
+    if (!side.variantId) return null
+    const [pkg, chronic] = await Promise.all([
+      describePackageWithCatalog(side).catch(() => null),
+      assessChronicRiskWithCatalog(side, { variantId: side.variantId }).catch(() => null)
+    ])
+    return {
+      package: pkg?.source === 'canonical' ? pkg : null,
+      chronic: chronic?.source === 'canonical' ? chronic : null
+    }
+  }
+
+  async function handleCompare() {
     if (!canCompare) return
     setComparison(compareTwoVehicles(sideA, sideB))
     setAi({ status: 'idle', data: null, message: '' })
+    setCanonicalCompare({ a: null, b: null })
+    const [a, b] = await Promise.all([resolveCanonicalSide(sideA), resolveCanonicalSide(sideB)])
+    setCanonicalCompare({ a, b })
   }
 
   function sideForAi(side, entry, result) {
@@ -425,6 +463,18 @@ export default function VehicleComparePage() {
                     />
                   </>
                 )}
+                {canonicalCompare.a?.chronic && canonicalCompare.b?.chronic && (
+                  <SpecRow
+                    label="Yayınlanmış Katalog Risk Kalemi"
+                    a={canonicalCompare.a.chronic.items.length}
+                    b={canonicalCompare.b.chronic.items.length}
+                    betterSide={betterNumeric(
+                      canonicalCompare.a.chronic.items.length,
+                      canonicalCompare.b.chronic.items.length,
+                      true
+                    )}
+                  />
+                )}
               </div>
               <p className="market-disclaimer">
                 Yeşil vurgulanan değer, o satırda daha avantajlı olan aracı gösterir. Donanım bilgileri
@@ -434,10 +484,10 @@ export default function VehicleComparePage() {
 
             <div className="compare-columns">
               {[
-                { label: labelA, entry: entryA, result: comparison.resultA },
-                { label: labelB, entry: entryB, result: comparison.resultB }
+                { side: 'a', label: labelA, entry: entryA, result: comparison.resultA, canonical: canonicalCompare.a },
+                { side: 'b', label: labelB, entry: entryB, result: comparison.resultB, canonical: canonicalCompare.b }
               ].map((col) => (
-                <section className="result-card compare-column" key={col.label}>
+                <section className="result-card compare-column" key={col.side}>
                   <h3>{col.label}</h3>
                   {col.entry?.features && (
                     <>
@@ -463,6 +513,32 @@ export default function VehicleComparePage() {
                         <div className="compare-problem" key={p.title}>
                           <RiskBadge risk={p.risk} />
                           <span>{p.title}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Canonical (yayınlanmış katalog) bölümleri: yalnız bu
+                      tarafın seçici zinciri bir variantId çözdüyse ve
+                      canonical veri boş/hatalı değilse görünür — yukarıdaki
+                      legacy "Kronik Sorunlar"/segment donanım listelerinin
+                      YANINDA, onları değiştirmeden durur. */}
+                  {col.canonical?.package?.includesDetail.length > 0 && (
+                    <div className="feature-block">
+                      <p className="expertise-category-title">Yayınlanmış Katalogdan Donanım</p>
+                      <ul className="feature-list">
+                        {col.canonical.package.includesDetail.flatMap((group) =>
+                          group.items.map((item) => <li key={item.id}>{item.label}</li>)
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                  {col.canonical?.chronic?.items.length > 0 && (
+                    <div className="feature-block">
+                      <p className="expertise-category-title">Yayınlanmış Katalogdan Kronik Sorunlar</p>
+                      {col.canonical.chronic.items.map((item) => (
+                        <div className="compare-problem" key={item.title}>
+                          <RiskBadge risk={item.risk} />
+                          <span>{item.title}</span>
                         </div>
                       ))}
                     </div>
