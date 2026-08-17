@@ -4,6 +4,10 @@ import BottomNav from './components/Layout/BottomNav'
 import SplashScreen from './components/SplashScreen'
 import { hydrateVehicleData, subscribeDataset } from './services/vehicleDataStore'
 import AuthGuard from './components/AuthGuard'
+import { useAuth } from './contexts/AuthContext'
+import { signInWithGoogle } from './services/authService'
+
+const AUTH_ONBOARDING_KEY = 'arac-dedektifi:auth-onboarding-dismissed'
 
 // Her araç ekranını ilk açılışta indirmek, mobil bağlantıda ilan analizine
 // ulaşmadan 1 MB'ın üzerinde JavaScript bekletiyordu. Sayfalar ihtiyaç
@@ -45,6 +49,7 @@ export default function App() {
   const handleSplashDone = useCallback(() => setSplashDone(true), [])
   // Veri deposu güncellenince ekranlar yeniden çizilsin.
   const [dataVersion, setDataVersion] = useState(0)
+  const { configured, loading, user } = useAuth()
 
   useEffect(() => {
     const unsubscribe = subscribeDataset(() => setDataVersion((v) => v + 1))
@@ -54,9 +59,36 @@ export default function App() {
     return unsubscribe
   }, [])
 
+  /*
+   * Açılış ekranı, far animasyonu bitince Google girişi / hesapsız devam
+   * seçimini gösterir — ama yalnız Supabase yapılandırılmışsa, oturum
+   * yoksa ve kullanıcı bu seçimi DAHA ÖNCE geçmediyse. Geçen kullanıcı bir
+   * daha görmez; giriş her zaman Hesap sayfasından yapılabilir.
+   */
+  const showAuthChoice =
+    configured && !loading && !user && localStorage.getItem(AUTH_ONBOARDING_KEY) !== '1'
+
+  function dismissAuthOnboarding() {
+    try {
+      localStorage.setItem(AUTH_ONBOARDING_KEY, '1')
+    } catch {
+      // Depolama kullanılamıyorsa bir sonraki açılışta tekrar sorulur.
+    }
+  }
+
   return (
     <div className="app-shell">
-      {!splashDone && <SplashScreen onDone={handleSplashDone} />}
+      {!splashDone && (
+        <SplashScreen
+          onDone={handleSplashDone}
+          showAuthChoice={showAuthChoice}
+          onGoogleSignIn={() => {
+            dismissAuthOnboarding()
+            return signInWithGoogle()
+          }}
+          onContinueWithoutAccount={dismissAuthOnboarding}
+        />
+      )}
       <div className="app-content">
         {/* Anahtara veri sürümü de girer: sayfalar listeleri useMemo ile bir kez
             hesapladığı için, sunucudan yeni veri geldiğinde yeniden kurulmaları

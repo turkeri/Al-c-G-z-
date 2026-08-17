@@ -1,6 +1,7 @@
 import PageContainer from '../components/Layout/PageContainer'
 import VehicleCard from '../components/VehicleCard'
 import ActiveAnnouncements from '../components/ActiveAnnouncements'
+import AccountBadge from '../components/AccountBadge'
 import Icon from '../components/icons/Icon'
 
 /**
@@ -77,6 +78,7 @@ export default function HomePage() {
       <header className="home-titlebar">
         <Icon name="search" size={18} aria-hidden="true" />
         <h1>Araç Dedektifi</h1>
+        <AccountBadge />
       </header>
 
       <PageContainer>

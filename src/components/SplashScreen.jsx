@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Headlight from './Headlight'
 
 /**
@@ -17,31 +17,70 @@ import Headlight from './Headlight'
  * Bu yüzden sahne katman katman kurulur: yol, hüzme konileri, yer havuzları,
  * far üniteleri, parlama ve pus. Selektör anında bunların HEPSİ birden yanar;
  * tek başına farın opaklığını değiştirmek yapay durur.
+ *
+ * `showAuthChoice` true ise (yapılandırılmış Supabase, oturum yok, kullanıcı
+ * daha önce bu seçimi geçmemiş) far animasyonu bitince sahne KAPANMAZ — aynı
+ * gece sahnesi üzerinde Google girişi / hesapsız devam seçimi belirir. Seçim
+ * yapılana kadar `onDone` çağrılmaz.
  */
 const TOTAL_MS = 3900
 const FADE_MS = 560
 
-export default function SplashScreen({ onDone }) {
+export default function SplashScreen({ onDone, showAuthChoice = false, onGoogleSignIn, onContinueWithoutAccount }) {
   const [leaving, setLeaving] = useState(false)
+  const [choiceVisible, setChoiceVisible] = useState(false)
+  const [googleBusy, setGoogleBusy] = useState(false)
+
+  // Animasyon 3.9sn sürüyor; auth durumu (Supabase oturum kontrolü) bu süre
+  // içinde herhangi bir anda çözülebilir. Zamanlayıcı geç tetiklendiğinde en
+  // GÜNCEL değeri okusun diye prop yerine ref üzerinden okunur — aksi halde
+  // mount anındaki (henüz `loading` durumundaki) bayat değer kullanılırdı.
+  const showAuthChoiceRef = useRef(showAuthChoice)
+  showAuthChoiceRef.current = showAuthChoice
 
   useEffect(() => {
-    const closeTimer = setTimeout(() => setLeaving(true), TOTAL_MS - FADE_MS)
-    const doneTimer = setTimeout(onDone, TOTAL_MS)
-    return () => {
-      clearTimeout(closeTimer)
-      clearTimeout(doneTimer)
-    }
-  }, [onDone])
+    const settleTimer = setTimeout(() => {
+      if (showAuthChoiceRef.current) setChoiceVisible(true)
+      else {
+        setLeaving(true)
+        setTimeout(onDone, FADE_MS)
+      }
+    }, TOTAL_MS - FADE_MS)
+    return () => clearTimeout(settleTimer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  function skip() {
+  function skipAnimation() {
+    if (choiceVisible || leaving) return
+    if (showAuthChoiceRef.current) setChoiceVisible(true)
+    else {
+      setLeaving(true)
+      setTimeout(onDone, 240)
+    }
+  }
+
+  function finish(callback) {
     setLeaving(true)
-    setTimeout(onDone, 240)
+    setTimeout(() => {
+      callback?.()
+      onDone()
+    }, FADE_MS)
+  }
+
+  async function handleGoogle() {
+    setGoogleBusy(true)
+    try {
+      await onGoogleSignIn()
+      // Başarılıysa tarayıcı Google'a yönlenir; sayfa zaten terk ediliyor.
+    } catch {
+      setGoogleBusy(false)
+    }
   }
 
   return (
     <div
-      className={'splash' + (leaving ? ' splash-leaving' : '')}
-      onClick={skip}
+      className={'splash' + (leaving ? ' splash-leaving' : '') + (choiceVisible ? ' splash-choice-active' : '')}
+      onClick={skipAnimation}
       role="presentation"
     >
       <div className="splash-scene">
@@ -84,6 +123,30 @@ export default function SplashScreen({ onDone }) {
         <span className="splash-brand-name">ARAÇ DEDEKTİFİ</span>
         <span className="splash-brand-tagline">Almadan önce gör.</span>
       </div>
+
+      {choiceVisible && (
+        <div className="splash-auth-choice" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className="splash-auth-google"
+            onClick={handleGoogle}
+            disabled={googleBusy}
+          >
+            {googleBusy ? 'Yönlendiriliyor…' : 'Google ile devam et'}
+          </button>
+          <button
+            type="button"
+            className="splash-auth-skip"
+            onClick={() => finish(onContinueWithoutAccount)}
+            disabled={googleBusy}
+          >
+            Hesap oluşturmadan devam et
+          </button>
+          <p className="splash-auth-hint">
+            Hesabınla ileride analizlerini cihazlar arasında taşıyabilirsin.
+          </p>
+        </div>
+      )}
 
       <div className="splash-vignette" aria-hidden="true" />
     </div>
