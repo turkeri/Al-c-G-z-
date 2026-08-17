@@ -16,7 +16,7 @@ database_id = "07b6820f-33e6-4ba6-b4dc-b16c792c826f"
 
 # Sadece kendi uygulamanızın çağırmasını isterseniz burayı doldurun.
 # Boş bırakılırsa tüm kaynaklara izin verilir (geliştirme için pratik, yayında daraltın).
-ALLOWED_ORIGINS = "http://localhost:5173"
+ALLOWED_ORIGINS = "http://localhost:5173,https://arac-dedektifi-web.turkerinurullah.workers.dev"
 APP_ENV = "production"
 SUPABASE_URL = "https://rvdtgudsgqtxfarvgqvf.supabase.co"
 SUPABASE_JWT_ISSUER = "https://rvdtgudsgqtxfarvgqvf.supabase.co/auth/v1"
