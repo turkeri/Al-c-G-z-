@@ -16,7 +16,7 @@ const report = buildInventoryReport()
 
 test('entity türleri ayrı sayılır', () => {
   assert.equal(report.summary.brands, 31)
-  assert.equal(report.summary.engineDefinitions, 111)
+  assert.equal(report.summary.engineDefinitions, 118)
   assert.notEqual(report.summary.engineDefinitions, report.summary.transmissionDefinitions)
 })
 

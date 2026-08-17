@@ -12,7 +12,7 @@ test('core dry-run is deterministic and preserves baseline and Audi A3 relations
   const a = await buildCoreDryRun(), b = await buildCoreDryRun()
   assert.deepEqual(a.records.models.map((x) => x.id), b.records.models.map((x) => x.id))
   assert.deepEqual(a.sourceManifest, b.sourceManifest)
-  assert.deepEqual(a.counts, { brands: 31, models: 130, generations: 204, engines: 111, transmissions: 28 })
+  assert.deepEqual(a.counts, { brands: 31, models: 198, generations: 274, engines: 118, transmissions: 28 })
   assert.deepEqual(a.records.generations.filter((x) => x.display_name.startsWith('A3 ')).map((x) => x.code), ['8P','8V','8Y'])
 })
 test('stable ids include parent context and normalization is deterministic', () => {

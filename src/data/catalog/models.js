@@ -2817,6 +2817,1123 @@ const CURATED_MODELS = [
         note: ''
       }
     ]
+  },
+
+  // ==========================================================================
+  // 3. TUR GENİŞLETME — kullanıcı geri bildirimi: "her markaya benzer sayıda
+  // model ekle, veri setini ~2 katına çıkar". Bu blok markaların model
+  // sayısını, mevcut motor/şanzıman havuzu üzerinden gerçek nesillerle
+  // genişletir.
+  // ==========================================================================
+
+  // ---- ALFA ROMEO ----
+  {
+    brand: 'Alfa Romeo',
+    model: 'Giulia',
+    segment: 'sedan',
+    generations: [
+      {
+        code: '952',
+        years: '2016-2024',
+        bodyTypes: ['Sedan'],
+        engineIds: ['alfa-jtdm-22', 'fiat-tjet-14'],
+        transmissionIds: ['zf8hp', 'manuel'],
+        note: 'Arkadan itişli, RWD tabanlı platformdur; ZF kaynaklı 8 ileri otomatik yaygındır.'
+      }
+    ]
+  },
+  {
+    brand: 'Alfa Romeo',
+    model: 'Stelvio',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Stelvio',
+        years: '2016-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['alfa-jtdm-22', 'fiat-tjet-14'],
+        transmissionIds: ['zf8hp'],
+        note: 'Giulia ile aynı RWD/AWD platformu ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+
+  // ---- SSANGYONG ----
+  {
+    brand: 'SsangYong',
+    model: 'Tivoli',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Tivoli',
+        years: '2015-2024',
+        facelift: '2019',
+        bodyTypes: ['SUV'],
+        engineIds: ['ssangyong-gdi-16', 'ssangyong-xdi'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'SsangYong',
+    model: 'Rexton',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Y400',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['ssangyong-xdi'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- MINI ----
+  {
+    brand: 'Mini',
+    model: 'Clubman',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'F54',
+        years: '2015-2024',
+        bodyTypes: ['Station Wagon'],
+        engineIds: ['bmw-b47', 'bmw-b48'],
+        transmissionIds: ['manuel', 'zf8hp'],
+        note: 'Countryman ile aynı platformu paylaşır, uzatılmış gövdelidir.'
+      }
+    ]
+  },
+  {
+    brand: 'Mini',
+    model: 'Cabrio',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'F57',
+        years: '2015-2024',
+        bodyTypes: ['Cabrio'],
+        engineIds: ['bmw-n13-b38', 'bmw-b48'],
+        transmissionIds: ['manuel', 'aisin-8at'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- JEEP ----
+  {
+    brand: 'Jeep',
+    model: 'Grand Cherokee',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'WK2',
+        years: '2011-2021',
+        facelift: '2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['jeep-pentastar-36', 'mb-om642'],
+        transmissionIds: ['zf8hp'],
+        note: 'Türkiye\'ye gelen dizel versiyon Mercedes kaynaklı 3.0 CRD (OM642) kullanır.'
+      }
+    ]
+  },
+  {
+    brand: 'Jeep',
+    model: 'Wrangler',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'JK',
+        years: '2007-2018',
+        bodyTypes: ['SUV'],
+        engineIds: ['jeep-crd-28', 'jeep-pentastar-36'],
+        transmissionIds: ['manuel', 'zf8hp'],
+        note: 'Arazi aracı karakteri nedeniyle km başına aşınma şehir kullanımından farklı yorumlanmalıdır.'
+      },
+      {
+        code: 'JL',
+        years: '2018-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['jeep-pentastar-36'],
+        transmissionIds: ['manuel', 'zf8hp'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- CITROËN ----
+  {
+    brand: 'Citroën',
+    model: 'C3 Aircross',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'C3 Aircross',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['psa-puretech', 'psa-bluehdi'],
+        transmissionIds: ['manuel', 'eat8'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Citroën',
+    model: 'Berlingo',
+    segment: 'ticari',
+    generations: [
+      {
+        code: 'Gen2/3',
+        years: '2008-2024',
+        bodyTypes: ['Panelvan'],
+        engineIds: ['psa-bluehdi', 'psa-puretech'],
+        transmissionIds: ['manuel'],
+        note: 'Ticari kullanım nedeniyle kilometre ve servis kaydı ciddi önem taşır.'
+      }
+    ]
+  },
+
+  // ---- MAZDA ----
+  {
+    brand: 'Mazda',
+    model: 'Mazda6',
+    segment: 'orta',
+    generations: [
+      {
+        code: 'GJ',
+        years: '2012-2024',
+        facelift: '2018',
+        bodyTypes: ['Sedan', 'Station Wagon'],
+        engineIds: ['mazda-skyactiv-g', 'mazda-skyactiv-d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Mazda',
+    model: 'CX-3',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'CX-3',
+        years: '2015-2021',
+        bodyTypes: ['SUV'],
+        engineIds: ['mazda-skyactiv-g'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- SUZUKI ----
+  {
+    brand: 'Suzuki',
+    model: 'S-Cross',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'S-Cross',
+        years: '2013-2024',
+        facelift: '2016',
+        bodyTypes: ['SUV'],
+        engineIds: ['suzuki-k-petrol', 'suzuki-ddis'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Suzuki',
+    model: 'Jimny',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Gen4',
+        years: '2018-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['suzuki-k-petrol'],
+        transmissionIds: ['manuel'],
+        note: 'Merdiven şasili gerçek arazi aracıdır; km başına aşınma şehir kullanımından farklı yorumlanmalıdır.'
+      }
+    ]
+  },
+
+  // ---- MITSUBISHI ----
+  {
+    brand: 'Mitsubishi',
+    model: 'Lancer',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'X',
+        years: '2007-2017',
+        bodyTypes: ['Sedan'],
+        engineIds: ['mitsubishi-mivec', 'mitsubishi-did-16'],
+        transmissionIds: ['manuel', 'jatco-cvt'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Mitsubishi',
+    model: 'Space Star',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Space Star',
+        years: '2013-2024',
+        facelift: '2019',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['mitsubishi-mivec'],
+        transmissionIds: ['manuel', 'jatco-cvt'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- LAND ROVER ----
+  {
+    brand: 'Land Rover',
+    model: 'Range Rover Sport',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'L494',
+        years: '2013-2022',
+        bodyTypes: ['SUV'],
+        engineIds: ['jlr-td6-v6', 'jlr-ingenium-p300'],
+        transmissionIds: ['zf8hp'],
+        note: 'Hava süspansiyon körükleri önemli bir bakım kalemidir.'
+      }
+    ]
+  },
+  {
+    brand: 'Land Rover',
+    model: 'Defender',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'L663',
+        years: '2020-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['jlr-ingenium-20d', 'jlr-td6-v6', 'jlr-ingenium-p300'],
+        transmissionIds: ['zf8hp'],
+        note: 'Klasik Defender (1990-2016) tamamen farklı bir platform/motor ailesidir ve bu kayıtta yer almaz.'
+      }
+    ]
+  },
+
+  // ---- JAGUAR ----
+  {
+    brand: 'Jaguar',
+    model: 'F-Pace',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'X761',
+        years: '2016-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['jlr-ingenium-20d', 'jlr-td6-v6', 'jlr-ingenium-p300'],
+        transmissionIds: ['zf8hp'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Jaguar',
+    model: 'E-Pace',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'X540',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['jlr-ingenium-20d'],
+        transmissionIds: ['zf9hp'],
+        note: 'Land Rover Discovery Sport ile aynı platform ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+
+  // ---- SUBARU ----
+  {
+    brand: 'Subaru',
+    model: 'Outback',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Gen5/6',
+        years: '2014-2024',
+        bodyTypes: ['Station Wagon'],
+        engineIds: ['subaru-fb'],
+        transmissionIds: ['manuel'],
+        note: 'Otomatik versiyonlar Subaru\'ya özgü Lineartronic CVT kullanır; bu şanzıman katalogda ayrıca kayıtlı değildir.'
+      }
+    ]
+  },
+  {
+    brand: 'Subaru',
+    model: 'Legacy',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'Gen6',
+        years: '2014-2019',
+        bodyTypes: ['Sedan'],
+        engineIds: ['subaru-fb'],
+        transmissionIds: ['manuel'],
+        note: 'Outback ile aynı platform ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+
+  // ---- CHEVROLET ----
+  {
+    brand: 'Chevrolet',
+    model: 'Spark',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Gen3/4',
+        years: '2010-2022',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['gm-spark-10'],
+        transmissionIds: ['manuel'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Chevrolet',
+    model: 'Trax',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Gen1',
+        years: '2013-2020',
+        bodyTypes: ['SUV'],
+        engineIds: ['gm-ecotec', 'gm-vcdi-20'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: 'Opel Mokka (A) ile aynı platform ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+
+  // ---- TOFAŞ ----
+  {
+    brand: 'Tofaş',
+    model: 'Kartal',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'Klasik',
+        years: '1994-2000',
+        bodyTypes: ['Hatchback'],
+        engineIds: [],
+        transmissionIds: ['manuel'],
+        note: 'Şahin/Doğan ile aynı Fiat 131 tabanlı motor ailesini paylaşır; ayrı motor kaydı tutulmaz. Kaporta paslanması en yaygın gündem maddesidir.'
+      }
+    ]
+  },
+  {
+    brand: 'Tofaş',
+    model: 'Serçe',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Klasik',
+        years: '1986-1999',
+        bodyTypes: ['Hatchback'],
+        engineIds: [],
+        transmissionIds: ['manuel'],
+        note: 'Fiat 147 tabanlı, dönemin en küçük ve ekonomik Tofaş modelidir; ayrı motor kaydı tutulmaz.'
+      }
+    ]
+  },
+
+  // ---- SEAT ----
+  {
+    brand: 'Seat',
+    model: 'Arona',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Arona',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['vag-ea211-10tsi', 'vag-ea211-14tsi'],
+        transmissionIds: ['manuel', 'dq200'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Seat',
+    model: 'Tarraco',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Tarraco',
+        years: '2018-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['vag-ea211-14tsi', 'vag-ea288-20tdi'],
+        transmissionIds: ['manuel', 'dq381'],
+        note: 'Skoda Kodiaq ile aynı platform ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+
+  // ---- NISSAN ----
+  {
+    brand: 'Nissan',
+    model: 'Juke',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Gen1',
+        years: '2010-2019',
+        facelift: '2014',
+        bodyTypes: ['SUV'],
+        engineIds: ['renault-h4d-b4d', 'renault-k9k'],
+        transmissionIds: ['manuel', 'jatco-cvt'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Nissan',
+    model: 'Note',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'E12',
+        years: '2013-2017',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['renault-h4d-b4d', 'renault-k9k'],
+        transmissionIds: ['manuel', 'jatco-cvt'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- VOLVO ----
+  {
+    brand: 'Volvo',
+    model: 'V40',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'V40',
+        years: '2012-2019',
+        facelift: '2016',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80', 'manuel'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Volvo',
+    model: 'S90',
+    segment: 'üst',
+    generations: [
+      {
+        code: 'S90',
+        years: '2016-2024',
+        bodyTypes: ['Sedan'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Volvo',
+    model: 'XC40',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'XC40',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80', 'manuel'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- DACIA ----
+  {
+    brand: 'Dacia',
+    model: 'Lodgy',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Lodgy',
+        years: '2012-2022',
+        bodyTypes: ['MPV'],
+        engineIds: ['renault-k9k', 'renault-h4d-b4d'],
+        transmissionIds: ['manuel'],
+        note: '7 koltuklu, aile kullanımı için uygun bütçeli MPV.'
+      }
+    ]
+  },
+  {
+    brand: 'Dacia',
+    model: 'Dokker',
+    segment: 'ticari',
+    generations: [
+      {
+        code: 'Dokker',
+        years: '2012-2021',
+        bodyTypes: ['Panelvan', 'MPV'],
+        engineIds: ['renault-k9k', 'renault-h4d-b4d'],
+        transmissionIds: ['manuel'],
+        note: 'Ticari kullanım nedeniyle kilometre ve servis kaydı ciddi önem taşır.'
+      }
+    ]
+  },
+
+  // ---- FORD ----
+  {
+    brand: 'Ford',
+    model: 'Puma',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Puma',
+        years: '2019-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['ford-ecoboost-10', 'ford-ecoblue-15'],
+        transmissionIds: ['manuel', 'powershift-dps6'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Ford',
+    model: 'Transit Connect',
+    segment: 'ticari',
+    generations: [
+      {
+        code: 'Gen2',
+        years: '2013-2024',
+        bodyTypes: ['Panelvan'],
+        engineIds: ['ford-tdci-15-16', 'ford-ecoblue-15'],
+        transmissionIds: ['manuel'],
+        note: 'Ticari kullanım nedeniyle kilometre ve servis kaydı ciddi önem taşır.'
+      }
+    ]
+  },
+  {
+    brand: 'Ford',
+    model: 'S-Max / Galaxy',
+    segment: 'orta',
+    generations: [
+      {
+        code: 'Gen2',
+        years: '2015-2024',
+        bodyTypes: ['MPV'],
+        engineIds: ['ford-tdci-20'],
+        transmissionIds: ['manuel', 'powershift-mps6'],
+        note: 'Aynı platform, motor ve şanzıman ailesini paylaşan iki 7 koltuklu model.'
+      }
+    ]
+  },
+
+  // ---- FIAT ----
+  {
+    brand: 'Fiat',
+    model: '500',
+    segment: 'mini',
+    generations: [
+      {
+        code: '500',
+        years: '2007-2024',
+        facelift: '2015',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['fiat-fire'],
+        transmissionIds: ['manuel', 'fiat-dualogic'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Fiat',
+    model: 'Bravo',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'Bravo',
+        years: '2007-2014',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['fiat-fire', 'fiat-multijet-13', 'fiat-tjet-14'],
+        transmissionIds: ['manuel'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Fiat',
+    model: 'Albea',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'Albea',
+        years: '2002-2012',
+        facelift: '2006',
+        bodyTypes: ['Sedan'],
+        engineIds: ['fiat-fire'],
+        transmissionIds: ['manuel'],
+        note: 'Türkiye\'de uzun yıllar taksi ve filo aracı olarak yaygın kullanılmıştır.'
+      }
+    ]
+  },
+
+  // ---- HYUNDAI ----
+  {
+    brand: 'Hyundai',
+    model: 'Accent',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'RB',
+        years: '2010-2019',
+        bodyTypes: ['Sedan'],
+        engineIds: ['hyundai-d4fc', 'hyundai-gamma'],
+        transmissionIds: ['manuel', 'hyundai-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Hyundai',
+    model: 'i30',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'GD',
+        years: '2012-2017',
+        bodyTypes: ['Hatchback', 'Station Wagon'],
+        engineIds: ['hyundai-d4fb', 'hyundai-gamma'],
+        transmissionIds: ['manuel', 'hyundai-6at'],
+        note: ''
+      },
+      {
+        code: 'PD',
+        years: '2017-2024',
+        bodyTypes: ['Hatchback', 'Station Wagon'],
+        engineIds: ['hyundai-d4fb', 'hyundai-smartstream-15'],
+        transmissionIds: ['manuel', 'hyundai-6dct'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Hyundai',
+    model: 'Kona',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Gen1',
+        years: '2017-2023',
+        bodyTypes: ['SUV'],
+        engineIds: ['hyundai-smartstream-15', 'hyundai-kappa'],
+        transmissionIds: ['manuel', 'hyundai-6dct'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- KIA ----
+  {
+    brand: 'Kia',
+    model: 'Soul',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'PS',
+        years: '2013-2019',
+        bodyTypes: ['SUV'],
+        engineIds: ['hyundai-gamma', 'hyundai-d4fb'],
+        transmissionIds: ['manuel', 'hyundai-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Kia',
+    model: 'Optima',
+    segment: 'üst',
+    generations: [
+      {
+        code: 'JF',
+        years: '2015-2020',
+        bodyTypes: ['Sedan'],
+        engineIds: ['hyundai-theta2', 'hyundai-r-crdi'],
+        transmissionIds: ['hyundai-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Kia',
+    model: 'Niro',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'DE',
+        years: '2016-2022',
+        bodyTypes: ['SUV'],
+        engineIds: ['hyundai-hybrid-16'],
+        transmissionIds: ['kia-7dct'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- OPEL ----
+  {
+    brand: 'Opel',
+    model: 'Meriva',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'B',
+        years: '2010-2017',
+        bodyTypes: ['MPV'],
+        engineIds: ['opel-turbo-14', 'opel-cdti-16'],
+        transmissionIds: ['manuel'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Opel',
+    model: 'Zafira',
+    segment: 'orta',
+    generations: [
+      {
+        code: 'Tourer',
+        years: '2011-2019',
+        bodyTypes: ['MPV'],
+        engineIds: ['opel-cdti-20', 'opel-turbo-14'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: '7 koltuklu, aile kullanımı için uygun bütçeli MPV.'
+      }
+    ]
+  },
+  {
+    brand: 'Opel',
+    model: 'Vectra',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'C',
+        years: '2002-2008',
+        facelift: '2005',
+        bodyTypes: ['Sedan', 'Station Wagon'],
+        engineIds: ['opel-twinport'],
+        transmissionIds: ['manuel'],
+        note: 'Dizel versiyonlarda motor kodu bu katalogda ayrıca tutulmaz; ilan/servis kaydından teyit edilmelidir.'
+      }
+    ]
+  },
+
+  // ---- SKODA ----
+  {
+    brand: 'Skoda',
+    model: 'Rapid',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'Rapid',
+        years: '2012-2019',
+        bodyTypes: ['Sedan', 'Hatchback'],
+        engineIds: ['vag-14tdi-3cyl', 'vag-ea211-10tsi'],
+        transmissionIds: ['manuel'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Skoda',
+    model: 'Yeti',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Yeti',
+        years: '2009-2017',
+        facelift: '2013',
+        bodyTypes: ['SUV'],
+        engineIds: ['vag-ea189-16tdi', 'vag-ea211-14tsi'],
+        transmissionIds: ['manuel', 'dq200'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Skoda',
+    model: 'Scala',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'Scala',
+        years: '2019-2024',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['vag-ea211-10tsi', 'vag-ea211-14tsi', 'vag-ea288-16tdi'],
+        transmissionIds: ['manuel', 'dq200'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- HONDA ----
+  {
+    brand: 'Honda',
+    model: 'Honda e',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Honda e',
+        years: '2020-2023',
+        bodyTypes: ['Hatchback'],
+        engineIds: [],
+        transmissionIds: [],
+        note: 'Tamamen elektrikli bir modeldir; katalogdaki motor/şanzıman veritabanı içten yanmalı araçlar için kurulduğundan burada ayrı bir elektrikli motor/redüktör kaydı henüz yoktur. Alım öncesi batarya sağlığı (SOH) mutlaka sorulmalıdır.'
+      }
+    ]
+  },
+
+  // ---- AUDI ----
+  {
+    brand: 'Audi',
+    model: 'A8',
+    segment: 'üst',
+    generations: [
+      {
+        code: 'D4/D5',
+        years: '2010-2024',
+        bodyTypes: ['Sedan'],
+        engineIds: ['vag-30tdi-v6', 'vag-ea888-gen3'],
+        transmissionIds: ['tiptronic-09g'],
+        note: 'Marka amiral gemisidir; hava süspansiyon ve çok sayıda elektronik donanım kalemi bakım maliyetini artırır.'
+      }
+    ]
+  },
+  {
+    brand: 'Audi',
+    model: 'Q8',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Q8',
+        years: '2018-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['vag-30tdi-v6', 'vag-ea888-gen3'],
+        transmissionIds: ['tiptronic-09g'],
+        note: 'Q7 ile aynı platform ve motor ailesini paylaşan kupe tavanlı gövdedir.'
+      }
+    ]
+  },
+
+  // ---- BMW ----
+  {
+    brand: 'BMW',
+    model: 'X2',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'F39',
+        years: '2018-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['bmw-b47', 'bmw-b48', 'bmw-n13-b38'],
+        transmissionIds: ['manuel', 'aisin-8at'],
+        note: 'X1 ile aynı öndeon çekişli platformu paylaşır; otomatik şanzıman ZF değil Aisin kaynaklıdır.'
+      }
+    ]
+  },
+  {
+    brand: 'BMW',
+    model: '8 Serisi',
+    segment: 'üst',
+    generations: [
+      {
+        code: 'G14/G15',
+        years: '2018-2024',
+        bodyTypes: ['Coupe', 'Cabrio', 'Gran Coupe'],
+        engineIds: ['bmw-b57', 'bmw-b58'],
+        transmissionIds: ['zf8hp'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- MERCEDES-BENZ ----
+  {
+    brand: 'Mercedes-Benz',
+    model: 'S Serisi',
+    segment: 'üst',
+    generations: [
+      {
+        code: 'W222',
+        years: '2013-2020',
+        bodyTypes: ['Sedan'],
+        engineIds: ['mb-om642', 'mb-om656'],
+        transmissionIds: ['mb-9g-tronic', 'mb-7g-tronic'],
+        note: 'Marka amiral gemisidir; hava süspansiyon ve çok sayıda elektronik donanım kalemi bakım maliyetini artırır.'
+      }
+    ]
+  },
+  {
+    brand: 'Mercedes-Benz',
+    model: 'GLS',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'X167',
+        years: '2019-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['mb-om656'],
+        transmissionIds: ['mb-9g-tronic'],
+        note: 'GLE ile aynı platform ve motor ailesini paylaşan 7 koltuklu, uzun gövdeli versiyondur.'
+      }
+    ]
+  },
+
+  // ---- PEUGEOT ----
+  {
+    brand: 'Peugeot',
+    model: '5008',
+    segment: 'suv',
+    generations: [
+      {
+        code: '5008',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['psa-puretech', 'psa-bluehdi'],
+        transmissionIds: ['manuel', 'eat8'],
+        note: '3008 ile aynı platform ve motor ailesini paylaşan 7 koltuklu versiyondur.'
+      }
+    ]
+  },
+  {
+    brand: 'Peugeot',
+    model: '108',
+    segment: 'mini',
+    generations: [
+      {
+        code: '108',
+        years: '2014-2021',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['toyota-1nr-1kr'],
+        transmissionIds: ['manuel'],
+        note: 'Toyota Aygo ve Citroën C1 ile aynı fabrikada üretilen, aynı platform ve motoru paylaşan üçüz modellerden biridir.'
+      }
+    ]
+  },
+
+  // ---- RENAULT ----
+  {
+    brand: 'Renault',
+    model: 'Twingo',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Gen2/3',
+        years: '2007-2024',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['renault-d4f-d7f', 'renault-h4d-b4d'],
+        transmissionIds: ['manuel'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Renault',
+    model: 'Scenic',
+    segment: 'orta',
+    generations: [
+      {
+        code: 'Gen3/4',
+        years: '2009-2022',
+        bodyTypes: ['MPV'],
+        engineIds: ['renault-k9k', 'renault-r9m'],
+        transmissionIds: ['manuel', 'renault-edc'],
+        note: '7 koltuklu Grand Scenic versiyonu da aynı motor/şanzıman ailesini kullanır.'
+      }
+    ]
+  },
+
+  // ---- TOYOTA ----
+  {
+    brand: 'Toyota',
+    model: 'Hilux',
+    segment: 'ticari',
+    generations: [
+      {
+        code: 'AN120/AN130',
+        years: '2015-2024',
+        bodyTypes: ['Pickup'],
+        engineIds: ['toyota-kd-d4d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: 'Ticari/arazi kullanımı nedeniyle km başına aşınma şehir kullanımından farklı yorumlanmalıdır.'
+      }
+    ]
+  },
+  {
+    brand: 'Toyota',
+    model: 'Land Cruiser',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'J150',
+        years: '2009-2024',
+        facelift: '2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['toyota-kd-d4d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+
+  // ---- VOLKSWAGEN ----
+  {
+    brand: 'Volkswagen',
+    model: 'Caddy',
+    segment: 'ticari',
+    generations: [
+      {
+        code: 'Gen3/4',
+        years: '2010-2024',
+        bodyTypes: ['Panelvan'],
+        engineIds: ['vag-ea189-16tdi', 'vag-ea288-16tdi'],
+        transmissionIds: ['manuel', 'dq200'],
+        note: 'Ticari kullanım nedeniyle kilometre ve servis kaydı ciddi önem taşır.'
+      }
+    ]
+  },
+  {
+    brand: 'Volkswagen',
+    model: 'Touran',
+    segment: 'orta',
+    generations: [
+      {
+        code: 'Gen2/3',
+        years: '2010-2023',
+        bodyTypes: ['MPV'],
+        engineIds: ['vag-ea189-16tdi', 'vag-ea288-20tdi', 'vag-ea211-14tsi'],
+        transmissionIds: ['manuel', 'dq200'],
+        note: '7 koltuklu, aile kullanımı için uygun MPV.'
+      }
+    ]
   }
 ]
 

@@ -2439,6 +2439,145 @@ export const ENGINES = [
       { title: 'Ateşleme bobini/kablo arızası', risk: 'Düşük', cost: '1.500 - 5.000 TL', note: 'Rölantide titreme ve arıza lambası ile kendini gösterir.' },
       { title: '1.8 (LDE) motorda hafif yağ tüketimi', risk: 'Orta', cost: '0 - 12.000 TL', note: 'Yüksek kilometrede piston segmanı kaynaklı yağ tüketimi bildirilir; yağ seviyesi sık kontrol edilmeli.' }
     ]
+  },
+
+  // ==========================================================================
+  // MARKA KAPSAMINI GENİŞLETME — 2. tur: yeni eklenen modeller için eksik
+  // motor varyantları.
+  // ==========================================================================
+  {
+    id: 'ssangyong-gdi-16',
+    family: 'G16',
+    name: '1.6 GDI',
+    codes: ['G16'],
+    group: 'SsangYong',
+    displacement: 1597,
+    fuel: 'Benzin',
+    power: '126 - 128 HP',
+    torque: '160 Nm',
+    years: '2015 - 2024',
+    usedIn: ['SsangYong Tivoli'],
+    durability: 76,
+    maintenance: { oilKm: 12000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'Direkt enjeksiyon karbon birikimi', risk: 'Orta', cost: '5.000 - 15.000 TL', note: '' },
+      { title: 'Marka servis ağının dar olması', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; parça temin süresi uzayabilir.' }
+    ]
+  },
+  {
+    id: 'jeep-pentastar-36',
+    family: 'Pentastar',
+    name: '3.6 V6 Pentastar',
+    codes: ['ERB'],
+    group: 'Stellantis-Fiat',
+    displacement: 3604,
+    fuel: 'Benzin',
+    power: '286 - 295 HP',
+    torque: '347 Nm',
+    years: '2011 - 2024',
+    usedIn: ['Jeep Grand Cherokee', 'Jeep Wrangler'],
+    durability: 82,
+    maintenance: { oilKm: 12000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'İlk nesillerde supap iticisi (lifter) tıkırtısı', risk: 'Düşük', cost: '8.000 - 25.000 TL', note: '2011-2013 üretimlerinde bildirilir; sonraki üretimlerde büyük ölçüde giderildi.' },
+      { title: 'Yüksek yakıt tüketimi', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; büyük hacimli V6 motorun karakteridir.' }
+    ]
+  },
+  {
+    id: 'jeep-crd-28',
+    family: 'VM Motori',
+    name: '2.8 CRD',
+    codes: ['ENS'],
+    group: 'Stellantis-Fiat',
+    displacement: 2777,
+    fuel: 'Dizel',
+    power: '163 - 200 HP',
+    torque: '360 - 460 Nm',
+    years: '2007 - 2018',
+    usedIn: ['Jeep Wrangler', 'Jeep Grand Cherokee'],
+    durability: 78,
+    maintenance: { oilKm: 15000, timing: 'Kayış', note: '' },
+    problems: [
+      { title: 'Enjektör ve yüksek basınç pompası arızası', risk: 'Orta', cost: '15.000 - 45.000 TL', note: '' },
+      { title: 'EGR ve turbo kurumlanması', risk: 'Orta', cost: '6.000 - 20.000 TL', note: '' }
+    ]
+  },
+  {
+    id: 'jlr-td6-v6',
+    family: 'SDV6 / TD6',
+    name: '3.0 V6 Turbo Diesel',
+    codes: ['306DT'],
+    group: 'JLR',
+    displacement: 2993,
+    fuel: 'Dizel',
+    power: '249 - 306 HP',
+    torque: '600 - 700 Nm',
+    years: '2010 - 2022',
+    usedIn: ['Land Rover Range Rover Sport', 'Land Rover Defender', 'Jaguar F-Pace'],
+    durability: 76,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'Zincir gerdirici aşınması', risk: 'Orta', cost: '15.000 - 40.000 TL', note: '' },
+      { title: 'Hava süspansiyon körükleri', risk: 'Orta', cost: '15.000 - 45.000 TL', note: 'Motora özgü değil ama bu gövdelerde neredeyse standarttır.' },
+      { title: 'AdBlue/SCR sistemi arızası', risk: 'Orta', cost: '8.000 - 35.000 TL', note: '' }
+    ]
+  },
+  {
+    id: 'jlr-ingenium-p300',
+    family: 'Ingenium',
+    name: '2.0 P250 / P300 Turbo Benzin',
+    codes: ['204PT'],
+    group: 'JLR',
+    displacement: 1997,
+    fuel: 'Benzin',
+    power: '250 - 300 HP',
+    torque: '365 - 400 Nm',
+    years: '2017 - 2024',
+    usedIn: ['Jaguar F-Pace', 'Jaguar E-Pace', 'Land Rover Range Rover Sport', 'Land Rover Defender'],
+    durability: 79,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'Turbo aktüatör arızası', risk: 'Düşük', cost: '10.000 - 30.000 TL', note: '' },
+      { title: 'Emme supabı karbon birikimi', risk: 'Düşük', cost: '6.000 - 18.000 TL', note: '' }
+    ]
+  },
+  {
+    id: 'gm-spark-10',
+    family: 'SmarTech',
+    name: '1.0 / 1.2',
+    codes: ['B10D1', 'B12D1'],
+    group: 'GM',
+    displacement: 995,
+    fuel: 'Benzin',
+    power: '68 - 80 HP',
+    torque: '92 - 108 Nm',
+    years: '2010 - 2022',
+    usedIn: ['Chevrolet Spark'],
+    durability: 77,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'Rölanti motoru/gaz kelebeği kirlenmesi', risk: 'Düşük', cost: '1.500 - 4.000 TL', note: '' },
+      { title: 'Düşük güç nedeniyle yokuş/yük altında zorlanma', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; motor karakteridir.' }
+    ]
+  },
+  {
+    id: 'alfa-jtdm-22',
+    family: 'JTDm',
+    name: '2.2 JTDm / MultiJet',
+    codes: ['940B2'],
+    group: 'Stellantis-Fiat',
+    displacement: 2143,
+    fuel: 'Dizel',
+    power: '150 - 210 HP',
+    torque: '380 - 470 Nm',
+    years: '2016 - 2024',
+    usedIn: ['Alfa Romeo Giulia', 'Alfa Romeo Stelvio'],
+    durability: 78,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'Enjektör arızası', risk: 'Orta', cost: '10.000 - 35.000 TL', note: '' },
+      { title: 'DPF tıkanması (kısa mesafede)', risk: 'Orta', cost: '6.000 - 40.000 TL', note: '' }
+    ]
   }
 ]
 
