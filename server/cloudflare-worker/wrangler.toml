@@ -25,7 +25,6 @@ SUPABASE_JWT_AUDIENCE = "authenticated"
 # GEMINI_API_KEY buraya YAZILMAZ. Şu komutla gizli olarak eklenir:
 #   npx wrangler secret put GEMINI_API_KEY
 
-# Hız limiti istiyorsanız bir KV namespace oluşturup aşağıyı açın:
-# [[kv_namespaces]]
-# binding = "RATE_LIMIT_KV"
-# id = "buraya_kv_namespace_id"
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "9338b8464e374e7f872b5aa8bf95a0d3"
