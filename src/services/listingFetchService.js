@@ -82,6 +82,30 @@ export function looksLikeListingInput(text) {
   return digits.length >= 6 && digits.length <= 12 && digits.length === value.replace(/\s/g, '').length
 }
 
+/*
+ * Bilinen ilan sitelerinin ana makinesi — sunucudaki ADAPTERS listesiyle aynı
+ * üç platformu (server/cloudflare-worker/listing/adapters.js) kapsar. Bugün
+ * hepsi `fetchable: false`; bu yüzden paylaşımdan gelen bir bağlantı bu
+ * listeyle eşleşiyorsa "İlanı Getir"e basıp reddedilmeyi beklemek yerine
+ * kullanıcıyı doğrudan çalışan yola (ekran görüntüsü) yönlendiririz. Liste
+ * yalnızca bir UX kısayolu içindir — asıl karar (fetchable mi) hâlâ
+ * sunucudadır; burada yanlış tahmin edilse bile en kötü ihtimalle kullanıcı
+ * bir adım fazladan "İlanı Getir"e basar.
+ */
+const KNOWN_BLOCKED_HOSTS = [/(^|\.)sahibinden\.com$/i, /(^|\.)arabam\.com$/i, /(^|\.)letgo\.com$/i]
+
+/** Bağlantı bilinen, sunucu taraflı okumaya kapalı bir ilan sitesine mi ait? */
+export function isKnownBlockedListingUrl(input) {
+  const value = String(input || '').trim()
+  if (!/^https?:\/\//i.test(value)) return false
+  try {
+    const hostname = new URL(value).hostname
+    return KNOWN_BLOCKED_HOSTS.some((pattern) => pattern.test(hostname))
+  } catch {
+    return false
+  }
+}
+
 /**
  * İlan numarası ya da bağlantıdan ilanı çeker.
  * @returns {Promise<object|null>} sunucunun döndüğü sonuç; ulaşılamazsa null

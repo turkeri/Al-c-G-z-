@@ -19,7 +19,13 @@ import { buildDecisionSummary } from '../services/decisionService'
 import { buildVehicleProfile, describePackageWithCatalog } from '../services/catalogService'
 import { assessChronicRisk, assessChronicRiskWithCatalog } from '../services/chronicProblemService'
 import { resolveVariantId } from '../services/catalogAdapter'
-import { fetchListingByInput, looksLikeListingInput, visionToFormData, toFormData } from '../services/listingFetchService'
+import {
+  fetchListingByInput,
+  looksLikeListingInput,
+  isKnownBlockedListingUrl,
+  visionToFormData,
+  toFormData
+} from '../services/listingFetchService'
 import { fetchListingFromScreenshot, isAiConfigured } from '../services/aiService'
 import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
 import { recordAnalysis } from '../services/historyService'
@@ -115,6 +121,10 @@ export default function ListingAnalysisPage() {
   // PWA'nın Android paylaş menüsünden gelen bağlantı/metin, kullanıcı hiçbir
   // şey yazmadan doğru giriş sekmesine yerleştirilir. Veri sadece formda
   // görünür; analizin başlatılması hâlâ kullanıcının açık eylemidir.
+  //
+  // Bağlantı bilinen bir sunucu-taraflı-kapalı siteye (sahibinden/arabam/
+  // letgo) aitse "İlanı Getir"e basıp reddedilmeyi beklemenin anlamı yok —
+  // kullanıcıyı doğrudan çalışan yola (ekran görüntüsü) yönlendiriyoruz.
   useEffect(() => {
     if (!location.search || handledShares.current.has(location.search)) return
     handledShares.current.add(location.search)
@@ -124,7 +134,16 @@ export default function ListingAnalysisPage() {
     const sharedText = params.get('share-text') || ''
     const sharedTitle = params.get('share-title') || ''
 
-    if (looksLikeListingInput(url)) {
+    if (url && isKnownBlockedListingUrl(url)) {
+      setMode('gorsel')
+      setNotice({
+        tone: 'ok',
+        text:
+          'İlan bağlantısı alındı. Bu site otomatik okumaya kapalı olduğu için doğrudan ekran görüntüsü ' +
+          'yoluna geçtik — az önce paylaştığın ilan sayfasını aç, bilgi tablosunun göründüğü bir ekran ' +
+          'görüntüsü al ve aşağıya yükle. Aynı raporu üretir.'
+      })
+    } else if (looksLikeListingInput(url)) {
       setMode('link')
       setLinkInput(url)
       setNotice({ tone: 'ok', text: 'İlan bağlantısı paylaşımdan alındı. Devam etmek için “İlanı Getir”e dokun.' })
