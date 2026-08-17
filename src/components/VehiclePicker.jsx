@@ -1,25 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
 import ChipSelect from './ChipSelect'
 import { useVehiclePickerChain } from '../hooks/useVehiclePickerChain'
-import { useCatalogList } from '../hooks/useCatalogList'
-import { listGenerations, listVehicleVariants } from '../services/catalogAdapter'
 import { KM_BANDS, bandForKm, yearOptions } from '../utils/vehicleOptions'
-
-const isLegacyId = (id) => !id || String(id).startsWith('legacy:')
 
 /**
  * Marka / model / motor / yıl / kilometre seçimini tek yerde toplayan bileşen.
  * Birden fazla ekran aynı seçimi istediği için tekrar yazılmaz.
  *
- * Canonical-first: marka/model/motor `useVehiclePickerChain` (yayınlanmış
- * katalog önce, yoksa/hata olursa legacy veri kümesi) üzerinden gelir. Marka
- * ve model canonical ise nesil listesi de çekilir; nesil bulunursa yıl
- * aralığı o neslin gerçek üretim yıllarından hesaplanır (legacy referans
- * kaydının GENEL aralığı yerine). Motor de canonical ise, aynı neslin araç
- * varyantları içinde eşleşen bir kayıt varsa `value.variantId` set edilir —
- * bu, değerleme/kronik sorun gibi servislerin canonical veriye bağlanmasını
- * sağlar; eşleşme yoksa `variantId` boş kalır ve akış legacy metin tabanlı
- * yoldan devam eder.
+ * Canonical-first: tüm zincir `useVehiclePickerChain`'den (`resolveVariant:
+ * true` ile) gelir — yayınlanmış katalog önce, yoksa/hata olursa legacy veri
+ * kümesi. Marka/model canonical ise nesil listesi de çekilir; nesil
+ * bulunursa yıl aralığı o neslin GERÇEK üretim yıllarından hesaplanır
+ * (legacy referans kaydının genel aralığı yerine). Motor de canonical ise,
+ * aynı neslin araç varyantları içinde eşleşen bir kayıt varsa
+ * `value.variantId` set edilir — bu, değerleme/kronik sorun/paket gibi
+ * servislerin canonical veriye bağlanmasını sağlar; eşleşme yoksa
+ * `variantId` boş kalır ve akış legacy metin tabanlı yoldan devam eder.
  */
 export default function VehiclePicker({ value, onChange, showKm = true, showYear = true }) {
   // Listede olmayan araçlar için serbest giriş; analiz formundaki mantığın aynısı.
@@ -28,48 +24,25 @@ export default function VehiclePicker({ value, onChange, showKm = true, showYear
   const {
     brands,
     models,
-    modelRows,
     engines,
-    engineRows,
     yearRange,
+    generations,
+    variantId,
     loading: chainLoading,
     error: chainError,
     retry: retryChain
-  } = useVehiclePickerChain(value.brand, value.model)
+  } = useVehiclePickerChain(value.brand, value.model, value.engine, value.year, {
+    generationId: value.generationId,
+    resolveVariant: true
+  })
 
-  const selectedModel = modelRows.find((m) => m.displayName === value.model) || null
-  const modelIsCanonical = selectedModel && !isLegacyId(selectedModel.id)
-
-  const generationsList = useCatalogList(
-    () => (modelIsCanonical ? listGenerations(selectedModel) : Promise.resolve([])),
-    [selectedModel?.id],
-    Boolean(modelIsCanonical)
-  )
-  const generations = generationsList.data || []
-  const selectedGeneration =
-    generations.find((g) => g.id === value.generationId) || (generations.length === 1 ? generations[0] : null)
-
-  const selectedEngine = engineRows.find((e) => e.displayName === value.engine) || null
-  const engineIsCanonical = Boolean(selectedEngine && !isLegacyId(selectedEngine.id) && selectedGeneration)
-
-  const variantsList = useCatalogList(
-    () => (engineIsCanonical ? listVehicleVariants(selectedGeneration) : Promise.resolve([])),
-    [selectedGeneration?.id, selectedEngine?.id],
-    engineIsCanonical
-  )
-
-  // Motor canonical ve aynı neslin varyantları arasında eşleşen bir kayıt
-  // varsa variantId parent state'ine yazılır; üst seçim değişip eşleşme
-  // kaybolursa aynı yoldan temizlenir. `value` dışarıdan kontrol edildiği
-  // için doğrudan mutasyon yerine yalnız fark varsa onChange çağrılır.
+  // Zincirin çözdüğü variantId parent state'ine yazılır; üst seçim değişip
+  // eşleşme kaybolursa aynı yoldan temizlenir. `value` dışarıdan kontrol
+  // edildiği için doğrudan mutasyon yerine yalnız fark varsa onChange çağrılır.
   useEffect(() => {
-    const variant = engineIsCanonical
-      ? (variantsList.data || []).find((v) => v.engine_id === selectedEngine.id) || null
-      : null
-    const nextId = variant?.id || ''
-    if (nextId !== (value.variantId || '')) onChange({ ...value, variantId: nextId })
+    if (variantId !== (value.variantId || '')) onChange({ ...value, variantId })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engineIsCanonical, selectedEngine?.id, variantsList.data])
+  }, [variantId])
 
   const years = useMemo(() => yearOptions(yearRange), [yearRange])
   const selectedBand = useMemo(() => bandForKm(value.km), [value.km])

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
 import AiPanel from '../components/AiPanel'
 import { fetchVerdict, fetchVehicleInfo, isAiConfigured } from '../services/aiService'
@@ -8,6 +8,7 @@ import PageContainer from '../components/Layout/PageContainer'
 import ScoreGauge from '../components/ScoreGauge'
 import ProblemCard from '../components/ProblemCard'
 import PackageExplorer from '../components/PackageExplorer'
+import CanonicalPackageCard from '../components/CanonicalPackageCard'
 import FavoriteButton from '../components/FavoriteButton'
 import { formatKm, formatPrice } from '../utils/formatters'
 import {
@@ -19,7 +20,8 @@ import {
 import { estimateMarketPrice } from '../services/marketService'
 import { buildNegotiationAdvice } from '../services/negotiationService'
 import { buildDecisionSummary } from '../services/decisionService'
-import { buildVehicleProfile } from '../services/catalogService'
+import { buildVehicleProfile, describePackageWithCatalog } from '../services/catalogService'
+import { assessChronicRiskWithCatalog } from '../services/chronicProblemService'
 
 const DECISION_ICON = { al: '✓', dikkatli: '!', alma: '×', belirsiz: '?' }
 
@@ -46,6 +48,39 @@ export default function AnalysisResultPage() {
 
   const [ai, setAi] = useState({ status: 'idle', data: null, message: '' })
   const [lookup, setLookup] = useState({ status: 'idle', data: null, message: '' })
+
+  /*
+   * Canonical paket/kronik risk: yalnız `formData.variantId` varsa (yani
+   * VehiclePicker seçilen motoru canonical bir varyantla eşleştirmişse)
+   * denenir. variantId yoksa ya da canonical veri boş/hatalıysa bu bölüm
+   * hiç görünmez — mevcut legacy `catalog.package`/`result.knownProblems`
+   * görünümleri değişmeden kalır, bu tamamen ek bir bölümdür.
+   */
+  const [canonical, setCanonical] = useState({ package: null, chronic: null })
+  useEffect(() => {
+    const variantId = state?.formData?.variantId
+    if (!variantId) {
+      setCanonical({ package: null, chronic: null })
+      return
+    }
+    let active = true
+    Promise.all([
+      describePackageWithCatalog(state.formData).catch(() => null),
+      assessChronicRiskWithCatalog(state.formData, { variantId }).catch(() => null)
+    ]).then(([pkg, chronic]) => {
+      if (!active) return
+      setCanonical({
+        package: pkg?.source === 'canonical' ? pkg : null,
+        chronic: chronic?.source === 'canonical' ? chronic : null
+      })
+    })
+    return () => {
+      active = false
+    }
+    // state.formData bu sayfanın ömrü boyunca sabittir (yalnız navigasyonla
+    // gelir); yeniden çekmeyi tetikleyen tek gerçek değişken variantId'dir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.formData?.variantId])
 
   if (!state) {
     return <Navigate to="/analiz" replace />
@@ -300,6 +335,8 @@ export default function AnalysisResultPage() {
           </section>
         )}
 
+        <CanonicalPackageCard detail={canonical.package} />
+
         {catalog?.availablePackages?.length > 0 && (
           <>
             <PackageExplorer
@@ -497,6 +534,27 @@ export default function AnalysisResultPage() {
             <div className="problem-list">
               {result.knownProblems.map((problem) => (
                 <ProblemCard problem={problem} key={problem.title} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {canonical.chronic?.items.length > 0 && (
+          <section className="result-card">
+            <div className="market-row">
+              <h3 style={{ margin: 0 }}>Yayınlanmış Katalogdan Risk Kayıtları</h3>
+              <span className="market-label tone-normal">{canonical.chronic.band.label}</span>
+            </div>
+            <p className="market-disclaimer" style={{ marginTop: 0 }}>{canonical.chronic.notice}</p>
+            <div className="problem-list">
+              {canonical.chronic.items.map((item) => (
+                <div className="problem-item" key={item.title}>
+                  <div className="problem-item-head">
+                    <span className="problem-item-title">{item.title}</span>
+                    <RiskBadge risk={item.risk} />
+                  </div>
+                  {item.note && <p>{item.note}</p>}
+                </div>
               ))}
             </div>
           </section>

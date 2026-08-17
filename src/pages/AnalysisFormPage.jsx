@@ -53,8 +53,16 @@ export default function AnalysisFormPage() {
    */
   const [manualEntry, setManualEntry] = useState(false)
 
-  const { brands, models, engines, yearRange, loading: catalogLoading, error: catalogError, retry: retryCatalog } =
-    useVehiclePickerChain(form.brand, form.model)
+  const {
+    brands,
+    models,
+    engines,
+    yearRange,
+    variantId,
+    loading: catalogLoading,
+    error: catalogError,
+    retry: retryCatalog
+  } = useVehiclePickerChain(form.brand, form.model, form.engine, form.year, { resolveVariant: true })
 
   const years = useMemo(() => yearOptions(yearRange), [yearRange])
   const selectedKmBand = useMemo(() => bandForKm(form.km), [form.km])
@@ -152,8 +160,15 @@ export default function AnalysisFormPage() {
     // Yerinde kontrol akışı bu araç üzerinden ilerleyecek.
     setSessionVehicle(form)
 
+    /*
+     * variantId, `form`'un kendisine değil yalnız gönderilen kopyaya eklenir:
+     * form state'i kullanıcının düzenlediği alanlarla sınırlı kalır, variantId
+     * türetilmiş bir değerdir ve her render'da taze hesaplanır. Sonuç
+     * ekranındaki canonical değerleme/kronik risk/paket bölümleri yalnız bu
+     * alan varsa (ve gerçekten canonical bir varyanta eşleşirse) görünür.
+     */
     const result = analyzeVehicle(form)
-    navigate('/sonuc', { state: { formData: form, result } })
+    navigate('/sonuc', { state: { formData: { ...form, variantId }, result } })
   }
 
   return (
