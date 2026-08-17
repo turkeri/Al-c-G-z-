@@ -9,14 +9,16 @@ import ProblemCard from '../components/ProblemCard'
 import HeadlightLoader from '../components/HeadlightLoader'
 import QuotaNote, { useAccount } from '../components/QuotaNote'
 import PackageExplorer from '../components/PackageExplorer'
+import CanonicalPackageCard from '../components/CanonicalPackageCard'
 import { analyzeListing } from '../services/listingAnalysisService'
 import { analyzeVehicle } from '../services/analysisService'
 import { estimateMarketPrice } from '../services/marketService'
 import { valuate, negotiationTarget } from '../services/valuationService'
 import { evaluateDamage } from '../services/damageService'
 import { buildDecisionSummary } from '../services/decisionService'
-import { buildVehicleProfile } from '../services/catalogService'
-import { assessChronicRisk } from '../services/chronicProblemService'
+import { buildVehicleProfile, describePackageWithCatalog } from '../services/catalogService'
+import { assessChronicRisk, assessChronicRiskWithCatalog } from '../services/chronicProblemService'
+import { resolveVariantId } from '../services/catalogAdapter'
 import { fetchListingByInput, looksLikeListingInput, visionToFormData, toFormData } from '../services/listingFetchService'
 import { fetchListingFromScreenshot, isAiConfigured } from '../services/aiService'
 import { loadImageFromFile, drawToCanvas, canvasToJpeg } from '../services/photoAnalysisService'
@@ -205,6 +207,54 @@ export default function ListingAnalysisPage() {
       source: seed ? (seed.via === 'ekran görüntüsü' ? 'ekran-goruntusu' : 'ilan-link') : 'metin'
     })
   }, [report, seed])
+
+  /*
+   * Canonical paket/kronik risk: serbest metinden/görselden okunan
+   * marka+model+yıl+motor bir canonical varyantla eşleşirse (aynı kurallar
+   * VehiclePicker'ın nesil/varyant seçimiyle — bkz. catalogAdapter.resolveVariantId)
+   * bu bölüm dolar. Eşleşmezse ya da canonical veri boş/hatalıysa hiç
+   * görünmez; mevcut legacy `report.catalog.package`/`report.chronic`
+   * görünümleri değişmeden, bunların YANINDA ek bilgi olarak durur.
+   *
+   * Değerleme (`valuateWithCatalog`) kasıtlı olarak buraya bağlanmadı:
+   * canonical referans bulunduğunda `listed`/`diffPercent` alanları boş
+   * kalır, bu da ilanın piyasaya göre nerede durduğunu gösteren bu sayfanın
+   * asıl amacını (bkz. marketSentence) zayıflatır.
+   */
+  const [canonical, setCanonical] = useState({ package: null, chronic: null })
+  useEffect(() => {
+    const formData = report?.listing?.formData
+    if (!formData?.brand || !formData?.model || !formData?.engine) {
+      setCanonical({ package: null, chronic: null })
+      return
+    }
+    let active = true
+    resolveVariantId({
+      brand: formData.brand,
+      model: formData.model,
+      year: formData.year,
+      engine: formData.engine
+    }).then((variantId) => {
+      if (!active) return
+      if (!variantId) {
+        setCanonical({ package: null, chronic: null })
+        return
+      }
+      Promise.all([
+        describePackageWithCatalog({ ...formData, variantId }).catch(() => null),
+        assessChronicRiskWithCatalog(formData, { variantId }).catch(() => null)
+      ]).then(([pkg, chronic]) => {
+        if (!active) return
+        setCanonical({
+          package: pkg?.source === 'canonical' ? pkg : null,
+          chronic: chronic?.source === 'canonical' ? chronic : null
+        })
+      })
+    })
+    return () => {
+      active = false
+    }
+  }, [report])
 
   // ------------------------------------------------------------------ girdi
 
@@ -1054,6 +1104,8 @@ export default function ListingAnalysisPage() {
               </section>
             )}
 
+            <CanonicalPackageCard detail={canonical.package} />
+
             {/*
              * Paket adı ilanda yazmadığında ya da katalogla eşleşmediğinde,
              * 8c bölümü hiç çıkmaz. Bu durumda kullanıcı yine de o model/yıl
@@ -1147,6 +1199,28 @@ export default function ListingAnalysisPage() {
                 <div className="problem-list">
                   {report.analysis.knownProblems.map((problem) => (
                     <ProblemCard problem={problem} key={problem.title} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ---------------- 9b. YAYINLANMIŞ KATALOGDAN RİSK KAYITLARI ---------------- */}
+            {canonical.chronic?.items.length > 0 && (
+              <section className="result-card">
+                <div className="market-row">
+                  <h3 style={{ margin: 0 }}>Yayınlanmış Katalogdan Risk Kayıtları</h3>
+                  <span className="market-label tone-normal">{canonical.chronic.band.label}</span>
+                </div>
+                <p className="market-disclaimer" style={{ marginTop: 0 }}>{canonical.chronic.notice}</p>
+                <div className="problem-list">
+                  {canonical.chronic.items.map((item) => (
+                    <div className="problem-item" key={item.title}>
+                      <div className="problem-item-head">
+                        <span className="problem-item-title">{item.title}</span>
+                        <RiskBadge risk={item.risk} />
+                      </div>
+                      {item.note && <p>{item.note}</p>}
+                    </div>
                   ))}
                 </div>
               </section>

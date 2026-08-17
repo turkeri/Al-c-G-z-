@@ -70,3 +70,54 @@ export async function yearRangeForModel(brandLabel, modelLabel) {
   }
   return legacy.getVehicleEntry(brandLabel, modelLabel)?.yearRange || null
 }
+
+const isLegacyId = (id) => !id || String(id).startsWith('legacy:')
+
+function yearWithinGeneration(year, generation) {
+  const y = Number(year)
+  if (!y || !Number.isFinite(generation.yearStart)) return false
+  const end = Number.isFinite(generation.yearEnd) ? generation.yearEnd : new Date().getFullYear()
+  return y >= generation.yearStart && y <= end
+}
+
+/**
+ * Marka/model/yıl/motor METNİNDEN (bir seçici UI'sinden değil — ilan
+ * metninden ayrıştırılmış ya da görselden okunmuş serbest string'lerden)
+ * canonical bir `vehicle_variant_id` çözmeye çalışır.
+ *
+ * `useVehiclePickerChain`'in nesil/varyant eşleştirme mantığıyla aynı
+ * kuralları izler (React state'i olmadan, tek seferlik async çağrı
+ * olarak): marka/model canonical değilse, ya da nesil/motor eşleşmesi
+ * belirsizse (birden fazla nesil var ve yıl hiçbirinin aralığına
+ * düşmüyorsa) BOŞ döner — yanlış varyanta bağlanmaktansa hiç bağlanmamak
+ * tercih edilir. Ağ hatası da aynı şekilde boş sonuca düşer, asla fırlatmaz.
+ *
+ * ListingAnalysisPage gibi metin/görsel tabanlı akışların
+ * `valuateWithCatalog`/`assessChronicRiskWithCatalog`/
+ * `describePackageWithCatalog`'a bağlanabilmesi için gereken köprüdür.
+ */
+export async function resolveVariantId({ brand, model, year, engine } = {}) {
+  if (!brand || !model || !engine) return ''
+  try {
+    const brandObj = (await listBrands()).find((b) => b.displayName === brand)
+    if (!brandObj || isLegacyId(brandObj.id)) return ''
+
+    const modelObj = (await listModels(brandObj)).find((m) => m.displayName === model)
+    if (!modelObj || isLegacyId(modelObj.id)) return ''
+
+    const generations = await listGenerations(modelObj)
+    const generation =
+      generations.length === 1
+        ? generations[0]
+        : generations.find((g) => yearWithinGeneration(year, g)) || null
+    if (!generation) return ''
+
+    const engineObj = (await listEngines(generation)).find((e) => e.displayName === engine)
+    if (!engineObj || isLegacyId(engineObj.id)) return ''
+
+    const variant = (await listVehicleVariants(generation)).find((v) => v.engine_id === engineObj.id)
+    return variant?.id || ''
+  } catch {
+    return ''
+  }
+}
