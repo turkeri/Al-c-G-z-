@@ -782,6 +782,566 @@ const CURATED_MODELS = [
     ]
   },
 
+  // ==========================================================================
+  // NISSAN
+  // ==========================================================================
+  {
+    brand: 'Nissan',
+    model: 'Qashqai',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'J11',
+        years: '2014-2021',
+        facelift: '2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['renault-r9m', 'renault-m9r', 'renault-h5h-13tce'],
+        transmissionIds: ['manuel', 'jatco-cvt'],
+        note: 'Nissan-Renault ittifakı sayesinde motor ailesi Renault kayıtlarıyla aynıdır; 2018 sonrası kendi 1.2 DIG-T motorunun yerini Renault kaynaklı 1.3 TCe aldı.'
+      }
+    ]
+  },
+  {
+    brand: 'Nissan',
+    model: 'X-Trail',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'T32',
+        years: '2014-2022',
+        facelift: '2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['renault-r9m', 'renault-m9r'],
+        transmissionIds: ['manuel', 'jatco-cvt', 'aisin-6at'],
+        note: '1.6 dCi Renault kaynaklı R9M motordur; 4x4 versiyonlarda farklı otomatik şanzıman kullanılabilir, VIN\'den teyit edilmeli.'
+      }
+    ]
+  },
+  {
+    brand: 'Nissan',
+    model: 'Micra',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'K14',
+        years: '2017-2022',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['renault-h4d-b4d', 'renault-k9k'],
+        transmissionIds: ['manuel'],
+        note: 'Renault Clio 4/5 ile aynı CMF-B platformu ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // VOLVO
+  // ==========================================================================
+  {
+    brand: 'Volvo',
+    model: 'XC60',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'Gen1 facelift (Drive-E)',
+        years: '2013-2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80'],
+        note: '2013 facelift ile eski 5 silindirli motorlar yerini Drive-E ailesine bıraktı; öncesi nesil için motor verisi kataloglanmadı.'
+      },
+      {
+        code: 'Gen2',
+        years: '2017-2023',
+        bodyTypes: ['SUV'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80'],
+        note: 'Türkiye\'de neredeyse tamamı otomatik (Geartronic) satılmıştır.'
+      }
+    ]
+  },
+  {
+    brand: 'Volvo',
+    model: 'S60',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'Gen2 facelift (Drive-E)',
+        years: '2013-2018',
+        bodyTypes: ['Sedan'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80'],
+        note: 'V60 karavan kasası ile aynı motor/şanzıman ailesini paylaşır.'
+      }
+    ]
+  },
+  {
+    brand: 'Volvo',
+    model: 'XC90',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'Gen2',
+        years: '2015-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['volvo-vea-d4', 'volvo-vea-t'],
+        transmissionIds: ['aisin-tf80'],
+        note: 'Tüm motorlar 2.0 litre 4 silindir turbo/turbo-kompresörlüdür; V8/6 silindir seçenek yoktur.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // MINI
+  // ==========================================================================
+  {
+    brand: 'Mini',
+    model: 'Cooper',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'R56',
+        years: '2006-2013',
+        facelift: '2010',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['psa-ep6', 'bmw-n13-b38', 'psa-dv6'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: '2010 öncesi Cooper/Cooper S motorları BMW-PSA ortak girişimi Prince ailesindendir (psa-ep6); Cooper D dizeli PSA kaynaklı DV6\'dır.'
+      },
+      {
+        code: 'F56',
+        years: '2014-2021',
+        facelift: '2018',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['bmw-n13-b38', 'bmw-b48', 'bmw-b47'],
+        transmissionIds: ['manuel', 'zf8hp'],
+        note: 'F56 ile birlikte tüm motorlar BMW\'nin kendi üç/dört silindirli ailesine (B-serisi) geçti.'
+      }
+    ]
+  },
+  {
+    brand: 'Mini',
+    model: 'Countryman',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'F60',
+        years: '2017-2023',
+        bodyTypes: ['SUV'],
+        engineIds: ['bmw-b48', 'bmw-b47'],
+        transmissionIds: ['manuel', 'zf8hp'],
+        note: 'ALL4 (4x4) versiyonlarında şanzıman kodu farklı olabilir; ilan/VIN üzerinden doğrulanmalı.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // JEEP
+  // ==========================================================================
+  {
+    brand: 'Jeep',
+    model: 'Renegade',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'BU',
+        years: '2014-2024',
+        facelift: '2018',
+        bodyTypes: ['SUV'],
+        engineIds: ['fiat-multijet-16', 'fiat-firefly-hybrid'],
+        transmissionIds: ['manuel', 'zf9hp'],
+        note: 'Fiat 500X ile aynı platform ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+  {
+    brand: 'Jeep',
+    model: 'Compass',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'MP',
+        years: '2017-2024',
+        facelift: '2021',
+        bodyTypes: ['SUV'],
+        engineIds: ['fiat-multijet-16', 'fiat-firefly-hybrid'],
+        transmissionIds: ['manuel', 'zf9hp'],
+        note: '4xe hibrit versiyonlarda ayrı bir güç aktarma organı vardır; bu kayıt yalnızca klasik içten yanmalı motorları kapsar.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // CITROËN
+  // ==========================================================================
+  {
+    brand: 'Citroën',
+    model: 'C4',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'B7',
+        years: '2010-2018',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['psa-dv6', 'psa-puretech', 'psa-ep6'],
+        transmissionIds: ['manuel', 'al4-dp0'],
+        note: 'Peugeot 308 ile aynı PSA platformu ve motor ailesini paylaşır.'
+      }
+    ]
+  },
+  {
+    brand: 'Citroën',
+    model: 'C3',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'Gen3',
+        years: '2017-2024',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['psa-puretech', 'psa-bluehdi'],
+        transmissionIds: ['manuel', 'eat8'],
+        note: ''
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // MAZDA
+  // ==========================================================================
+  {
+    brand: 'Mazda',
+    model: 'Mazda3',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'BM/BN',
+        years: '2013-2019',
+        facelift: '2016',
+        bodyTypes: ['Hatchback', 'Sedan'],
+        engineIds: ['mazda-skyactiv-g', 'mazda-skyactiv-d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      },
+      {
+        code: 'BP',
+        years: '2019-2024',
+        bodyTypes: ['Hatchback', 'Sedan'],
+        engineIds: ['mazda-skyactiv-g', 'mazda-skyactiv-d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Mazda',
+    model: 'CX-5',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'KE',
+        years: '2012-2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['mazda-skyactiv-g', 'mazda-skyactiv-d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      },
+      {
+        code: 'KF',
+        years: '2017-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['mazda-skyactiv-g', 'mazda-skyactiv-d'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // SUZUKI
+  // ==========================================================================
+  {
+    brand: 'Suzuki',
+    model: 'Vitara',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'LY',
+        years: '2015-2024',
+        facelift: '2018',
+        bodyTypes: ['SUV'],
+        engineIds: ['suzuki-k-petrol', 'suzuki-ddis'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Suzuki',
+    model: 'Swift',
+    segment: 'mini',
+    generations: [
+      {
+        code: 'AZ',
+        years: '2017-2024',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['suzuki-k-petrol'],
+        transmissionIds: ['manuel'],
+        note: ''
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // MITSUBISHI
+  // ==========================================================================
+  {
+    brand: 'Mitsubishi',
+    model: 'ASX',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'GA',
+        years: '2010-2023',
+        facelift: '2016',
+        bodyTypes: ['SUV'],
+        engineIds: ['mitsubishi-did-16', 'mitsubishi-mivec'],
+        transmissionIds: ['manuel', 'jatco-cvt'],
+        note: 'Uzun üretim ömrü boyunca birkaç kez hafif yüz güncellemesi aldı; motor ailesi büyük ölçüde sabit kaldı.'
+      }
+    ]
+  },
+  {
+    brand: 'Mitsubishi',
+    model: 'Outlander',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'GF',
+        years: '2012-2021',
+        facelift: '2015',
+        bodyTypes: ['SUV'],
+        engineIds: ['mitsubishi-did-16', 'mitsubishi-mivec'],
+        transmissionIds: ['manuel', 'jatco-cvt', 'aisin-6at'],
+        note: 'PHEV (plug-in hibrit) versiyon ayrı bir güç aktarma organına sahiptir; bu kayıt klasik motorları kapsar.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // ALFA ROMEO
+  // ==========================================================================
+  {
+    brand: 'Alfa Romeo',
+    model: 'Giulietta',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: '940',
+        years: '2010-2020',
+        facelift: '2016',
+        bodyTypes: ['Hatchback'],
+        engineIds: ['fiat-multijet-16', 'fiat-tjet-14'],
+        transmissionIds: ['manuel'],
+        note: 'TCT çift kavramalı otomatik seçeneği de sunulmuştur; bu şanzıman katalogda ayrıca kayıtlı değildir, ilan üzerinden teyit edilmelidir.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // LAND ROVER / JAGUAR
+  // ==========================================================================
+  {
+    brand: 'Land Rover',
+    model: 'Discovery Sport',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'L550',
+        years: '2015-2024',
+        facelift: '2019',
+        bodyTypes: ['SUV'],
+        engineIds: ['jlr-ingenium-20d'],
+        transmissionIds: ['zf9hp'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Land Rover',
+    model: 'Range Rover Evoque',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'L538',
+        years: '2011-2018',
+        bodyTypes: ['SUV'],
+        engineIds: [],
+        transmissionIds: [],
+        note: 'Bu nesil Ingenium öncesi (Ford kaynaklı) motorlar kullanır; motor verisi henüz kataloglanmadı.'
+      },
+      {
+        code: 'L551',
+        years: '2019-2024',
+        bodyTypes: ['SUV'],
+        engineIds: ['jlr-ingenium-20d'],
+        transmissionIds: ['zf9hp'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Jaguar',
+    model: 'XE',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'X760',
+        years: '2015-2024',
+        facelift: '2019',
+        bodyTypes: ['Sedan'],
+        engineIds: ['jlr-ingenium-20d'],
+        transmissionIds: ['zf8hp'],
+        note: ''
+      }
+    ]
+  },
+  {
+    brand: 'Jaguar',
+    model: 'XF',
+    segment: 'premium',
+    generations: [
+      {
+        code: 'X260',
+        years: '2015-2024',
+        bodyTypes: ['Sedan'],
+        engineIds: ['jlr-ingenium-20d'],
+        transmissionIds: ['zf8hp'],
+        note: ''
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // SUBARU
+  // ==========================================================================
+  {
+    brand: 'Subaru',
+    model: 'Forester',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'SJ',
+        years: '2013-2018',
+        bodyTypes: ['SUV'],
+        engineIds: ['subaru-fb'],
+        transmissionIds: ['manuel'],
+        note: 'Otomatik versiyonlar Subaru\'ya özgü Lineartronic CVT kullanır; bu şanzıman katalogda ayrıca kayıtlı değildir.'
+      }
+    ]
+  },
+  {
+    brand: 'Subaru',
+    model: 'XV',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'GP',
+        years: '2012-2017',
+        bodyTypes: ['SUV'],
+        engineIds: ['subaru-fb'],
+        transmissionIds: ['manuel'],
+        note: 'Otomatik versiyonlar Subaru\'ya özgü Lineartronic CVT kullanır; bu şanzıman katalogda ayrıca kayıtlı değildir.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // CHEVROLET
+  // ==========================================================================
+  {
+    brand: 'Chevrolet',
+    model: 'Cruze',
+    segment: 'kompakt',
+    generations: [
+      {
+        code: 'J300',
+        years: '2009-2016',
+        bodyTypes: ['Sedan', 'Hatchback'],
+        engineIds: ['gm-vcdi-20', 'gm-ecotec'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: 'Opel Astra J ile aynı GM platformunu ve büyük ölçüde aynı motor ailesini paylaşır.'
+      }
+    ]
+  },
+  {
+    brand: 'Chevrolet',
+    model: 'Captiva',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'C100/C140',
+        years: '2006-2016',
+        bodyTypes: ['SUV'],
+        engineIds: ['gm-vcdi-20'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: 'Opel Antara ile aynı platform ve motoru paylaşır.'
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // SSANGYONG
+  // ==========================================================================
+  {
+    brand: 'SsangYong',
+    model: 'Korando',
+    segment: 'suv',
+    generations: [
+      {
+        code: 'C300',
+        years: '2010-2019',
+        facelift: '2013',
+        bodyTypes: ['SUV'],
+        engineIds: ['ssangyong-xdi'],
+        transmissionIds: ['manuel', 'aisin-6at'],
+        note: ''
+      }
+    ]
+  },
+
+  // ==========================================================================
+  // TOFAŞ
+  // ==========================================================================
+  {
+    brand: 'Tofaş',
+    model: 'Şahin',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'Klasik',
+        years: '1986-1998',
+        bodyTypes: ['Sedan'],
+        engineIds: [],
+        transmissionIds: ['manuel'],
+        note: 'Fiat 131 tabanlı 1.6 SOHC motor; karbüratörlü ve sonradan enjeksiyonlu versiyonları vardır. Motor kodu bu katalogda ayrıca tutulmaz. Gövde paslanmaya yatkındır; alt kaporta ve savaş mahalli mutlaka kontrol edilmeli.'
+      }
+    ]
+  },
+  {
+    brand: 'Tofaş',
+    model: 'Doğan',
+    segment: 'sedan',
+    generations: [
+      {
+        code: 'Klasik',
+        years: '1987-1999',
+        bodyTypes: ['Sedan'],
+        engineIds: [],
+        transmissionIds: ['manuel'],
+        note: 'Şahin ile aynı platform ve motor ailesini paylaşır; kaporta paslanması ve karbüratör bakımı en yaygın gündem maddeleridir.'
+      }
+    ]
+  },
+
   // ========================================================================
   // KAPSAM GENİŞLETME — motor/şanzıman aileleri katalogda zaten kayıtlı olan
   // yaygın Türkiye modelleri. Burada yeni arıza veya maliyet uydurulmaz;
@@ -887,7 +1447,15 @@ const BASIC_COVERAGE_MODELS = [
   ['Renault', 'Captur', 'suv'], ['Renault', 'Kadjar', 'suv'], ['Renault', 'Kangoo', 'ticari'],
   ['Renault', 'Symbol', 'mini'], ['Renault', 'Talisman', 'orta'],
   ['Fiat', 'Doblo', 'ticari'], ['Fiat', 'Linea', 'kompakt'], ['Fiat', 'Panda', 'mini'], ['Fiat', 'Tipo', 'kompakt'],
-  ['Ford', 'EcoSport', 'suv'], ['Ford', 'Kuga', 'suv'], ['Ford', 'Mondeo', 'orta']
+  ['Ford', 'EcoSport', 'suv'], ['Ford', 'Kuga', 'suv'], ['Ford', 'Mondeo', 'orta'],
+  ['Skoda', 'Fabia', 'mini'], ['Skoda', 'Superb', 'üst'], ['Skoda', 'Kodiaq', 'suv'], ['Skoda', 'Karoq', 'suv'],
+  ['Seat', 'Ibiza', 'mini'], ['Seat', 'Ateca', 'suv'],
+  ['Kia', 'Ceed', 'kompakt'], ['Kia', 'Picanto', 'mini'], ['Kia', 'Sorento', 'suv'], ['Kia', 'Stonic', 'suv'],
+  ['Opel', 'Insignia', 'orta'], ['Opel', 'Mokka', 'suv'], ['Opel', 'Grandland', 'suv'],
+  ['Dacia', 'Jogger', 'suv'], ['Dacia', 'Spring', 'mini'],
+  ['Honda', 'Jazz', 'mini'], ['Honda', 'HR-V', 'suv'], ['Honda', 'Accord', 'orta'],
+  ['Hyundai', 'Elantra', 'sedan'], ['Hyundai', 'Bayon', 'suv'], ['Hyundai', 'Santa Fe', 'suv'],
+  ['Peugeot', '508', 'orta'], ['Peugeot', '2008', 'suv'], ['Peugeot', 'Partner', 'ticari']
 ].map(([brand, model, segment]) => ({
   brand,
   model,

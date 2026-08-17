@@ -2350,6 +2350,95 @@ export const ENGINES = [
       { title: 'Hibrit şanzıman yazılım/geçiş şikayetleri', risk: 'Düşük', cost: '0 - 20.000 TL', note: 'Güncel yazılımın yüklü olup olmadığı servis kaydından sorulmalı.' },
       { title: 'Yeni teknoloji, uzun vadeli veri sınırlı', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; garanti kapsamı bu araçlarda önem kazanır.' }
     ]
+  },
+
+  // ==========================================================================
+  // MARKA KAPSAMINI GENİŞLETME — daha önce yalnızca dizel/hibrit motoru
+  // kayıtlı olan gruplara benzinli karşılıkları eklenir.
+  // ==========================================================================
+  {
+    id: 'volvo-vea-t',
+    family: 'Drive-E VEA',
+    name: '1.5 T2/T3 · 2.0 T4/T5',
+    aliases: ['T3', 'T4', 'T5', 'Drive-E Turbo'],
+    codes: ['B4154T3', 'B4204T', 'B4204T19'],
+    group: 'Volvo',
+    displacement: 1969,
+    fuel: 'Benzin',
+    power: '150 - 254 HP',
+    torque: '250 - 350 Nm',
+    years: '2013 - 2022',
+    usedIn: ['Volvo V40', 'Volvo S60', 'Volvo XC60', 'Volvo XC90'],
+    durability: 76,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: 'Turbo ve kompresörü (T5/T6) birlikte olan versiyonlarda yağ kalitesi önemlidir.' },
+    problems: [
+      { title: 'Triger zinciri gerdiricisi aşınması', risk: 'Orta', cost: '12.000 - 35.000 TL', note: 'Soğuk çalıştırmada kısa süreli metalik tıkırtı erken belirtidir.' },
+      { title: 'Yağ buharı ayırıcısından (PCV) intercoolere yağ sızıntısı', risk: 'Orta', cost: '4.000 - 15.000 TL', note: 'Turbo borularında yağlanma görülürse kontrol ettirilmeli.' },
+      { title: 'Yüksek basınç yakıt pompası arızası', risk: 'Düşük', cost: '8.000 - 20.000 TL', note: '' }
+    ]
+  },
+  {
+    id: 'mitsubishi-mivec',
+    family: 'MIVEC',
+    name: '1.6 / 2.0 / 2.4 MIVEC',
+    aliases: ['4J11', '4B10', '4B11', '4B12'],
+    codes: ['4J11', '4B10', '4B12'],
+    group: 'Mitsubishi',
+    displacement: 1998,
+    fuel: 'Benzin',
+    power: '117 - 150 HP',
+    torque: '154 - 220 Nm',
+    years: '2010 - 2021',
+    usedIn: ['Mitsubishi ASX', 'Mitsubishi Outlander', 'Mitsubishi Lancer'],
+    durability: 80,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'MIVEC değişken supap zamanlama aktüatörü arızası', risk: 'Düşük', cost: '5.000 - 15.000 TL', note: 'Rölantide hafif düzensizlik ve arıza lambası ile kendini gösterir.' },
+      { title: 'Emme supabı karbon birikimi', risk: 'Düşük', cost: '5.000 - 15.000 TL', note: 'Direkt enjeksiyonlu versiyonlarda (4B12 MIVEC DI) görülür.' },
+      { title: 'Motor takozu sertleşmesi', risk: 'Düşük', cost: '3.000 - 8.000 TL', note: 'Rölantide titreşim artışına yol açar.' }
+    ]
+  },
+  {
+    id: 'suzuki-k-petrol',
+    family: 'K-Series',
+    name: '1.0 Boosterjet · 1.4 / 1.6 VVT',
+    aliases: ['K10C', 'K14D', 'M16A'],
+    codes: ['K14D', 'K10C', 'M16A'],
+    group: 'Suzuki',
+    displacement: 1373,
+    fuel: 'Benzin',
+    power: '90 - 140 HP',
+    torque: '130 - 235 Nm',
+    years: '2010 - 2024',
+    usedIn: ['Suzuki SX4', 'Suzuki Vitara', 'Suzuki Swift', 'Suzuki S-Cross'],
+    durability: 86,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: 'Ailenin genel güvenilirlik notu yüksektir; bakımı ihmal edilmediği sürece sorun azdır.' },
+    problems: [
+      { title: 'Rölanti kontrol/VVT aktüatörü kirlenmesi', risk: 'Düşük', cost: '2.000 - 6.000 TL', note: 'Rölantide dalgalanma ile fark edilir.' },
+      { title: 'Boosterjet turbosunda hafif yağ tüketimi', risk: 'Düşük', cost: '0 - 6.000 TL', note: '1.0 Boosterjet\'te bazı araçlarda bildirilir; garanti takibi önemlidir.' },
+      { title: 'Ateşleme bobini arızası', risk: 'Düşük', cost: '1.500 - 4.000 TL', note: '' }
+    ]
+  },
+  {
+    id: 'gm-ecotec',
+    family: 'Ecotec Family 1',
+    name: '1.4 / 1.6 / 1.8 Ecotec',
+    aliases: ['LDE', 'F16D4', 'A16XER'],
+    codes: ['LDE', 'A16XER', 'F16D4'],
+    group: 'GM',
+    displacement: 1598,
+    fuel: 'Benzin',
+    power: '86 - 141 HP',
+    torque: '150 - 175 Nm',
+    years: '2005 - 2016',
+    usedIn: ['Chevrolet Cruze', 'Chevrolet Aveo', 'Opel Astra', 'Opel Corsa'],
+    durability: 79,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: '' },
+    problems: [
+      { title: 'PCV (karter gazı) valfi tıkanması', risk: 'Düşük', cost: '1.500 - 4.000 TL', note: 'İhmal edilirse contalardan yağ sızıntısına yol açar.' },
+      { title: 'Ateşleme bobini/kablo arızası', risk: 'Düşük', cost: '1.500 - 5.000 TL', note: 'Rölantide titreme ve arıza lambası ile kendini gösterir.' },
+      { title: '1.8 (LDE) motorda hafif yağ tüketimi', risk: 'Orta', cost: '0 - 12.000 TL', note: 'Yüksek kilometrede piston segmanı kaynaklı yağ tüketimi bildirilir; yağ seviyesi sık kontrol edilmeli.' }
+    ]
   }
 ]
 
