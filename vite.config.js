@@ -13,6 +13,7 @@ export default defineConfig({
         name: 'Araç Dedektifi',
         short_name: 'Araç Dedektifi',
         description: 'Aracı almadan önce riskleri öğren.',
+        lang: 'tr',
         theme_color: '#3454d1',
         background_color: '#f3f5fa',
         display: 'standalone',
