@@ -295,10 +295,14 @@ async function callTask(task, payload) {
     if (!response.ok) {
       // Sunucu anlaşılır bir neden gönderdiyse onu göster
       const detail = await response.json().catch(() => null)
+      // Sunucu tarafında başarısız denemeler için hak iade edilir; ekranın
+      // gösterdiği kalan hak sayısı da bu iadeyi hemen yansıtmalı.
+      if (detail?.account) setCachedAccount(detail.account)
       return {
         error: typeof detail?.error === 'string' && detail.error.length < 160
           ? detail.error
-          : 'Detaylı değerlendirme şu an alınamadı.'
+          : 'Detaylı değerlendirme şu an alınamadı.',
+        account: detail?.account || null
       }
     }
 

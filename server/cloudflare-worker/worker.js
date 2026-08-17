@@ -550,6 +550,36 @@ async function consumeQuota(env, deviceId, ip) {
 }
 
 /**
+ * `consumeQuota` ile düşülen hakkı geri verir — yalnızca Gemini çağrısı
+ * bizim tarafımızdan kaynaklı bir nedenle tamamen başarısız olduğunda
+ * çağrılır. Kullanıcının hiç sonuç almadığı bir istek için hak harcanmış
+ * sayılmamalı. En kötü ihtimalle (DB hatası) sessizce eski hesabı döner;
+ * bu bir iade başarısızlığıdır, isteğin kendisini bozmaz.
+ */
+async function refundQuota(env, deviceId, previousAccount) {
+  try {
+    const now = Date.now()
+    await env.DB.prepare(
+      `UPDATE accounts
+          SET used_count = MAX(0, used_count - 1),
+              total_count = MAX(0, total_count - 1),
+              last_seen_at = ?2
+        WHERE id = ?1`
+    )
+      .bind(deviceId, now)
+      .run()
+    return {
+      ...previousAccount,
+      used: Math.max(0, previousAccount.used - 1),
+      remaining: Math.min(previousAccount.limit, previousAccount.remaining + 1),
+      total: Math.max(0, previousAccount.total - 1)
+    }
+  } catch {
+    return previousAccount
+  }
+}
+
+/**
  * `parts` bir metin dizesi ya da Gemini'nin beklediği parça listesi olabilir.
  * Görsel inceleme için parça listesi gerekir: [{text}, {inlineData:{...}}].
  */
@@ -672,7 +702,12 @@ async function tryModel(env, model, prompt, schema, { disableThinking = true } =
 
   const generationConfig = {
     temperature: 0.3,
-    maxOutputTokens: 1600,
+    // 1600 birkaç görevde (özellikle listing-vision: birden fazla görselden
+    // uzun serbest metin alanları -- açıklama, hasar kaydı, boya bilgisi --
+    // aynen kopyalanıyor) çıktının ortasında kesilip JSON'u bozabiliyordu;
+    // bu da kullanıcıya "Analiz alınamadı" gibi anlamsız bir hata olarak
+    // yansıyordu. Tüm görevler için ortak, daha güvenli bir tavan.
+    maxOutputTokens: 3072,
     responseMimeType: 'application/json',
     responseSchema: schema
   }
@@ -1253,10 +1288,16 @@ export default {
      * bir soru doğurur ve asıl amacı (maliyet kontrolü) zayıflatır. Yanıt
      * alınamazsa kullanıcı bir hakkını kaybeder; bunun karşılığında sunucu
      * kendini sınırsız çağrıya açmamış olur.
+     *
+     * İstisna: Gemini çağrısı BİZİM tarafımızdan kaynaklı bir nedenle
+     * (model aşırı yüklü, JSON ayrıştırılamadı, zaman aşımı vb.) tamamen
+     * başarısız olursa, kullanıcı hiçbir sonuç almadan hakkını kaybetmiş
+     * olur — bu adil değildir. Bu durumda aşağıda hak iade edilir.
      */
     let quota = null
+    let deviceId = null
     if (env.DB) {
-      const deviceId = readDeviceId(request)
+      deviceId = readDeviceId(request)
       if (!deviceId) {
         return json({ error: 'Cihaz kimliği gerekli. Uygulamayı güncelleyin.' }, 400, cors)
       }
@@ -1281,10 +1322,14 @@ export default {
     const payload = task.parts ? task.parts(body) : task.prompt(body)
     const outcome = await callGemini(env, payload, task.schema)
     if (!outcome.ok) {
+      if (env.DB && deviceId && quota) {
+        quota = await refundQuota(env, deviceId, quota)
+      }
       return json(
         {
           error: outcome.userMessage || 'Analiz alınamadı',
-          model: outcome.model
+          model: outcome.model,
+          account: quota
         },
         outcome.status || 502,
         cors
