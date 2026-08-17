@@ -1,1 +1,0 @@
-import{j as r}from"./index-uf1fWuNf.js";const i={Düşük:"risk-badge risk-low",Orta:"risk-badge risk-mid",Yüksek:"risk-badge risk-high"};function e({risk:s}){return r.jsx("span",{className:i[s]||"risk-badge",children:s})}export{e as R};
