@@ -16,7 +16,7 @@ export default function AuthCallbackPage() {
   const { status, error } = useAuth()
 
   useEffect(() => {
-    if (status === 'authenticated') navigate('/hesap', { replace: true })
+    if (status === 'authenticated') navigate('/', { replace: true })
   }, [status, navigate])
 
   return (

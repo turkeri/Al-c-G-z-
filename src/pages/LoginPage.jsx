@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
-  if (!loading && user) return <Navigate to={location.state?.from || '/hesap'} replace />
+  if (!loading && user) return <Navigate to={location.state?.from || '/'} replace />
 
   async function handleGoogle() {
     setBusy(true); setError('')
