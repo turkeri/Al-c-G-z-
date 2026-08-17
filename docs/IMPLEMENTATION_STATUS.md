@@ -85,10 +85,12 @@
 - Kayıtların gerçek cihazlar arasında UI'ya uygulanması ve operasyonların
   ileride IndexedDB'ye taşınması sonraki ürünselleştirme turunda ele alınmalıdır.
 
-## Aşama 5 — canonical katalog mimarisi: tamamlandı (migration uygulanmadı, publish yapılmadı)
+## Aşama 5 — canonical katalog mimarisi: tamamlandı, remote D1'e uygulandı ve publish edildi
 
 - Revision snapshot modeli, canonical şema (marka/model/nesil/motor/şanzıman/paket/donanım/varyant/sorun/bakım/değer), admin CRUD + review workflow, public read API — [CATALOG_ARCHITECTURE](CATALOG_ARCHITECTURE.md), [CATALOG_ADMIN](CATALOG_ADMIN.md), [CATALOG_REVIEW](CATALOG_REVIEW.md).
-- Migration zinciri 0001–0009 kaynakta durur; hiçbiri remote D1'e uygulanmadı, hiçbir revision publish edilmedi.
+- Migration zinciri 0001–0009 remote D1'e (`arac-dedektifi`) uygulandı; `npm run catalog:plan`'ın ürettiği doğrulanmış plan (`planHash` eşleşti, `canApply:true`) draft bir revizyon olarak yazıldı, sunucu tarafı doğrulama (0 blocking error, 753 bilgilendirici uyarı — eşleşmemiş sorun arketipi/bakım kapsamı) geçti ve publish edildi.
+- `GET /catalog/meta` artık `available:true` ve gerçek sayıları dönüyor: 31 marka, 76 model, 62 nesil, 107 motor, 28 şanzıman, 134 paket, 53 donanım, 43 araç varyantı, 20 sorun arketipi, 740 sorun-kapsam eşleşmesi, 14 bakım kalemi, 20 referans değer, 8 değerleme faktörü.
+- Worker (`arac-dedektifi-ai`) ve frontend (`arac-dedektifi-web`, Cloudflare Workers static assets) canlıda; Supabase Auth (e-posta magic link + Resend SMTP) çalışıyor, ilk admin hesabı bootstrap edildi.
 
 ## Aşama 6 — katalog admin ekranı: tamamlandı
 
@@ -96,6 +98,7 @@
 
 ## Aşama 7A — runtime tüketicilerin async canonical-first akışa taşınması: kısmen tamamlandı
 
+- Canonical katalog artık publish edilmiş durumda (bkz. Aşama 5) — bu bölümdeki tüm canonical-first akışlar artık gerçek kullanıcı trafiğinde de tetikleniyor, yalnızca mock veriyle değil.
 - `catalogAdapter` + `useCatalogList`/`useVehiclePickerChain` kancaları: VehiclePicker, AnalysisForm, ChronicIssues, Diagnosis, Inspection, Compare'in marka/model/motor seçicileri artık önce yayınlanmış katalog, yoksa/hata olursa legacy veri kümesi kullanır.
 - `useVehiclePickerChain`, `resolveVariant: true` ile nesil-doğru yıl aralığı ve varyant kimliği (`variantId`) de çözer; VehiclePicker VE AnalysisFormPage bunu kullanır — iki ayrı implementasyon yerine tek kaynak.
 - `AnalysisFormPage → AnalysisResultPage` zinciri canonical'a bağlandı: `variantId` çözülürse sonuç ekranı `describePackageWithCatalog`/`assessChronicRiskWithCatalog`'u ek (mevcut legacy görünümleri bozmadan) çağırır ve canonical paket/kronik risk kartlarını gösterir. Gerçek Playwright taramasıyla (dolu canonical katalog mock'u) uçtan uca doğrulandı — bkz. [CATALOG_CONSUMERS](CATALOG_CONSUMERS.md).
