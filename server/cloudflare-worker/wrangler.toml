@@ -16,7 +16,11 @@ database_id = "07b6820f-33e6-4ba6-b4dc-b16c792c826f"
 
 # Sadece kendi uygulamanızın çağırmasını isterseniz burayı doldurun.
 # Boş bırakılırsa tüm kaynaklara izin verilir (geliştirme için pratik, yayında daraltın).
-# ALLOWED_ORIGINS = "https://uygulamaniz.com,capacitor://localhost"
+ALLOWED_ORIGINS = "http://localhost:5173"
+APP_ENV = "production"
+SUPABASE_URL = "https://rvdtgudsgqtxfarvgqvf.supabase.co"
+SUPABASE_JWT_ISSUER = "https://rvdtgudsgqtxfarvgqvf.supabase.co/auth/v1"
+SUPABASE_JWT_AUDIENCE = "authenticated"
 
 # GEMINI_API_KEY buraya YAZILMAZ. Şu komutla gizli olarak eklenir:
 #   npx wrangler secret put GEMINI_API_KEY
