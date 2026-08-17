@@ -110,7 +110,8 @@ const BRAND_GROUPS = {
   suzuki: 'Suzuki',
   mitsubishi: 'Mitsubishi',
   chevrolet: 'GM', 'land rover': 'JLR', jaguar: 'JLR',
-  subaru: 'Subaru', ssangyong: 'SsangYong', infiniti: 'Renault-Nissan'
+  subaru: 'Subaru', ssangyong: 'SsangYong', infiniti: 'Renault-Nissan',
+  porsche: 'VAG', mg: 'MG'
 }
 
 /*

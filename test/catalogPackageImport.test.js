@@ -13,7 +13,7 @@ const minimalPlan = () => ({ revisionId: 'dry-run:core-v1', sourceManifestStable
 test('real package dry-run has 134 packages, 53 equipment and keeps core revision compatible', async () => {
   const report = await buildPackagesDryRun()
   assert.equal(report.counts.packages, 134)
-  assert.equal(report.counts.equipment, 53)
+  assert.equal(report.counts.equipment, 61)
   assert.equal(report.corePlan.compatible, true)
   assert.equal(report.canImport, true)
 })
@@ -33,10 +33,10 @@ test('ambiguous or low confidence matching stays review-only', () => {
 })
 test('known unresolved package model relations remain review candidates', async () => {
   const report = await buildPackagesDryRun()
-  const expected = ['Audi|Q3', 'Skoda|Octavia', 'Honda|CR-V', 'Ford|Fiesta', 'Ford|Kuga', 'Peugeot|208', 'Opel|Corsa', 'Hyundai|i10', 'Kia|Sportage', 'Kia|Rio']
+  const expected = ['Audi|Q3', 'Skoda|Octavia', 'Honda|CR-V', 'Ford|Fiesta', 'Ford|Kuga', 'Peugeot|208', 'Opel|Corsa', 'Hyundai|i10', 'Kia|Sportage']
   const unresolved = new Set(report.reviewCandidates.map((item) => `${item.brand}|${item.model}`))
   for (const key of expected) assert.ok(unresolved.has(key))
-  assert.equal(report.reviewCandidates.filter((item) => expected.includes(`${item.brand}|${item.model}`)).length, 10)
+  assert.equal(report.reviewCandidates.filter((item) => expected.includes(`${item.brand}|${item.model}`)).length, 9)
 })
 test('validator blocks missing equipment, orphan generation, invalid years and source collisions', () => {
   const plan = minimalPlan()

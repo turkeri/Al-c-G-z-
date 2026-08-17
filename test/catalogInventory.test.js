@@ -15,8 +15,8 @@ const execFileAsync = promisify(execFile)
 const report = buildInventoryReport()
 
 test('entity türleri ayrı sayılır', () => {
-  assert.equal(report.summary.brands, 31)
-  assert.equal(report.summary.engineDefinitions, 118)
+  assert.equal(report.summary.brands, 35)
+  assert.equal(report.summary.engineDefinitions, 121)
   assert.notEqual(report.summary.engineDefinitions, report.summary.transmissionDefinitions)
 })
 
@@ -55,7 +55,7 @@ test('geçersiz yıl aralığı ve negatif değer yardımcılarla reddedilir', (
 
 test('warning ve blocking error ayrı tutulur', () => {
   assert.equal(report.integrity.blockingErrorCount, 0)
-  assert.equal(report.integrity.warningCount, 3)
+  assert.equal(report.integrity.warningCount, 2)
   assert.notStrictEqual(report.integrity.blockingErrors, report.integrity.warnings)
 })
 

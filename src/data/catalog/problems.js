@@ -294,6 +294,133 @@ export const PROBLEM_ARCHETYPES = [
     symptom: 'Araç içinde nem kokusu, camlarda buğulanma, tavan döşemesinde leke',
     checkHow:
       'Tavan döşemesinin köşelerini elle yokla. Panoramik tavanlı araçlarda drenaj kanalları tıkanınca elektronik aksama su verir.'
+  },
+
+  // --------------------------------------------------------------- MOTOR (2)
+  {
+    id: 'zincir-gerdirici',
+    system: 'motor',
+    title: 'Triger zinciri gerdiricisi aşınması',
+    appliesTo: { minKm: 100000 },
+    risk: 'Orta',
+    cost: '8.000 - 35.000 TL',
+    checkKm: '100000-220000',
+    symptom: 'Soğuk çalıştırmada 1-2 saniyelik metalik tıkırtı, rölantide hafif titreşim',
+    checkHow:
+      'Motoru soğukken çalıştır ve ilk saniyelere kulak ver; tıkırtı hemen kaybolmuyorsa gerdirici veya zincir kılavuzu aşınmış olabilir.'
+  },
+  {
+    id: 'enjektor-arizasi',
+    system: 'motor',
+    title: 'Enjektör aşınması / sızdırması',
+    appliesTo: { fuel: 'Dizel', minKm: 150000 },
+    risk: 'Orta',
+    cost: '10.000 - 40.000 TL',
+    checkKm: '150000-300000',
+    symptom: 'Sert/düzensiz rölanti, duman rengi değişimi, yakıt tüketiminde artış',
+    checkHow:
+      'Servis kaydında enjektör debisi (return flow) testi yapılıp yapılmadığını sor; yapılmadıysa alım öncesi ölçtürülmesi önerilir.'
+  },
+  {
+    id: 'yakit-pompasi',
+    system: 'motor',
+    title: 'Yüksek basınç yakıt pompası aşınması',
+    appliesTo: { minKm: 150000 },
+    risk: 'Orta',
+    cost: '10.000 - 45.000 TL',
+    checkKm: '150000-300000',
+    symptom: 'Zor çalışma, güç kesilmesi, arıza lambası',
+    checkHow:
+      'Kötü kalite yakıtla uzun süre kullanılan araçlarda daha sık görülür; yakıt istasyonu geçmişi ilan sahibine sorulmalı.'
+  },
+
+  // ------------------------------------------------------------- ŞANZIMAN (1)
+  {
+    id: 'volan-cift-kutleli',
+    system: 'sanziman',
+    title: 'Çift kütleli volan (DMF) aşınması',
+    appliesTo: { transmissionType: 'Manuel', minKm: 150000 },
+    risk: 'Orta',
+    cost: '15.000 - 45.000 TL',
+    checkKm: '150000-280000',
+    symptom: 'Rölantide vuruntu/tıkırtı, debriyaja basınca titreşim, hızlanırken sarsıntı',
+    checkHow:
+      'Rölantide vitesi boşta bırakıp debriyaj pedalını yarı bas; ses değişiyorsa DMF aşınmış olabilir. Debriyaj değişiminde birlikte değiştirilmesi önerilir.'
+  },
+
+  // --------------------------------------------------------- SÜSPANSİYON (1)
+  {
+    id: 'rot-basi',
+    system: 'suspansiyon',
+    title: 'Rot başı / rotil aşınması',
+    appliesTo: { minKm: 80000 },
+    risk: 'Düşük',
+    cost: '2.000 - 8.000 TL',
+    checkKm: '80000-200000',
+    symptom: 'Direksiyonda oynama, düz yolda hafif titreşim, lastik iç/dış kenar aşınması',
+    checkHow:
+      'Aracı kaldırıp lastikleri saat 3-9 yönünde tutup sallayarak boşluk kontrol edilir.'
+  },
+
+  // ------------------------------------------------------------------ FREN (2)
+  {
+    id: 'abs-sensor',
+    system: 'fren',
+    title: 'ABS teker hız sensörü arızası',
+    appliesTo: { minKm: 100000 },
+    risk: 'Düşük',
+    cost: '1.500 - 6.000 TL',
+    checkKm: '100000-999999',
+    symptom: 'ABS/ESP arıza lambası, fren sırasında ABS devreye girmemesi',
+    checkHow: 'Gösterge panelinde ABS lambası kontağı açınca kısa süre yanıp sönmeli ve sönmelidir; sönmüyorsa arıza var demektir.'
+  },
+  {
+    id: 'el-freni-kablosu',
+    system: 'fren',
+    title: 'El freni kablosu paslanması/sıkışması',
+    appliesTo: { minAge: 8 },
+    risk: 'Düşük',
+    cost: '2.000 - 6.000 TL',
+    checkKm: '0-999999',
+    symptom: 'El freni tutmuyor veya bırakılınca açılmıyor, sürüşte hafif çekme',
+    checkHow: 'El frenini çekip bırak; her iki arka tekerlek de aynı anda ve tam serbest kalmalı.'
+  },
+
+  // --------------------------------------------------------------- ELEKTRİK (2)
+  {
+    id: 'alternator-arizasi',
+    system: 'elektrik',
+    title: 'Alternatör aşınması',
+    appliesTo: { minKm: 150000 },
+    risk: 'Orta',
+    cost: '4.000 - 15.000 TL',
+    checkKm: '150000-999999',
+    symptom: 'Akü şarj lambası, gece farlarda titreşim, marşın zayıflaması',
+    checkHow: 'Motor çalışırken çoklu ölçer ile akü uçlarından voltaj ölç; 13.5-14.5V dışındaysa alternatör/regülatör şüphelidir.'
+  },
+  {
+    id: 'cam-mekanizmasi',
+    system: 'elektrik',
+    title: 'Elektrikli cam mekanizması (regülatör) arızası',
+    appliesTo: { minAge: 7 },
+    risk: 'Düşük',
+    cost: '1.500 - 5.000 TL',
+    checkKm: '0-999999',
+    symptom: 'Cam yavaş iniyor/çıkıyor, inerken takılıyor, tuhaf motor sesi',
+    checkHow: 'Tüm camları teker teker aç/kapat; asimetrik hız veya duraksama regülatör halatının koptuğunu gösterebilir.'
+  },
+
+  // --------------------------------------------------------- İKLİMLENDİRME (1)
+  {
+    id: 'klima-kompresoru',
+    system: 'iklimlendirme',
+    title: 'Klima kompresörü arızası',
+    appliesTo: { minKm: 120000 },
+    risk: 'Orta',
+    cost: '8.000 - 25.000 TL',
+    checkKm: '120000-999999',
+    symptom: 'Klima açıldığında vuruntu/gıcırtı sesi, soğutmanın aniden kesilmesi',
+    checkHow: 'Klimayı açıp motor kaputunu aç; kompresör kasnağı devreye girerken anormal ses/titreşim varsa şüphelen.'
   }
 ]
 

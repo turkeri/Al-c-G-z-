@@ -2578,6 +2578,70 @@ export const ENGINES = [
       { title: 'Enjektör arızası', risk: 'Orta', cost: '10.000 - 35.000 TL', note: '' },
       { title: 'DPF tıkanması (kısa mesafede)', risk: 'Orta', cost: '6.000 - 40.000 TL', note: '' }
     ]
+  },
+
+  // ==========================================================================
+  // 3. TUR GENİŞLETME — yeni markalar (Lexus, Porsche, MG, DS) ve yeni ikinci
+  // kademe modeller (Ford Ranger vb.) için eksik motor varyantları.
+  // ==========================================================================
+  {
+    id: 'porsche-v6-turbo',
+    family: 'EA839',
+    name: '3.0 V6 Turbo',
+    codes: ['DFI'],
+    group: 'VAG',
+    displacement: 2995,
+    fuel: 'Benzin',
+    power: '340 - 440 HP',
+    torque: '450 - 550 Nm',
+    years: '2017 - 2024',
+    usedIn: ['Porsche Cayenne', 'Porsche Macan', 'Audi SQ7', 'Audi SQ5'],
+    durability: 80,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: 'Yüksek performanslı motor; yağ kalitesi ve ısınma sonrası kullanım ömrü doğrudan etkiler.' },
+    problems: [
+      { title: 'Hava süspansiyon körükleri', risk: 'Orta', cost: '20.000 - 60.000 TL', note: 'Motora özgü değil ama bu gövdelerde neredeyse standarttır.' },
+      { title: 'Turbo/aktüatör arızası', risk: 'Düşük', cost: '15.000 - 45.000 TL', note: '' },
+      { title: 'Yüksek yakıt ve bakım maliyeti', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; performans motorunun karakteridir.' }
+    ]
+  },
+  {
+    id: 'mg-turbo-15',
+    family: 'SGE',
+    name: '1.5 Turbo',
+    codes: ['15S4C'],
+    group: 'MG',
+    displacement: 1490,
+    fuel: 'Benzin',
+    power: '162 - 170 HP',
+    torque: '230 - 250 Nm',
+    years: '2018 - 2024',
+    usedIn: ['MG ZS', 'MG HS'],
+    durability: 74,
+    maintenance: { oilKm: 15000, timing: 'Zincir', note: 'Yeni nesil bir motor ailesidir; Türkiye\'de uzun vadeli arıza istatistiği henüz sınırlıdır.' },
+    problems: [
+      { title: 'Turbo/aktüatör arızası', risk: 'Düşük', cost: '10.000 - 30.000 TL', note: '' },
+      { title: 'Uzun vadeli güvenilirlik verisi sınırlı', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; markanın Türkiye\'deki geçmişi kısa olduğundan istatistik azdır. Garanti kapsamı bu araçlarda önem kazanır.' }
+    ]
+  },
+  {
+    id: 'ford-duratorq-32',
+    family: 'Duratorq TDCi',
+    name: '3.2 TDCi',
+    codes: ['P5AT'],
+    group: 'Ford',
+    displacement: 3198,
+    fuel: 'Dizel',
+    power: '200 HP',
+    torque: '470 Nm',
+    years: '2011 - 2019',
+    usedIn: ['Ford Ranger'],
+    durability: 81,
+    maintenance: { oilKm: 15000, timing: 'Kayış', note: '' },
+    problems: [
+      { title: 'Turbo aktüatör yapışması', risk: 'Orta', cost: '10.000 - 30.000 TL', note: '' },
+      { title: 'DPF tıkanması (kısa mesafede)', risk: 'Orta', cost: '6.000 - 40.000 TL', note: '' },
+      { title: 'Ticari/arazi kullanımı nedeniyle aşırı yüklenme aşınması', risk: 'Düşük', cost: '0 TL', note: 'Arıza değil; kullanım amacına dikkat edilmeli.' }
+    ]
   }
 ]
 

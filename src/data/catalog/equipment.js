@@ -491,6 +491,72 @@ export const EQUIPMENT = [
       'Varlığı aracın römork/karavan çektiğini gösterebilir; bu, şanzıman ve debriyajın normalden fazla yorulduğu anlamına gelir.',
     checkHow: 'Çeki demiri varsa ne amaçla kullanıldığını sor ve şanzıman geçmişini ayrıca sorgula.',
     riskIfBroken: 'Kendisi ucuzdur; asıl konu aktarma organlarının yorgunluğudur.'
+  },
+
+  // ------------------------------------------------------------- EK KONFOR
+  {
+    id: 'start-stop',
+    label: 'Start-stop sistemi',
+    category: 'surus',
+    whyItMatters: 'Şehir içi yakıt tüketimini düşürür; ama marş motoru ve aküyü normalden fazla yorar.',
+    checkHow: 'Trafikte durup fren pedalını bırak; motor otomatik durup vitese basınca tekrar çalışmalı. Çalışmıyorsa akü/marş kontrol edilmeli.',
+    riskIfBroken: 'AGM akü değişimi 4.000 - 9.000 TL; marş motoru 6.000 - 18.000 TL.'
+  },
+  {
+    id: 'elektronik-el-freni',
+    label: 'Elektronik el freni',
+    category: 'konfor',
+    whyItMatters: 'Klasik kablolu el frenine göre kullanımı kolaydır ama arızası daha maliyetlidir.',
+    checkHow: 'Düğmeye basıp bırak; gösterge panelinde ilgili ikaz doğru şekilde yanıp sönmeli.',
+    riskIfBroken: 'Aktüatör değişimi 6.000 - 15.000 TL.'
+  },
+  {
+    id: 'uc-bolge-klima',
+    label: '3 (çoklu) bölge klima',
+    category: 'konfor',
+    whyItMatters: 'Üst donanım göstergesidir; arka koltuk yolcuları kendi sıcaklığını ayarlayabilir.',
+    checkHow: 'Ön ve arka paneli farklı sıcaklıklara ayarla, menfezlerden gelen havanın gerçekten farklı olduğunu doğrula.',
+    riskIfBroken: 'Ek aktüatör ve sensör arızası 3.000 - 10.000 TL.'
+  },
+  {
+    id: 'masaj-koltuk',
+    label: 'Masaj fonksiyonlu koltuk',
+    category: 'konfor',
+    whyItMatters: 'Üst/premium donanım göstergesidir.',
+    checkHow: 'Menüden masaj fonksiyonunu çalıştır; koltuk sırtındaki hava yastıklarının hareket ettiğini hisset.',
+    riskIfBroken: 'Koltuk modülü arızası 8.000 - 25.000 TL.'
+  },
+  {
+    id: 'gece-gorus',
+    label: 'Gece görüş sistemi',
+    category: 'surus',
+    whyItMatters: 'Üst/premium donanım göstergesidir; termal kamera ile yaya/hayvan tespiti yapar.',
+    checkHow: 'Gece kullanım geçmişi olmadan test edilemez; ilan/servis kaydından fonksiyonun çalıştığı teyit edilmelidir.',
+    riskIfBroken: 'Kamera ünitesi 15.000 - 40.000 TL.'
+  },
+  {
+    id: 'arka-cam-perdesi',
+    label: 'Elektrikli arka cam perdesi',
+    category: 'konfor',
+    whyItMatters: 'Üst donanım göstergesidir; arka koltuk mahremiyeti ve güneşten korunma sağlar.',
+    checkHow: 'Düğmesine basıp perdenin düzgün açılıp kapandığını gör.',
+    riskIfBroken: 'Motor/mekanizma arızası 3.000 - 8.000 TL.'
+  },
+  {
+    id: 'elektrikli-direksiyon-ayari',
+    label: 'Elektrikli direksiyon ayarı (hafızalı)',
+    category: 'konfor',
+    whyItMatters: 'Koltuk hafızasıyla birlikte çalışır; birden fazla kullanıcı için hızlı ayar sağlar.',
+    checkHow: 'Hafıza düğmesine bas; direksiyon ve koltuğun birlikte ayarlanan konuma geldiğini doğrula.',
+    riskIfBroken: 'Motor/mekanizma arızası 5.000 - 15.000 TL.'
+  },
+  {
+    id: 'otomatik-sinyal-sekmesi',
+    label: 'Şeritler arası otomatik direksiyon desteği',
+    category: 'surus',
+    whyItMatters: 'Şerit takip sisteminin bir adım ilerisidir; aracı şerit içinde otomatik olarak ortalar.',
+    checkHow: 'Şerit çizgileri belirgin bir yolda etkinleştir; direksiyona hafif bir düzeltme torku hissedilmeli.',
+    riskIfBroken: 'Kamera/sensör kalibrasyonu gerektirir, 3.000 - 10.000 TL.'
   }
 ]
 

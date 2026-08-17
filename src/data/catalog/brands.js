@@ -403,6 +403,52 @@ export const BRANDS = [
     partsAvailability: 5,
     resaleSpeed: 4,
     note: 'Parça en ucuz ve en yaygın bulunan gruptur; her ustanın bildiği mekanik.'
+  },
+
+  // ---------------------------------------------------------------- DİĞER
+  {
+    id: 'lexus',
+    name: 'Lexus',
+    origin: 'Japonya',
+    group: 'Toyota',
+    partsCost: 4,
+    serviceNetwork: 2,
+    partsAvailability: 3,
+    resaleSpeed: 3,
+    note: 'Toyota ile aynı hibrit teknolojisini ve güvenilirlik seviyesini taşır; servis ağı Toyota\'ya göre çok daha dardır, bu da bekleme süresini uzatabilir.'
+  },
+  {
+    id: 'porsche',
+    name: 'Porsche',
+    origin: 'Almanya',
+    group: 'VAG',
+    partsCost: 5,
+    serviceNetwork: 2,
+    partsAvailability: 3,
+    resaleSpeed: 4,
+    note: 'Cayenne/Macan gibi SUV modelleri VW/Audi ile ortak platform ve motor kullanır; işçilik ve orijinal parça markanın karakteri gereği çok pahalıdır.'
+  },
+  {
+    id: 'mg',
+    name: 'MG',
+    origin: 'Çin',
+    group: 'MG',
+    partsCost: 2,
+    serviceNetwork: 3,
+    partsAvailability: 2,
+    resaleSpeed: 2,
+    note: 'Türkiye pazarına yeni giren, agresif fiyatlanan bir markadır. Servis ağı hızla büyüyor ama ikinci el fiyat davranışı ve parça arzı için henüz uzun vadeli veri yoktur.'
+  },
+  {
+    id: 'ds',
+    name: 'DS',
+    origin: 'Fransa',
+    group: 'Stellantis-PSA',
+    partsCost: 4,
+    serviceNetwork: 1,
+    partsAvailability: 2,
+    resaleSpeed: 2,
+    note: 'Citroën\'in premium alt markasıdır; PSA motor ailesini paylaşır ama bayi/servis ağı Türkiye\'de çok dardır.'
   }
 ]
 
