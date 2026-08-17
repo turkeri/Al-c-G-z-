@@ -31,12 +31,12 @@ test('ambiguous or low confidence matching stays review-only', () => {
   const core = { brands: [{ id: 'b', display_name: 'Audi' }], models: [{ id: 'm', brand_id: 'b', display_name: 'A3' }], generations: [{ id: 'g1', model_id: 'm', code: '8V', year_start: 2012, year_end: 2020 }, { id: 'g2', model_id: 'm', code: '8V', year_start: 2012, year_end: 2020 }] }
   assert.equal(matchPackageToGeneration({ brand: 'Audi', model: 'A3', years: '2013-2020', generationCode: '8V' }, core).matched, false)
 })
-test('seven known unresolved package model relations remain review candidates', async () => {
+test('known unresolved package model relations remain review candidates', async () => {
   const report = await buildPackagesDryRun()
-  const expected = ['Skoda|Superb', 'Skoda|Fabia', 'Seat|Ibiza', 'Hyundai|i10', 'Kia|Ceed', 'Kia|Rio']
+  const expected = ['Audi|Q3', 'Skoda|Octavia', 'Honda|CR-V', 'Ford|Fiesta', 'Ford|Kuga', 'Peugeot|208', 'Opel|Corsa', 'Hyundai|i10', 'Kia|Sportage', 'Kia|Rio']
   const unresolved = new Set(report.reviewCandidates.map((item) => `${item.brand}|${item.model}`))
   for (const key of expected) assert.ok(unresolved.has(key))
-  assert.equal(report.reviewCandidates.filter((item) => expected.includes(`${item.brand}|${item.model}`)).length, 7)
+  assert.equal(report.reviewCandidates.filter((item) => expected.includes(`${item.brand}|${item.model}`)).length, 10)
 })
 test('validator blocks missing equipment, orphan generation, invalid years and source collisions', () => {
   const plan = minimalPlan()
