@@ -8,7 +8,7 @@ compatibility_date = "2024-11-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "arac-dedektifi"
-database_id = "BURAYA_D1_DATABASE_ID"
+database_id = "07b6820f-33e6-4ba6-b4dc-b16c792c826f"
 
 # Model tercihi (ücretsiz katmanda çalışan bir model seçin)
 [vars]
